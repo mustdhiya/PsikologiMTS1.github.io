@@ -1,0 +1,1392 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS Pengumuman</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fc;
+            overflow-x: hidden;
+        }
+        
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-hidden {
+            transform: translateX(-100%);
+        }
+        
+        .main-content {
+            transition: all 0.3s ease;
+        }
+        
+        .announcement-item {
+            transition: all 0.2s ease;
+        }
+        
+        .announcement-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .draggable {
+            cursor: grab;
+        }
+        
+        .draggable:active {
+            cursor: grabbing;
+        }
+        
+        .drag-over {
+            border: 2px dashed #4f46e5;
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+        
+        .mode-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .mode-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #4f46e5;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-info {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+        
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+        
+        .announcement-container {
+            min-height: 100px;
+            transition: all 0.2s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                z-index: 40;
+            }
+            
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 30;
+                display: none;
+            }
+            
+            .overlay.active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="flex min-h-screen bg-gray-100">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-gradient-to-b from-indigo-800 to-purple-800 text-white w-64 fixed h-full z-40">
+            <div class="p-5">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold">EduLMS</h2>
+                    <button id="close-sidebar" class="text-white p-2 rounded-full hover:bg-indigo-700 lg:hidden">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-center mb-6">
+                        <div class="relative">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E" 
+                                 alt="Profile" class="w-16 h-16 rounded-full bg-indigo-600 p-2">
+                            <span class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <h3 class="text-lg font-medium">User Name</h3>
+                        <div id="user-role" class="text-indigo-200 text-sm">Teacher Mode</div>
+                    </div>
+                    
+                    <div class="flex items-center justify-center mb-6">
+                        <span class="mr-2 text-sm">Student</span>
+                        <label class="mode-switch">
+                            <input type="checkbox" id="mode-toggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span class="ml-2 text-sm">Teacher</span>
+                    </div>
+                    
+                    <a href="#" class="flex items-center p-3 rounded-lg hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-home w-6"></i>
+                        <span>Home</span>
+                    </a>
+                    
+                    <a href="#" class="flex items-center p-3 rounded-lg bg-indigo-700 text-white">
+                        <i class="fas fa-bullhorn w-6"></i>
+                        <span>Pengumuman</span>
+                    </a>
+                    
+                    <a href="#" class="flex items-center p-3 rounded-lg hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-book w-6"></i>
+                        <span>Modul</span>
+                    </a>
+                    
+                    <a href="#" class="flex items-center p-3 rounded-lg hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-bookmark w-6"></i>
+                        <span>Referensi</span>
+                    </a>
+                    
+                    <a href="#" class="flex items-center p-3 rounded-lg hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-tasks w-6"></i>
+                        <span>Tugas</span>
+                    </a>
+                    
+                    <a href="#" class="flex items-center p-3 rounded-lg hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-chart-bar w-6"></i>
+                        <span>Nilai</span>
+                    </a>
+                    
+                    <a href="#" class="flex items-center p-3 rounded-lg hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-cog w-6"></i>
+                        <span>Pengaturan</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Overlay for mobile -->
+        <div id="overlay" class="overlay"></div>
+        
+        <!-- Main Content -->
+        <div id="main-content" class="main-content flex-1 ml-64">
+            <!-- Top Navigation -->
+            <nav class="bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-30">
+                <div class="flex items-center">
+                    <button id="toggle-sidebar" class="p-2 rounded-md hover:bg-gray-200 focus:outline-none">
+                        <i class="fas fa-bars text-gray-600"></i>
+                    </button>
+                    <h1 class="text-xl font-semibold ml-4 text-gray-800">Pengumuman</h1>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search..." class="px-4 py-2 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-40 lg:w-64">
+                        <i class="fas fa-search absolute right-3 top-2.5 text-gray-400"></i>
+                    </div>
+                    
+                    <button class="p-2 rounded-full hover:bg-gray-200 relative">
+                        <i class="fas fa-bell text-gray-600"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    
+                    <button class="p-2 rounded-full hover:bg-gray-200">
+                        <i class="fas fa-envelope text-gray-600"></i>
+                    </button>
+                </div>
+            </nav>
+            
+            <!-- Content Area -->
+            <div class="p-6">
+                <!-- Announcement Header -->
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Pengumuman Kelas</h2>
+                            <p class="text-gray-600">Informasi penting untuk semua siswa</p>
+                        </div>
+                        
+                        <div class="mt-4 md:mt-0">
+                            <div class="flex items-center space-x-2">
+                                <span class="badge badge-info">Semua Kelas</span>
+                                <span class="badge badge-success">Aktif</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Teacher Controls - Only visible in Teacher Mode -->
+                <div id="teacher-controls" class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Kelola Pengumuman</h3>
+                        
+                        <div class="flex space-x-2 mt-4 md:mt-0">
+                            <button id="add-announcement-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors flex items-center">
+                                <i class="fas fa-plus mr-2"></i> Tambah Pengumuman
+                            </button>
+                            
+                            <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors flex items-center">
+                                <i class="fas fa-filter mr-2"></i> Filter
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-medium text-gray-700">Statistik Pengumuman</h4>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Total Pengumuman</span>
+                                    <span class="font-medium">5</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Pengumuman Aktif</span>
+                                    <span class="font-medium">3</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Pengumuman Terjadwal</span>
+                                    <span class="font-medium">1</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Pengumuman Kedaluwarsa</span>
+                                    <span class="font-medium">1</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-medium text-gray-700">Kategori</h4>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="badge badge-info">Umum</span>
+                                <span class="badge badge-warning">Tugas</span>
+                                <span class="badge badge-success">Ujian</span>
+                                <span class="badge badge-danger">Penting</span>
+                                <span class="badge" style="background-color: #e9d5ff; color: #7e22ce;">Acara</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
+                            <h4 class="font-medium text-gray-700 mb-2">Petunjuk:</h4>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li><i class="fas fa-arrows-alt text-indigo-500 mr-1"></i> Drag & drop untuk mengatur urutan</li>
+                                <li><i class="fas fa-thumbtack text-indigo-500 mr-1"></i> Pin pengumuman penting</li>
+                                <li><i class="fas fa-eye text-indigo-500 mr-1"></i> Atur visibilitas pengumuman</li>
+                                <li><i class="fas fa-calendar text-indigo-500 mr-1"></i> Jadwalkan pengumuman</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Announcements Section -->
+                <div id="announcements-container" class="space-y-6">
+                    <!-- Pinned Announcement -->
+                    <div class="announcement-container bg-white rounded-lg shadow-sm p-6 border-l-4 border-yellow-400" data-id="announcement-1">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-start">
+                                <div class="draggable-handle mr-2 cursor-grab teacher-only">
+                                    <i class="fas fa-grip-vertical text-gray-400"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center">
+                                        <h3 class="text-xl font-semibold text-gray-800">Ujian Tengah Semester</h3>
+                                        <span class="ml-2 text-yellow-500"><i class="fas fa-thumbtack"></i></span>
+                                    </div>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="badge badge-danger">Penting</span>
+                                        <span class="text-sm text-gray-500">Diposting: 10 September 2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2 teacher-only">
+                                <button class="announcement-settings-btn p-2 rounded-md hover:bg-gray-100">
+                                    <i class="fas fa-cog text-gray-600"></i>
+                                </button>
+                                <button class="delete-announcement-btn p-2 rounded-md hover:bg-gray-100">
+                                    <i class="fas fa-trash text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="prose max-w-none text-gray-700 mb-4">
+                            <p>Ujian Tengah Semester akan dilaksanakan pada tanggal 25-30 September 2023. Semua siswa diwajibkan untuk mempersiapkan diri dengan baik. Materi ujian meliputi semua topik yang telah dipelajari dari awal semester hingga Modul 5.</p>
+                            <p>Jadwal detail ujian dapat dilihat pada lampiran. Pastikan untuk memeriksa ruangan dan waktu ujian masing-masing mata pelajaran.</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <div class="flex items-center bg-gray-100 px-3 py-2 rounded-md">
+                                <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                                <span class="text-sm">Jadwal_UTS_Ganjil_2023.pdf</span>
+                            </div>
+                            <div class="flex items-center bg-gray-100 px-3 py-2 rounded-md">
+                                <i class="fas fa-file-word text-blue-500 mr-2"></i>
+                                <span class="text-sm">Peraturan_Ujian.docx</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center text-sm text-gray-600">
+                            <div>
+                                <i class="fas fa-eye mr-1"></i> Dilihat oleh 28/30 siswa
+                            </div>
+                            <div>
+                                <button class="text-indigo-600 hover:text-indigo-800">
+                                    <i class="fas fa-comment mr-1"></i> Komentar (5)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Regular Announcement -->
+                    <div class="announcement-container bg-white rounded-lg shadow-sm p-6" data-id="announcement-2">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-start">
+                                <div class="draggable-handle mr-2 cursor-grab teacher-only">
+                                    <i class="fas fa-grip-vertical text-gray-400"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-800">Pengumpulan Tugas Matematika</h3>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="badge badge-warning">Tugas</span>
+                                        <span class="text-sm text-gray-500">Diposting: 15 September 2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2 teacher-only">
+                                <button class="announcement-settings-btn p-2 rounded-md hover:bg-gray-100">
+                                    <i class="fas fa-cog text-gray-600"></i>
+                                </button>
+                                <button class="delete-announcement-btn p-2 rounded-md hover:bg-gray-100">
+                                    <i class="fas fa-trash text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="prose max-w-none text-gray-700 mb-4">
+                            <p>Batas pengumpulan tugas Matematika Bab 3 tentang Persamaan Linear diperpanjang hingga tanggal 20 September 2023. Pastikan untuk mengumpulkan tugas tepat waktu untuk mendapatkan nilai maksimal.</p>
+                            <p>Tugas dapat dikumpulkan melalui platform LMS dengan mengakses menu Tugas > Matematika > Tugas Bab 3.</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center text-sm text-gray-600">
+                            <div>
+                                <i class="fas fa-eye mr-1"></i> Dilihat oleh 25/30 siswa
+                            </div>
+                            <div>
+                                <button class="text-indigo-600 hover:text-indigo-800">
+                                    <i class="fas fa-comment mr-1"></i> Komentar (3)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Scheduled Announcement -->
+                    <div class="announcement-container bg-white rounded-lg shadow-sm p-6 border-l-4 border-blue-400" data-id="announcement-3">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-start">
+                                <div class="draggable-handle mr-2 cursor-grab teacher-only">
+                                    <i class="fas fa-grip-vertical text-gray-400"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center">
+                                        <h3 class="text-xl font-semibold text-gray-800">Kunjungan Studi Lapangan</h3>
+                                        <span class="ml-2 text-blue-500"><i class="fas fa-clock"></i></span>
+                                    </div>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="badge" style="background-color: #e9d5ff; color: #7e22ce;">Acara</span>
+                                        <span class="text-sm text-gray-500">Terjadwal: 25 September 2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2 teacher-only">
+                                <button class="announcement-settings-btn p-2 rounded-md hover:bg-gray-100">
+                                    <i class="fas fa-cog text-gray-600"></i>
+                                </button>
+                                <button class="delete-announcement-btn p-2 rounded-md hover:bg-gray-100">
+                                    <i class="fas fa-trash text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="prose max-w-none text-gray-700 mb-4">
+                            <p>Akan diadakan kunjungan studi lapangan ke Museum Sains dan Teknologi pada tanggal 5 Oktober 2023. Kegiatan ini wajib diikuti oleh seluruh siswa kelas X.</p>
+                            <p>Detail lebih lanjut mengenai transportasi, biaya, dan jadwal kegiatan akan diinformasikan segera. Orang tua/wali diminta untuk mengisi formulir izin yang akan dibagikan minggu depan.</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <div class="flex items-center bg-gray-100 px-3 py-2 rounded-md">
+                                <i class="fas fa-image text-green-500 mr-2"></i>
+                                <span class="text-sm">Museum_Preview.jpg</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center text-sm text-gray-600">
+                            <div>
+                                <i class="fas fa-eye mr-1"></i> Akan ditampilkan pada 25 September 2023
+                            </div>
+                            <div class="teacher-only">
+                                <button class="text-indigo-600 hover:text-indigo-800">
+                                    <i class="fas fa-edit mr-1"></i> Edit Jadwal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Regular Announcement -->
+                    <div class="announcement-container bg-white rounded-lg shadow-sm p-6" data-id="announcement-4">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-start">
+                                <div class="draggable-handle mr-2 cursor-grab teacher-only">
+                                    <i class="fas fa-grip-vertical text-gray-400"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-800">Materi Baru Telah Ditambahkan</h3>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="badge badge-info">Umum</span>
+                                        <span class="text-sm text-gray-500">Diposting: 18 September 2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2 teacher-only">
+                                <button class="announcement-settings-btn p-2 rounded-md hover:bg-gray-100">
+                                    <i class="fas fa-cog text-gray-600"></i>
+                                </button>
+                                <button class="delete-announcement-btn p-2 rounded-md hover:bg-gray-100">
+                                    <i class="fas fa-trash text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="prose max-w-none text-gray-700 mb-4">
+                            <p>Materi baru untuk Modul 6: Persamaan Kuadrat telah ditambahkan. Silakan akses materi tersebut melalui menu Modul > Matematika > Modul 6.</p>
+                            <p>Materi ini mencakup video pembelajaran, latihan soal, dan quiz interaktif yang dapat membantu pemahaman kalian tentang persamaan kuadrat.</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center text-sm text-gray-600">
+                            <div>
+                                <i class="fas fa-eye mr-1"></i> Dilihat oleh 15/30 siswa
+                            </div>
+                            <div>
+                                <button class="text-indigo-600 hover:text-indigo-800">
+                                    <i class="fas fa-comment mr-1"></i> Komentar (0)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Expired Announcement -->
+                    <div class="announcement-container bg-white rounded-lg shadow-sm p-6 opacity-70" data-id="announcement-5">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-start">
+                                <div class="draggable-handle mr-2 cursor-grab teacher-only">
+                                    <i class="fas fa-grip-vertical text-gray-400"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center">
+                                        <h3 class="text-xl font-semibold text-gray-800">Perubahan Jadwal Pelajaran</h3>
+                                        <span class="ml-2 text-gray-500"><i class="fas fa-history"></i></span>
+                                    </div>
+                                    <div class="flex items-center mt-1 space-x-2">
+                                        <span class="badge badge-info">Umum</span>
+                                        <span class="text-sm text-gray-500">Diposting: 5 September 2023</span>
+                                        <span class="text-sm text-red-500">Kedaluwarsa</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2 teacher-only">
+                                <button class="announcement-settings-btn p-2 rounded-md hover:bg-gray-100">
+                                    <i class="fas fa-cog text-gray-600"></i>
+                                </button>
+                                <button class="delete-announcement-btn p-2 rounded-md hover:bg-gray-100">
+                                    <i class="fas fa-trash text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="prose max-w-none text-gray-700 mb-4">
+                            <p>Terdapat perubahan jadwal pelajaran untuk minggu ini karena ada beberapa guru yang mengikuti pelatihan. Silakan lihat jadwal terbaru pada lampiran.</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <div class="flex items-center bg-gray-100 px-3 py-2 rounded-md">
+                                <i class="fas fa-file-excel text-green-500 mr-2"></i>
+                                <span class="text-sm">Jadwal_Revisi_5Sept.xlsx</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center text-sm text-gray-600">
+                            <div>
+                                <i class="fas fa-eye mr-1"></i> Dilihat oleh 30/30 siswa
+                            </div>
+                            <div>
+                                <button class="text-indigo-600 hover:text-indigo-800">
+                                    <i class="fas fa-comment mr-1"></i> Komentar (8)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="flex justify-center mt-8">
+                    <nav class="flex items-center space-x-2">
+                        <button class="px-3 py-1 rounded-md bg-gray-200 text-gray-600 hover:bg-gray-300">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="px-3 py-1 rounded-md bg-indigo-600 text-white">1</button>
+                        <button class="px-3 py-1 rounded-md bg-gray-200 text-gray-600 hover:bg-gray-300">2</button>
+                        <button class="px-3 py-1 rounded-md bg-gray-200 text-gray-600 hover:bg-gray-300">3</button>
+                        <button class="px-3 py-1 rounded-md bg-gray-200 text-gray-600 hover:bg-gray-300">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Announcement Modal -->
+    <div id="add-announcement-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Tambah Pengumuman Baru</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Judul Pengumuman</label>
+                <input type="text" id="announcement-title" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan judul pengumuman">
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Kategori</label>
+                <select id="announcement-category" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="umum">Umum</option>
+                    <option value="tugas">Tugas</option>
+                    <option value="ujian">Ujian</option>
+                    <option value="penting">Penting</option>
+                    <option value="acara">Acara</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Isi Pengumuman</label>
+                <textarea id="announcement-content" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan isi pengumuman" rows="5"></textarea>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Lampiran</label>
+                <div class="flex items-center">
+                    <button id="add-attachment-btn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors flex items-center">
+                        <i class="fas fa-paperclip mr-2"></i> Tambah Lampiran
+                    </button>
+                    <span class="ml-3 text-sm text-gray-500">Maksimal 3 file</span>
+                </div>
+                <div id="attachments-list" class="mt-2 space-y-2">
+                    <!-- Attachments will be added here -->
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <div class="flex items-center">
+                    <input type="checkbox" id="pin-announcement" class="mr-2">
+                    <label for="pin-announcement" class="text-gray-700">Pin Pengumuman</label>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <div class="flex items-center">
+                    <input type="checkbox" id="schedule-announcement" class="mr-2">
+                    <label for="schedule-announcement" class="text-gray-700">Jadwalkan Pengumuman</label>
+                </div>
+                <div id="schedule-date-container" class="mt-2 hidden">
+                    <label class="block text-gray-700 mb-2">Tanggal Publikasi</label>
+                    <input type="date" id="schedule-date" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Visibilitas</label>
+                <select id="announcement-visibility" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all">Semua Siswa</option>
+                    <option value="class">Kelas Tertentu</option>
+                    <option value="group">Grup Tertentu</option>
+                </select>
+            </div>
+            
+            <div class="flex justify-end">
+                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors mr-2 close-modal">Batal</button>
+                <button id="save-announcement-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">Publikasikan</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Announcement Settings Modal -->
+    <div id="announcement-settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Pengaturan Pengumuman</h3>
+                <button class="close-modal text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Judul Pengumuman</label>
+                <input type="text" id="edit-announcement-title" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan judul pengumuman">
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Kategori</label>
+                <select id="edit-announcement-category" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="umum">Umum</option>
+                    <option value="tugas">Tugas</option>
+                    <option value="ujian">Ujian</option>
+                    <option value="penting">Penting</option>
+                    <option value="acara">Acara</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Isi Pengumuman</label>
+                <textarea id="edit-announcement-content" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan isi pengumuman" rows="5"></textarea>
+            </div>
+            
+            <div class="mb-4">
+                <div class="flex items-center">
+                    <input type="checkbox" id="edit-pin-announcement" class="mr-2">
+                    <label for="edit-pin-announcement" class="text-gray-700">Pin Pengumuman</label>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Status</label>
+                <select id="announcement-status" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="active">Aktif</option>
+                    <option value="scheduled">Terjadwal</option>
+                    <option value="expired">Kedaluwarsa</option>
+                    <option value="draft">Draft</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Statistik</label>
+                <div class="bg-gray-50 p-3 rounded-md">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-gray-600">Dilihat oleh</span>
+                        <span class="font-medium">28/30 siswa</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Komentar</span>
+                        <span class="font-medium">5</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end">
+                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors mr-2 close-modal">Batal</button>
+                <button id="save-announcement-settings-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">Simpan</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variables
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+            const closeSidebarBtn = document.getElementById('close-sidebar');
+            const overlay = document.getElementById('overlay');
+            const modeToggle = document.getElementById('mode-toggle');
+            const userRole = document.getElementById('user-role');
+            const teacherControls = document.getElementById('teacher-controls');
+            const teacherOnlyElements = document.querySelectorAll('.teacher-only');
+            const addAnnouncementModal = document.getElementById('add-announcement-modal');
+            const announcementSettingsModal = document.getElementById('announcement-settings-modal');
+            const closeModalBtns = document.querySelectorAll('.close-modal');
+            const addAnnouncementBtn = document.getElementById('add-announcement-btn');
+            const saveAnnouncementBtn = document.getElementById('save-announcement-btn');
+            const saveAnnouncementSettingsBtn = document.getElementById('save-announcement-settings-btn');
+            const scheduleAnnouncement = document.getElementById('schedule-announcement');
+            const scheduleDateContainer = document.getElementById('schedule-date-container');
+            const announcementsContainer = document.getElementById('announcements-container');
+            const addAttachmentBtn = document.getElementById('add-attachment-btn');
+            const attachmentsList = document.getElementById('attachments-list');
+            
+            let currentAnnouncementId = null;
+            let draggedItem = null;
+            let nextAnnouncementId = 6; // Starting from 6 since we already have announcements 1-5
+            let attachmentCount = 0;
+            
+            // Toggle sidebar
+            function toggleSidebar() {
+                sidebar.classList.toggle('sidebar-hidden');
+                
+                if (window.innerWidth < 768) {
+                    overlay.classList.toggle('active');
+                } else {
+                    if (sidebar.classList.contains('sidebar-hidden')) {
+                        mainContent.style.marginLeft = '0';
+                    } else {
+                        mainContent.style.marginLeft = '16rem'; // 64px (w-64)
+                    }
+                }
+            }
+            
+            toggleSidebarBtn.addEventListener('click', toggleSidebar);
+            closeSidebarBtn.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+            
+            // Handle responsive layout
+            function handleResize() {
+                if (window.innerWidth < 768) {
+                    sidebar.classList.add('sidebar-hidden');
+                    mainContent.style.marginLeft = '0';
+                } else {
+                    if (!sidebar.classList.contains('sidebar-hidden')) {
+                        mainContent.style.marginLeft = '16rem'; // 64px (w-64)
+                    }
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+            
+            // Toggle between Teacher and Student modes
+            function toggleMode() {
+                if (modeToggle.checked) {
+                    // Teacher Mode
+                    userRole.textContent = 'Teacher Mode';
+                    teacherControls.style.display = 'block';
+                    teacherOnlyElements.forEach(el => {
+                        el.style.display = 'block';
+                    });
+                } else {
+                    // Student Mode
+                    userRole.textContent = 'Student Mode';
+                    teacherControls.style.display = 'none';
+                    teacherOnlyElements.forEach(el => {
+                        el.style.display = 'none';
+                    });
+                }
+            }
+            
+            modeToggle.addEventListener('change', toggleMode);
+            
+            // Initialize mode
+            toggleMode();
+            
+            // Modal functions
+            function openModal(modal) {
+                modal.style.display = 'block';
+            }
+            
+            function closeModal(modal) {
+                modal.style.display = 'none';
+            }
+            
+            closeModalBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    closeModal(modal);
+                });
+            });
+            
+            window.addEventListener('click', function(event) {
+                if (event.target.classList.contains('modal')) {
+                    closeModal(event.target);
+                }
+            });
+            
+            // Schedule announcement toggle
+            scheduleAnnouncement.addEventListener('change', function() {
+                if (this.checked) {
+                    scheduleDateContainer.classList.remove('hidden');
+                } else {
+                    scheduleDateContainer.classList.add('hidden');
+                }
+            });
+            
+            // Add Announcement Button Click
+            addAnnouncementBtn.addEventListener('click', function() {
+                // Reset form
+                document.getElementById('announcement-title').value = '';
+                document.getElementById('announcement-content').value = '';
+                document.getElementById('announcement-category').value = 'umum';
+                document.getElementById('pin-announcement').checked = false;
+                document.getElementById('schedule-announcement').checked = false;
+                scheduleDateContainer.classList.add('hidden');
+                document.getElementById('announcement-visibility').value = 'all';
+                attachmentsList.innerHTML = '';
+                attachmentCount = 0;
+                
+                openModal(addAnnouncementModal);
+            });
+            
+            // Announcement Settings Button Click
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.announcement-settings-btn')) {
+                    const announcementContainer = e.target.closest('.announcement-container');
+                    currentAnnouncementId = announcementContainer.dataset.id;
+                    
+                    // Get current announcement details
+                    const announcementTitle = announcementContainer.querySelector('h3').textContent;
+                    const announcementContent = announcementContainer.querySelector('.prose p').textContent;
+                    const isPinned = announcementContainer.querySelector('.fa-thumbtack') !== null;
+                    
+                    // Get category
+                    let category = 'umum';
+                    const badgeElement = announcementContainer.querySelector('.badge');
+                    if (badgeElement) {
+                        if (badgeElement.classList.contains('badge-warning')) category = 'tugas';
+                        else if (badgeElement.classList.contains('badge-danger')) category = 'penting';
+                        else if (badgeElement.classList.contains('badge-success')) category = 'ujian';
+                        else if (badgeElement.style.backgroundColor === 'rgb(233, 213, 255)') category = 'acara';
+                    }
+                    
+                    // Set values in modal
+                    document.getElementById('edit-announcement-title').value = announcementTitle;
+                    document.getElementById('edit-announcement-content').value = announcementContent;
+                    document.getElementById('edit-announcement-category').value = category;
+                    document.getElementById('edit-pin-announcement').checked = isPinned;
+                    
+                    // Set status
+                    let status = 'active';
+                    if (announcementContainer.querySelector('.fa-clock')) status = 'scheduled';
+                    else if (announcementContainer.querySelector('.text-red-500')) status = 'expired';
+                    document.getElementById('announcement-status').value = status;
+                    
+                    openModal(announcementSettingsModal);
+                }
+            });
+            
+            // Delete Announcement Button Click
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-announcement-btn')) {
+                    const announcementContainer = e.target.closest('.announcement-container');
+                    announcementContainer.remove();
+                }
+            });
+            
+            // Add Attachment Button Click
+            addAttachmentBtn.addEventListener('click', function() {
+                if (attachmentCount >= 3) {
+                    alert('Maksimal 3 lampiran!');
+                    return;
+                }
+                
+                const fileTypes = ['pdf', 'doc', 'xls', 'jpg', 'png'];
+                const randomType = fileTypes[Math.floor(Math.random() * fileTypes.length)];
+                let icon, color;
+                
+                switch (randomType) {
+                    case 'pdf':
+                        icon = 'fa-file-pdf';
+                        color = 'text-red-500';
+                        break;
+                    case 'doc':
+                        icon = 'fa-file-word';
+                        color = 'text-blue-500';
+                        break;
+                    case 'xls':
+                        icon = 'fa-file-excel';
+                        color = 'text-green-500';
+                        break;
+                    case 'jpg':
+                    case 'png':
+                        icon = 'fa-image';
+                        color = 'text-purple-500';
+                        break;
+                }
+                
+                const attachmentItem = document.createElement('div');
+                attachmentItem.className = 'flex items-center justify-between bg-gray-100 px-3 py-2 rounded-md';
+                attachmentItem.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas ${icon} ${color} mr-2"></i>
+                        <span class="text-sm">Lampiran_${attachmentCount + 1}.${randomType}</span>
+                    </div>
+                    <button class="remove-attachment-btn text-gray-500 hover:text-red-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                attachmentsList.appendChild(attachmentItem);
+                attachmentCount++;
+                
+                // Remove attachment button click
+                attachmentItem.querySelector('.remove-attachment-btn').addEventListener('click', function() {
+                    attachmentItem.remove();
+                    attachmentCount--;
+                });
+            });
+            
+            // Save Announcement Button Click
+            saveAnnouncementBtn.addEventListener('click', function() {
+                const announcementTitle = document.getElementById('announcement-title').value;
+                const announcementCategory = document.getElementById('announcement-category').value;
+                const announcementContent = document.getElementById('announcement-content').value;
+                const isPinned = document.getElementById('pin-announcement').checked;
+                const isScheduled = document.getElementById('schedule-announcement').checked;
+                const scheduleDate = isScheduled ? document.getElementById('schedule-date').value : null;
+                
+                if (announcementTitle.trim() === '') {
+                    alert('Judul pengumuman tidak boleh kosong!');
+                    return;
+                }
+                
+                if (announcementContent.trim() === '') {
+                    alert('Isi pengumuman tidak boleh kosong!');
+                    return;
+                }
+                
+                const announcementId = `announcement-${nextAnnouncementId++}`;
+                
+                // Get badge class and color based on category
+                let badgeClass, badgeText;
+                switch (announcementCategory) {
+                    case 'umum':
+                        badgeClass = 'badge-info';
+                        badgeText = 'Umum';
+                        break;
+                    case 'tugas':
+                        badgeClass = 'badge-warning';
+                        badgeText = 'Tugas';
+                        break;
+                    case 'ujian':
+                        badgeClass = 'badge-success';
+                        badgeText = 'Ujian';
+                        break;
+                    case 'penting':
+                        badgeClass = 'badge-danger';
+                        badgeText = 'Penting';
+                        break;
+                    case 'acara':
+                        badgeClass = '';
+                        badgeText = 'Acara';
+                        break;
+                }
+                
+                // Create new announcement
+                const newAnnouncement = document.createElement('div');
+                newAnnouncement.className = `announcement-container bg-white rounded-lg shadow-sm p-6 ${isPinned ? 'border-l-4 border-yellow-400' : ''} ${isScheduled ? 'border-l-4 border-blue-400' : ''}`;
+                newAnnouncement.dataset.id = announcementId;
+                
+                // Get current date
+                const currentDate = new Date();
+                const formattedDate = currentDate.getDate() + ' ' + 
+                                     ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'][currentDate.getMonth()] + ' ' + 
+                                     currentDate.getFullYear();
+                
+                // Create HTML content
+                let announcementHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-start">
+                            <div class="draggable-handle mr-2 cursor-grab teacher-only">
+                                <i class="fas fa-grip-vertical text-gray-400"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <h3 class="text-xl font-semibold text-gray-800">${announcementTitle}</h3>
+                                    ${isPinned ? '<span class="ml-2 text-yellow-500"><i class="fas fa-thumbtack"></i></span>' : ''}
+                                    ${isScheduled ? '<span class="ml-2 text-blue-500"><i class="fas fa-clock"></i></span>' : ''}
+                                </div>
+                                <div class="flex items-center mt-1 space-x-2">
+                                    <span class="badge ${badgeClass}" ${announcementCategory === 'acara' ? 'style="background-color: #e9d5ff; color: #7e22ce;"' : ''}>${badgeText}</span>
+                                    <span class="text-sm text-gray-500">${isScheduled ? 'Terjadwal: ' + scheduleDate : 'Diposting: ' + formattedDate}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-2 teacher-only">
+                            <button class="announcement-settings-btn p-2 rounded-md hover:bg-gray-100">
+                                <i class="fas fa-cog text-gray-600"></i>
+                            </button>
+                            <button class="delete-announcement-btn p-2 rounded-md hover:bg-gray-100">
+                                <i class="fas fa-trash text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="prose max-w-none text-gray-700 mb-4">
+                        <p>${announcementContent}</p>
+                    </div>
+                `;
+                
+                // Add attachments if any
+                const attachments = attachmentsList.querySelectorAll('.flex.items-center.justify-between');
+                if (attachments.length > 0) {
+                    announcementHTML += '<div class="flex flex-wrap gap-2 mb-4">';
+                    attachments.forEach(attachment => {
+                        const icon = attachment.querySelector('i').className;
+                        const fileName = attachment.querySelector('span').textContent;
+                        announcementHTML += `
+                            <div class="flex items-center bg-gray-100 px-3 py-2 rounded-md">
+                                <i class="${icon} mr-2"></i>
+                                <span class="text-sm">${fileName}</span>
+                            </div>
+                        `;
+                    });
+                    announcementHTML += '</div>';
+                }
+                
+                // Add footer
+                announcementHTML += `
+                    <div class="flex justify-between items-center text-sm text-gray-600">
+                        <div>
+                            <i class="fas fa-eye mr-1"></i> ${isScheduled ? 'Akan ditampilkan pada ' + scheduleDate : 'Dilihat oleh 0/30 siswa'}
+                        </div>
+                        <div>
+                            <button class="text-indigo-600 hover:text-indigo-800">
+                                <i class="fas fa-comment mr-1"></i> Komentar (0)
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                newAnnouncement.innerHTML = announcementHTML;
+                
+                // Add to container (at the top if pinned)
+                if (isPinned) {
+                    announcementsContainer.insertBefore(newAnnouncement, announcementsContainer.firstChild);
+                } else {
+                    announcementsContainer.appendChild(newAnnouncement);
+                }
+                
+                closeModal(addAnnouncementModal);
+                
+                // Apply mode settings to new elements
+                if (!modeToggle.checked) {
+                    const teacherOnlyElements = newAnnouncement.querySelectorAll('.teacher-only');
+                    teacherOnlyElements.forEach(el => {
+                        el.style.display = 'none';
+                    });
+                }
+                
+                // Initialize drag and drop for the new announcement
+                initDragAndDrop();
+            });
+            
+            // Save Announcement Settings Button Click
+            saveAnnouncementSettingsBtn.addEventListener('click', function() {
+                const announcementTitle = document.getElementById('edit-announcement-title').value;
+                const announcementCategory = document.getElementById('edit-announcement-category').value;
+                const announcementContent = document.getElementById('edit-announcement-content').value;
+                const isPinned = document.getElementById('edit-pin-announcement').checked;
+                const status = document.getElementById('announcement-status').value;
+                
+                if (announcementTitle.trim() === '') {
+                    alert('Judul pengumuman tidak boleh kosong!');
+                    return;
+                }
+                
+                if (announcementContent.trim() === '') {
+                    alert('Isi pengumuman tidak boleh kosong!');
+                    return;
+                }
+                
+                // Find the announcement container
+                const announcementContainer = document.querySelector(`.announcement-container[data-id="${currentAnnouncementId}"]`);
+                
+                // Get badge class and color based on category
+                let badgeClass, badgeText;
+                switch (announcementCategory) {
+                    case 'umum':
+                        badgeClass = 'badge-info';
+                        badgeText = 'Umum';
+                        break;
+                    case 'tugas':
+                        badgeClass = 'badge-warning';
+                        badgeText = 'Tugas';
+                        break;
+                    case 'ujian':
+                        badgeClass = 'badge-success';
+                        badgeText = 'Ujian';
+                        break;
+                    case 'penting':
+                        badgeClass = 'badge-danger';
+                        badgeText = 'Penting';
+                        break;
+                    case 'acara':
+                        badgeClass = '';
+                        badgeText = 'Acara';
+                        break;
+                }
+                
+                // Update announcement title
+                announcementContainer.querySelector('h3').textContent = announcementTitle;
+                
+                // Update announcement content
+                announcementContainer.querySelector('.prose p').textContent = announcementContent;
+                
+                // Update category
+                const badgeElement = announcementContainer.querySelector('.badge');
+                badgeElement.className = `badge ${badgeClass}`;
+                if (announcementCategory === 'acara') {
+                    badgeElement.style.backgroundColor = '#e9d5ff';
+                    badgeElement.style.color = '#7e22ce';
+                } else {
+                    badgeElement.style.backgroundColor = '';
+                    badgeElement.style.color = '';
+                }
+                badgeElement.textContent = badgeText;
+                
+                // Update pin status
+                const titleContainer = announcementContainer.querySelector('.flex.items-center');
+                const pinIcon = titleContainer.querySelector('.fa-thumbtack');
+                
+                if (isPinned && !pinIcon) {
+                    const pinSpan = document.createElement('span');
+                    pinSpan.className = 'ml-2 text-yellow-500';
+                    pinSpan.innerHTML = '<i class="fas fa-thumbtack"></i>';
+                    titleContainer.appendChild(pinSpan);
+                    
+                    // Add border to container
+                    announcementContainer.classList.add('border-l-4', 'border-yellow-400');
+                    
+                    // Move to top
+                    announcementsContainer.insertBefore(announcementContainer, announcementsContainer.firstChild);
+                } else if (!isPinned && pinIcon) {
+                    pinIcon.parentElement.remove();
+                    
+                    // Remove border if not scheduled
+                    if (!announcementContainer.querySelector('.fa-clock')) {
+                        announcementContainer.classList.remove('border-l-4', 'border-yellow-400');
+                    }
+                }
+                
+                // Update status
+                const statusText = announcementContainer.querySelector('.text-sm.text-gray-500');
+                const clockIcon = announcementContainer.querySelector('.fa-clock');
+                const expiredText = announcementContainer.querySelector('.text-sm.text-red-500');
+                
+                // Remove existing status indicators
+                if (clockIcon) clockIcon.parentElement.remove();
+                if (expiredText) expiredText.remove();
+                
+                // Set opacity based on status
+                if (status === 'expired') {
+                    announcementContainer.style.opacity = '0.7';
+                    
+                    // Add expired text
+                    const expiredSpan = document.createElement('span');
+                    expiredSpan.className = 'text-sm text-red-500';
+                    expiredSpan.textContent = 'Kedaluwarsa';
+                    statusText.parentElement.appendChild(expiredSpan);
+                    
+                    // Add history icon
+                    const historySpan = document.createElement('span');
+                    historySpan.className = 'ml-2 text-gray-500';
+                    historySpan.innerHTML = '<i class="fas fa-history"></i>';
+                    titleContainer.appendChild(historySpan);
+                } else if (status === 'scheduled') {
+                    announcementContainer.style.opacity = '1';
+                    
+                    // Add clock icon
+                    const clockSpan = document.createElement('span');
+                    clockSpan.className = 'ml-2 text-blue-500';
+                    clockSpan.innerHTML = '<i class="fas fa-clock"></i>';
+                    titleContainer.appendChild(clockSpan);
+                    
+                    // Add border
+                    announcementContainer.classList.add('border-l-4', 'border-blue-400');
+                    if (announcementContainer.classList.contains('border-yellow-400')) {
+                        announcementContainer.classList.remove('border-yellow-400');
+                        announcementContainer.classList.add('border-blue-400');
+                    }
+                    
+                    // Update status text
+                    statusText.textContent = 'Terjadwal: 25 September 2023';
+                } else {
+                    announcementContainer.style.opacity = '1';
+                    
+                    // Remove border if not pinned
+                    if (!isPinned) {
+                        announcementContainer.classList.remove('border-l-4', 'border-blue-400', 'border-yellow-400');
+                    }
+                }
+                
+                closeModal(announcementSettingsModal);
+            });
+            
+            // Drag and Drop functionality
+            function initDragAndDrop() {
+                const draggables = document.querySelectorAll('.announcement-container');
+                const container = document.getElementById('announcements-container');
+                
+                draggables.forEach(draggable => {
+                    const handle = draggable.querySelector('.draggable-handle');
+                    
+                    if (handle) {
+                        handle.addEventListener('mousedown', () => {
+                            draggable.setAttribute('draggable', 'true');
+                            
+                            draggable.addEventListener('dragstart', () => {
+                                draggable.classList.add('opacity-50');
+                                draggedItem = draggable;
+                            }, { once: true });
+                            
+                            draggable.addEventListener('dragend', () => {
+                                draggable.classList.remove('opacity-50');
+                                draggable.removeAttribute('draggable');
+                                draggedItem = null;
+                            }, { once: true });
+                        });
+                    }
+                });
+                
+                container.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const afterElement = getDragAfterElement(container, e.clientY);
+                    
+                    if (draggedItem) {
+                        if (afterElement == null) {
+                            container.appendChild(draggedItem);
+                        } else {
+                            container.insertBefore(draggedItem, afterElement);
+                        }
+                    }
+                });
+            }
+            
+            function getDragAfterElement(container, y) {
+                const draggableElements = [...container.querySelectorAll('.announcement-container:not(.opacity-50)')];
+                
+                return draggableElements.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = y - box.top - box.height / 2;
+                    
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child };
+                    } else {
+                        return closest;
+                    }
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+            }
+            
+            // Initialize drag and drop
+            initDragAndDrop();
+            
+            // Initialize layout for current screen size
+            handleResize();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93cf129f140d404e',t:'MTc0Njc3MTQzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
