@@ -1,0 +1,364 @@
+
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Sertifikat Otomatis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0f4f8;
+        }
+        
+        .certificate {
+            font-family: 'Montserrat', sans-serif;
+            background-color: white;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(216, 241, 230, 0.46) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.28) 0%, transparent 50%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .certificate:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%232563eb' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            z-index: 0;
+        }
+        
+        .certificate-title {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .signature-line {
+            width: 80%;
+            height: 2px;
+            background-color: #333;
+            margin: 0 auto;
+        }
+        
+        .certificate-seal {
+            position: absolute;
+            bottom: 30px;
+            right: 40px;
+            width: 100px;
+            height: 100px;
+        }
+        
+        .border-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 20px solid transparent;
+            border-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%232563eb' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E") 20;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .ribbon {
+            width: 150px;
+            height: 150px;
+            overflow: hidden;
+            position: absolute;
+        }
+        
+        .ribbon-top-right {
+            top: -10px;
+            right: -10px;
+        }
+        
+        .ribbon-top-right::before,
+        .ribbon-top-right::after {
+            border-top-color: transparent;
+            border-right-color: transparent;
+        }
+        
+        .ribbon-top-right::before {
+            top: 0;
+            left: 0;
+        }
+        
+        .ribbon-top-right::after {
+            bottom: 0;
+            right: 0;
+        }
+        
+        .ribbon-top-right span {
+            left: -25px;
+            top: 30px;
+            transform: rotate(45deg);
+        }
+        
+        .ribbon span {
+            position: absolute;
+            display: block;
+            width: 225px;
+            padding: 8px 0;
+            background-color: #3b82f6;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen py-8 px-4">
+        <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-8">
+            <h1 class="text-3xl font-bold text-center text-blue-600 mb-8">Generator Sertifikat Otomatis</h1>
+            
+            <!-- Form Input Data -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Input Data Peserta</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2">Nama Lengkap</label>
+                        <input type="text" id="nama" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan nama lengkap">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Nomor Sertifikat</label>
+                        <input type="text" id="nomor" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Contoh: CERT/2023/001">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Nama Acara/Pelatihan</label>
+                        <input type="text" id="acara" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan nama acara atau pelatihan">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Tanggal</label>
+                        <input type="date" id="tanggal" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Nama Penandatangan</label>
+                        <input type="text" id="penandatangan" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama penandatangan sertifikat">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Jabatan Penandatangan</label>
+                        <input type="text" id="jabatan" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Contoh: Direktur Pelatihan">
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <button id="tambahData" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">Tambahkan ke Tabel</button>
+                </div>
+            </div>
+            
+            <!-- Tabel Data -->
+            <div class="mb-8 overflow-x-auto">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Data Peserta</h2>
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="py-3 px-4 border-b text-left">Nama</th>
+                            <th class="py-3 px-4 border-b text-left">Nomor Sertifikat</th>
+                            <th class="py-3 px-4 border-b text-left">Acara/Pelatihan</th>
+                            <th class="py-3 px-4 border-b text-left">Tanggal</th>
+                            <th class="py-3 px-4 border-b text-left">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataPeserta">
+                        <!-- Data akan ditambahkan di sini -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Preview Sertifikat -->
+            <div id="previewContainer" class="hidden mb-8">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Preview Sertifikat</h2>
+                <div class="flex justify-center">
+                    <div id="certificate" class="certificate relative w-[800px] h-[600px] p-8 border border-gray-300 shadow-lg">
+                        <div class="border-pattern"></div>
+                        <div class="ribbon ribbon-top-right"><span>Sertifikat</span></div>
+                        <div class="relative z-10 h-full flex flex-col justify-between items-center text-center">
+                            <div class="pt-8">
+                                <h2 class="text-xl font-semibold text-blue-800 mb-1">SERTIFIKAT PENGHARGAAN</h2>
+                                <p class="text-gray-600 mb-2">Nomor: <span id="previewNomor">CERT/2023/001</span></p>
+                                <p class="text-gray-600 mb-6">Diberikan kepada:</p>
+                                <h1 id="previewNama" class="certificate-title text-4xl font-bold text-blue-900 mb-6">Nama Peserta</h1>
+                                <p class="text-gray-700 mb-2">Atas partisipasinya dalam</p>
+                                <h3 id="previewAcara" class="text-2xl font-semibold text-blue-800 mb-6">Nama Acara atau Pelatihan</h3>
+                                <p class="text-gray-700">Yang diselenggarakan pada <span id="previewTanggal">1 Januari 2023</span></p>
+                            </div>
+                            
+                            <div class="mb-8">
+                                <div class="mt-8 mb-2">
+                                    <div class="signature-line"></div>
+                                </div>
+                                <h4 id="previewPenandatangan" class="font-semibold text-gray-800">Nama Penandatangan</h4>
+                                <p id="previewJabatan" class="text-gray-600">Jabatan</p>
+                            </div>
+                            
+                            <svg class="certificate-seal" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#3b82f6" stroke-width="2"/>
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#1d4ed8" stroke-width="1"/>
+                                <path d="M50 10 L52 18 L60 18 L54 24 L56 32 L50 28 L44 32 L46 24 L40 18 L48 18 Z" fill="#3b82f6"/>
+                                <path d="M50 90 L52 82 L60 82 L54 76 L56 68 L50 72 L44 68 L46 76 L40 82 L48 82 Z" fill="#3b82f6"/>
+                                <path d="M10 50 L18 48 L18 40 L24 46 L32 44 L28 50 L32 56 L24 54 L18 60 L18 52 Z" fill="#3b82f6"/>
+                                <path d="M90 50 L82 48 L82 40 L76 46 L68 44 L72 50 L68 56 L76 54 L82 60 L82 52 Z" fill="#3b82f6"/>
+                                <text x="50" y="54" font-size="10" text-anchor="middle" fill="#1d4ed8" font-weight="bold">VERIFIED</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-center mt-6">
+                    <button id="downloadPDF" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors mr-4">Unduh PDF</button>
+                    <button id="closePreview" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors">Tutup Preview</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inisialisasi array untuk menyimpan data
+        let dataPeserta = [];
+        
+        // Format tanggal
+        function formatDate(dateString) {
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+        
+        // Tambah data ke tabel
+        document.getElementById('tambahData').addEventListener('click', function() {
+            const nama = document.getElementById('nama').value;
+            const nomor = document.getElementById('nomor').value;
+            const acara = document.getElementById('acara').value;
+            const tanggal = document.getElementById('tanggal').value;
+            const penandatangan = document.getElementById('penandatangan').value;
+            const jabatan = document.getElementById('jabatan').value;
+            
+            if (!nama || !nomor || !acara || !tanggal || !penandatangan || !jabatan) {
+                alert('Semua field harus diisi!');
+                return;
+            }
+            
+            // Tambahkan data ke array
+            const newData = {
+                nama,
+                nomor,
+                acara,
+                tanggal,
+                penandatangan,
+                jabatan
+            };
+            
+            dataPeserta.push(newData);
+            
+            // Update tabel
+            updateTable();
+            
+            // Reset form
+            document.getElementById('nama').value = '';
+            document.getElementById('nomor').value = '';
+            document.getElementById('acara').value = '';
+            document.getElementById('tanggal').value = '';
+            document.getElementById('penandatangan').value = '';
+            document.getElementById('jabatan').value = '';
+        });
+        
+        // Update tabel dengan data
+        function updateTable() {
+            const tableBody = document.getElementById('dataPeserta');
+            tableBody.innerHTML = '';
+            
+            dataPeserta.forEach((data, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-3 px-4 border-b">${data.nama}</td>
+                    <td class="py-3 px-4 border-b">${data.nomor}</td>
+                    <td class="py-3 px-4 border-b">${data.acara}</td>
+                    <td class="py-3 px-4 border-b">${formatDate(data.tanggal)}</td>
+                    <td class="py-3 px-4 border-b">
+                        <button class="preview-btn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 mr-2" data-index="${index}">Preview</button>
+                        <button class="delete-btn bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" data-index="${index}">Hapus</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Tambahkan event listener untuk tombol preview
+            document.querySelectorAll('.preview-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    previewSertifikat(index);
+                });
+            });
+            
+            // Tambahkan event listener untuk tombol hapus
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    dataPeserta.splice(index, 1);
+                    updateTable();
+                });
+            });
+        }
+        
+        // Preview sertifikat
+        function previewSertifikat(index) {
+            const data = dataPeserta[index];
+            
+            document.getElementById('previewNama').textContent = data.nama;
+            document.getElementById('previewNomor').textContent = data.nomor;
+            document.getElementById('previewAcara').textContent = data.acara;
+            document.getElementById('previewTanggal').textContent = formatDate(data.tanggal);
+            document.getElementById('previewPenandatangan').textContent = data.penandatangan;
+            document.getElementById('previewJabatan').textContent = data.jabatan;
+            
+            document.getElementById('previewContainer').classList.remove('hidden');
+        }
+        
+        // Tutup preview
+        document.getElementById('closePreview').addEventListener('click', function() {
+            document.getElementById('previewContainer').classList.add('hidden');
+        });
+        
+        // Download PDF
+        document.getElementById('downloadPDF').addEventListener('click', function() {
+            const { jsPDF } = window.jspdf;
+            
+            const certificate = document.getElementById('certificate');
+            
+            html2canvas(certificate, {
+                scale: 2,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                
+                // Landscape orientation
+                const pdf = new jsPDF('l', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                const imgX = (pdfWidth - imgWidth * ratio) / 2;
+                const imgY = (pdfHeight - imgHeight * ratio) / 2;
+                
+                pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+                
+                // Get name from certificate for filename
+                const name = document.getElementById('previewNama').textContent;
+                pdf.save(`Sertifikat_${name.replace(/\s+/g, '_')}.pdf`);
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94318dea33c4fd04',t:'MTc0NzgwNDA5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

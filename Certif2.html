@@ -1,0 +1,754 @@
+
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Sertifikat Otomatis Terintegrasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .certificate {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23f0f0f0' d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z'/%3E%3C/svg%3E");
+            border: 2px solid #ddd;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .qr-code {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='100' height='100'%3E%3Cpath fill='%23000000' d='M0,0 L40,0 L40,40 L0,40 Z M10,10 L10,30 L30,30 L30,10 Z M15,15 L25,15 L25,25 L15,25 Z M50,0 L90,0 L90,40 L50,40 Z M60,10 L60,30 L80,30 L80,10 Z M65,15 L75,15 L75,25 L65,25 Z M0,50 L40,50 L40,90 L0,90 Z M10,60 L10,80 L30,80 L30,60 Z M15,65 L25,65 L25,75 L15,75 Z M50,50 L60,50 L60,60 L50,60 Z M70,50 L90,50 L90,70 L70,70 Z M50,70 L70,70 L70,90 L50,90 Z M80,80 L90,80 L90,90 L80,90 Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .signature {
+            font-family: 'Brush Script MT', cursive;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .progress-bar {
+            transition: width 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-blue-800 to-indigo-900 text-white shadow-lg">
+            <div class="container mx-auto px-4 py-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <svg class="h-10 w-10 mr-3" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 5L30 10V20C30 25.523 25.523 30 20 30C14.477 30 10 25.523 10 20V10L20 5Z" fill="#ffffff"/>
+                            <path d="M20 15C21.6569 15 23 13.6569 23 12C23 10.3431 21.6569 9 20 9C18.3431 9 17 10.3431 17 12C17 13.6569 18.3431 15 20 15Z" fill="#3B82F6"/>
+                            <path d="M15 22C15 19.2386 17.2386 17 20 17C22.7614 17 25 19.2386 25 22V30H15V22Z" fill="#3B82F6"/>
+                        </svg>
+                        <div>
+                            <h1 class="text-2xl font-bold">SistemCert</h1>
+                            <p class="text-xs opacity-75">Sistem Sertifikat Otomatis Terintegrasi</p>
+                        </div>
+                    </div>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="#" class="hover:text-blue-200 transition">Beranda</a>
+                        <a href="#" class="hover:text-blue-200 transition">Dashboard</a>
+                        <a href="#" class="hover:text-blue-200 transition">Sertifikat</a>
+                        <a href="#" class="hover:text-blue-200 transition">Laporan</a>
+                        <a href="#" class="hover:text-blue-200 transition">Pengaturan</a>
+                    </nav>
+                    <div class="flex items-center space-x-4">
+                        <button id="notificationBtn" class="p-1 rounded-full hover:bg-blue-700 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                        </button>
+                        <div class="relative">
+                            <button id="userMenuBtn" class="flex items-center space-x-2 focus:outline-none">
+                                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                                    <span class="font-medium">AS</span>
+                                </div>
+                                <span class="hidden md:inline-block">Admin Sekolah</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Keluar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-8">
+            <div class="flex flex-col md:flex-row gap-6">
+                <!-- Sidebar -->
+                <div class="w-full md:w-1/4">
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <h2 class="text-lg font-semibold mb-4">Navigasi Cepat</h2>
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="#" class="flex items-center p-2 rounded-md bg-blue-50 text-blue-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    </svg>
+                                    Dashboard
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="flex items-center p-2 rounded-md hover:bg-gray-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Manajemen Sertifikat
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="flex items-center p-2 rounded-md hover:bg-gray-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                    Data Siswa
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="flex items-center p-2 rounded-md hover:bg-gray-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                    </svg>
+                                    Pencatatan Nilai
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="flex items-center p-2 rounded-md hover:bg-gray-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                    Analisis & Laporan
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="flex items-center p-2 rounded-md hover:bg-gray-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    Pengaturan Sistem
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-lg font-semibold mb-4">Status Sistem</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium">Database</span>
+                                    <span class="text-sm font-medium text-green-600">Online</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium">API</span>
+                                    <span class="text-sm font-medium text-green-600">Online</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium">Sinkronisasi Data</span>
+                                    <span class="text-sm font-medium text-green-600">Terbaru</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 95%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium">Penyimpanan</span>
+                                    <span class="text-sm font-medium">65%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 65%"></div>
+                                </div>
+                            </div>
+                            <div class="pt-2">
+                                <p class="text-xs text-gray-500">Terakhir diperbarui: <span class="font-medium">Hari ini, 10:45</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="w-full md:w-3/4">
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h1 class="text-2xl font-bold text-gray-800">Dashboard Sistem</h1>
+                            <div class="flex space-x-2">
+                                <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    Buat Sertifikat Baru
+                                </button>
+                                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
+                                    Export
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Stats Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg border border-blue-200">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="text-sm text-blue-800 font-medium">Total Sertifikat</p>
+                                        <p class="text-2xl font-bold text-blue-900">8,742</p>
+                                    </div>
+                                    <div class="bg-blue-200 rounded-full p-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center">
+                                    <span class="text-green-600 text-sm font-medium flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                        </svg>
+                                        12.5%
+                                    </span>
+                                    <span class="text-xs text-gray-600 ml-2">dari bulan lalu</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg border border-green-200">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="text-sm text-green-800 font-medium">Siswa Aktif</p>
+                                        <p class="text-2xl font-bold text-green-900">10,254</p>
+                                    </div>
+                                    <div class="bg-green-200 rounded-full p-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center">
+                                    <span class="text-green-600 text-sm font-medium flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                        </svg>
+                                        3.2%
+                                    </span>
+                                    <span class="text-xs text-gray-600 ml-2">dari tahun lalu</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-6 rounded-lg border border-amber-200">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="text-sm text-amber-800 font-medium">Nilai Di Bawah KKM</p>
+                                        <p class="text-2xl font-bold text-amber-900">342</p>
+                                    </div>
+                                    <div class="bg-amber-200 rounded-full p-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center">
+                                    <span class="text-red-600 text-sm font-medium flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                        </svg>
+                                        5.1%
+                                    </span>
+                                    <span class="text-xs text-gray-600 ml-2">dari bulan lalu</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-lg border border-purple-200">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="text-sm text-purple-800 font-medium">Efisiensi Sistem</p>
+                                        <p class="text-2xl font-bold text-purple-900">42%</p>
+                                    </div>
+                                    <div class="bg-purple-200 rounded-full p-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center">
+                                    <span class="text-green-600 text-sm font-medium flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                        </svg>
+                                        40%
+                                    </span>
+                                    <span class="text-xs text-gray-600 ml-2">peningkatan administrasi</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabs -->
+                        <div class="mb-6">
+                            <div class="border-b border-gray-200">
+                                <nav class="flex -mb-px">
+                                    <button class="tab-btn active mr-8 py-4 px-1 border-b-2 font-medium text-sm border-blue-500 text-blue-600" data-tab="preview">
+                                        Preview Sertifikat
+                                    </button>
+                                    <button class="tab-btn mr-8 py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="implementation">
+                                        Rencana Implementasi
+                                    </button>
+                                    <button class="tab-btn mr-8 py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="technology">
+                                        Teknologi
+                                    </button>
+                                    <button class="tab-btn py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="integration">
+                                        Integrasi
+                                    </button>
+                                </nav>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content -->
+                        <div class="tab-content active" id="preview-content">
+                            <div class="flex flex-col lg:flex-row gap-6">
+                                <div class="w-full lg:w-1/2">
+                                    <h3 class="text-lg font-semibold mb-4">Halaman Sertifikat Resmi</h3>
+                                    <div class="certificate bg-white border-4 border-blue-100 rounded-lg p-8 relative">
+                                        <div class="absolute top-4 left-4">
+                                            <svg class="h-16 w-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect width="100" height="100" rx="10" fill="#3B82F6" fill-opacity="0.1"/>
+                                                <path d="M30 25H70C72.7614 25 75 27.2386 75 30V70C75 72.7614 72.7614 75 70 75H30C27.2386 75 25 72.7614 25 70V30C25 27.2386 27.2386 25 30 25Z" fill="#3B82F6" fill-opacity="0.2"/>
+                                                <path d="M50 35L65 45V60C65 67.732 58.732 74 51 74H49C41.268 74 35 67.732 35 60V45L50 35Z" fill="#3B82F6"/>
+                                                <path d="M50 45C52.7614 45 55 42.7614 55 40C55 37.2386 52.7614 35 50 35C47.2386 35 45 37.2386 45 40C45 42.7614 47.2386 45 50 45Z" fill="white"/>
+                                                <path d="M42.5 55C42.5 51.134 45.634 48 49.5 48H50.5C54.366 48 57.5 51.134 57.5 55V65H42.5V55Z" fill="white"/>
+                                            </svg>
+                                        </div>
+                                        <div class="text-center mb-6">
+                                            <h2 class="text-2xl font-bold text-blue-800">SERTIFIKAT PRESTASI</h2>
+                                            <p class="text-gray-600">Diberikan Kepada:</p>
+                                        </div>
+                                        <div class="text-center mb-6">
+                                            <h3 class="text-xl font-bold mb-1">Budi Santoso</h3>
+                                            <p class="text-gray-600">NIS: 2023051234</p>
+                                            <p class="text-gray-600">Kelas: XI IPA 2</p>
+                                        </div>
+                                        <div class="mb-6">
+                                            <p class="text-center">Telah menyelesaikan mata pelajaran</p>
+                                            <h4 class="text-lg font-bold text-center text-blue-700">Matematika Peminatan</h4>
+                                            <p class="text-center">dengan nilai</p>
+                                            <p class="text-3xl font-bold text-center text-blue-800">92</p>
+                                            <p class="text-center text-sm text-gray-500">(KKM: 75)</p>
+                                        </div>
+                                        <div class="flex justify-between items-end mt-8">
+                                            <div class="qr-code h-24 w-24 border border-gray-200 rounded"></div>
+                                            <div class="text-center">
+                                                <p>Jakarta, 15 Juni 2023</p>
+                                                <div class="signature text-blue-800 text-xl mt-6 mb-1">Drs. Ahmad Sulaiman</div>
+                                                <p class="text-sm">Kepala Sekolah</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-xs text-gray-500 text-center mt-6">
+                                            <p>Sertifikat ini dapat diverifikasi melalui scan QR Code atau kunjungi</p>
+                                            <p>https://sekolah.edu.id/verify dengan kode: CERT-2023-06-15-92845</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-full lg:w-1/2">
+                                    <h3 class="text-lg font-semibold mb-4">Halaman Motivasi Personal</h3>
+                                    <div class="certificate bg-white border-4 border-blue-100 rounded-lg p-8">
+                                        <div class="text-center mb-6">
+                                            <h2 class="text-2xl font-bold text-blue-800">ANALISIS KEMAMPUAN</h2>
+                                            <p class="text-gray-600">Budi Santoso - XI IPA 2</p>
+                                        </div>
+                                        
+                                        <div class="mb-8">
+                                            <h4 class="text-lg font-semibold mb-3">Grafik Kemampuan</h4>
+                                            <div class="aspect-square max-w-xs mx-auto">
+                                                <canvas id="radarChart"></canvas>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-6">
+                                            <h4 class="text-lg font-semibold mb-2">Rekomendasi Pengembangan</h4>
+                                            <div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                                                <p class="mb-2"><span class="font-medium">Kekuatan:</span> Pemahaman konsep dan analisis yang sangat baik.</p>
+                                                <p class="mb-2"><span class="font-medium">Area Pengembangan:</span> Penerapan dalam konteks dunia nyata.</p>
+                                                <p><span class="font-medium">Rekomendasi:</span> Bergabung dengan klub olimpiade matematika untuk mengembangkan kemampuan pemecahan masalah kompleks.</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <h4 class="text-lg font-semibold mb-2">Pesan Guru</h4>
+                                            <div class="bg-amber-50 rounded-lg p-4 border border-amber-100 italic">
+                                                "Budi menunjukkan kemampuan luar biasa dalam memahami konsep matematika tingkat lanjut. Ia memiliki potensi untuk berkembang lebih jauh dengan latihan soal-soal olimpiade. Teruslah berlatih dan jangan ragu untuk mengajukan pertanyaan!"
+                                                <div class="text-right mt-2 text-sm font-medium">- Ibu Siti Aminah, M.Pd.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content hidden" id="implementation-content">
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold mb-4">Rencana Implementasi</h3>
+                                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                                    <div class="p-6">
+                                        <div class="flex items-center mb-4">
+                                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                                </svg>
+                                            </div>
+                                            <h4 class="text-xl font-semibold">Fase Implementasi</h4>
+                                        </div>
+                                        
+                                        <div class="ml-4 pl-8 border-l-2 border-blue-200">
+                                            <div class="mb-6 relative">
+                                                <div class="absolute -left-10 top-1 w-4 h-4 rounded-full bg-blue-600"></div>
+                                                <h5 class="text-lg font-medium mb-2">Fase 1: Prototipe (2 minggu)</h5>
+                                                <ul class="list-disc ml-6 text-gray-700 space-y-1">
+                                                    <li>Pengembangan UI/UX dasar</li>
+                                                    <li>Pembuatan template sertifikat</li>
+                                                    <li>Integrasi database awal</li>
+                                                    <li>Pengujian validasi QR code</li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <div class="mb-6 relative">
+                                                <div class="absolute -left-10 top-1 w-4 h-4 rounded-full bg-blue-400"></div>
+                                                <h5 class="text-lg font-medium mb-2">Fase 2: Pengembangan Penuh (6 minggu)</h5>
+                                                <ul class="list-disc ml-6 text-gray-700 space-y-1">
+                                                    <li>Implementasi sistem keamanan AES-256</li>
+                                                    <li>Pengembangan dashboard analitik</li>
+                                                    <li>Integrasi dengan SIA sekolah</li>
+                                                    <li>Pengembangan API validasi</li>
+                                                    <li>Implementasi two-factor authentication</li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <div class="relative">
+                                                <div class="absolute -left-10 top-1 w-4 h-4 rounded-full bg-blue-300"></div>
+                                                <h5 class="text-lg font-medium mb-2">Fase 3: Deployment & Training</h5>
+                                                <ul class="list-disc ml-6 text-gray-700 space-y-1">
+                                                    <li>Migrasi data dari sistem lama</li>
+                                                    <li>Pelatihan admin dan staf</li>
+                                                    <li>Pengujian beban sistem</li>
+                                                    <li>Dokumentasi SOP</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="bg-gray-50 p-6 border-t border-gray-200">
+                                        <div class="flex items-center mb-4">
+                                            <div class="bg-green-100 p-3 rounded-full mr-4">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
+                                            <h4 class="text-xl font-semibold">Anggaran & Maintenance</h4>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                                                <h5 class="font-medium mb-3">Anggaran Pengembangan</h5>
+                                                <div class="space-y-2">
+                                                    <div class="flex justify-between">
+                                                        <span>Pengembangan Sistem</span>
+                                                        <span class="font-medium">$7,500</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span>Integrasi & Testing</span>
+                                                        <span class="font-medium">$1,200</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span>Training & Dokumentasi</span>
+                                                        <span class="font-medium">$800</span>
+                                                    </div>
+                                                    <div class="pt-2 border-t border-gray-200 flex justify-between font-medium">
+                                                        <span>Total</span>
+                                                        <span>$9,500</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                                                <h5 class="font-medium mb-3">Maintenance Tahunan</h5>
+                                                <div class="space-y-2">
+                                                    <div class="flex justify-between">
+                                                        <span>Support Teknis</span>
+                                                        <span class="font-medium">$1,200</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span>Update & Patch</span>
+                                                        <span class="font-medium">$500</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span>Backup & Security</span>
+                                                        <span class="font-medium">$300</span>
+                                                    </div>
+                                                    <div class="pt-2 border-t border-gray-200 flex justify-between font-medium">
+                                                        <span>Total</span>
+                                                        <span>$2,000</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content hidden" id="technology-content">
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold mb-4">Teknologi yang Diusulkan</h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                        <div class="p-6">
+                                            <div class="flex items-center mb-4">
+                                                <svg class="h-8 w-8 mr-3 text-blue-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M21.7 10.3L12.7 1.3C12.3 0.9 11.7 0.9 11.3 1.3L2.3 10.3C1.9 10.7 1.9 11.3 2.3 11.7C2.7 12.1 3.3 12.1 3.7 11.7L4 11.4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V11.4L20.3 11.7C20.5 11.9 20.8 12 21 12C21.2 12 21.5 11.9 21.7 11.7C22.1 11.3 22.1 10.7 21.7 10.3ZM18 20H6V9.2L12 3.2L18 9.2V20Z"/>
+                                                </svg>
+                                                <h4 class="text-xl font-semibold">Google Workspace</h4>
+                                            </div>
+                                            <ul class="space-y-3">
+                                                <li class="flex items-start">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <div>
+                                                        <span class="font-medium">Google Forms</span>
+                                                        <p class="text-sm text-gray-600">Untuk input nilai dan data siswa</p>
+                                                    </div>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <div>
+                                                        <span class="font-medium">Google Sheets</span>
+                                                        <p class="text-sm text-gray-600">Database dan analisis nilai</p>
+                                                    </div>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <div>
+                                                        <span class="font-medium">Apps Script</span>
+                                                        <p class="text-sm text-gray-600">Otomatisasi dan generasi sertifikat</p>
+                                                    </div>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <div>
+                                                        <span class="font-medium">Google Drive</span>
+                                                        <p class="text-sm text-gray-600">Penyimpanan sertifikat dan laporan</p>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="font-medium">Kelebihan:</span>
+                                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Mudah Diimplementasikan</span>
+                                                </div>
+                                                <ul class="mt-2 text-sm text-gray-600 space-y-1">
+                                                    <li>• Tidak memerlukan infrastruktur server</li>
+                                                    <li>• Integrasi dengan email sekolah</li>
+                                                    <li>• Biaya implementasi lebih rendah</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                        <div class="p-6">
+                                            <div class="flex items-center mb-4">
+                                                <svg class="h-8 w-8 mr-3 text-blue-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M10 20L14 20C16.2091 20 18 18.2091 18 16L18 8C18 5.79086 16.2091 4 14 4L10 4C7.79086 4 6 5.79086 6 8L6 16C6 18.2091 7.79086 20 10 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                                    <path d="M14 9L14 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    <path d="M10 9L10 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                                <h4 class="text-xl font-semibold">Stack MERN</h4>
+                                            </div>
+                                            <ul class="space-y-3">
+                                                <li class="flex items-start">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <div>
+                                                        <span class="font-medium">MongoDB</span>
+                                                        <p class="text-sm text-gray-600">Database NoSQL untuk data siswa dan sertifikat</p>
+                                                    </div>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <div>
+                                                        <span class="font-medium">Express.js</span>
+                                                        <p class="text-sm text-gray-600">Backend framework untuk API</p>
+                                                    </div>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <div>
+                                                        <span class="font-medium">React.js</span>
+                                                        <p class="text-sm text-gray-600">Frontend untuk dashboard dan portal admin</p>
+                                                    </div>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <div>
+                                                        <span class="font-medium">Node.js</span>
+                                                        <p class="text-sm text-gray-600">Runtime JavaScript untuk server</p>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="font-medium">Kelebihan:</span>
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Kontrol Penuh</span>
+                                                </div>
+                                                <ul class="mt-2 text-sm text-gray-600 space-y-1">
+                                                    <li>• Kustomisasi lebih fleksibel</li>
+                                                    <li>• Performa lebih baik untuk skala besar</li>
+                                                    <li>• Kontrol penuh atas keamanan data</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6">
+                                    <div class="p-6">
+                                        <div class="flex items-center mb-4">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                            <h4 class="text-xl font-semibold">Fitur Keamanan</h4>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                                <h5 class="font-medium mb-2 flex items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                                                    </svg>
+                                                    AES-256 Encryption
+                                                </h5>
+                                                <p class="text-sm text-gray-600">Enkripsi data sensitif dan nomor sertifikat dengan standar industri AES-256 bit.</p>
+                                            </div>
+                                            
+                                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                                <h5 class="font-medium mb-2 flex items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                    </svg>
+                                                    Two-Factor Authentication
+                                                </h5>
+                                                <p class="text-sm text-gray-600">Verifikasi dua langkah untuk akses admin dan perubahan data penting.</p>
+                                            </div>
+                                            
+                                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                                <h5 class="font-medium mb-2 flex items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                    PDPA Compliance
+                                                </h5>
+                                                <p class="text-sm text-gray-600">Kepatuhan terhadap regulasi perlindungan data pribadi dengan audit trail lengkap.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content hidden" id="integration-content">
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold mb-4">Integrasi Database Sekolah</h3>
+                                
+                                <div class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6">
+                                    <div class="p-6">
+                                        <div class="flex items-center mb-4">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                                            </svg>
+                                            <h4 class="text-xl font-semibold">Fitur Integrasi</h4>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <h5 class="font-medium mb-3 flex items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                    </svg>
+                                                    Sinkronisasi Data NIS
+                                                </h5>
+                                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                                    <ul class="space-y-2 text-sm">
+                                                        <li class="flex items-start">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                            </svg>
+                                                            <span>Sinkronisasi otomatis dengan database siswa</span>
+                                                        </li>
+                                                        <li class="flex items-start">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                            </svg>
+                                                            <span>Update data siswa secara real-time</span>
+                                                        </li>
+                                                        <li class="flex items-start">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                            </svg>
+                                                            <span>Deteksi duplikasi dan validasi data</span>
+                                                        </li>
+                                                        <li class="flex items-start">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                            </svg>
+                                                            <span>Integrasi dengan SIA sekolah (SIPLah/Rapor Digital)</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                            <div>
+                                                <h5 class="font-medium mb-3 flex items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94317ec6903dfd04',t:'MTc0NzgwMzQ3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
