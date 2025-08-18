@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMIB Career Mapping - Input Skor RMIB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <style>
+        /* ✨ Enhanced Animations & Transitions */
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.4s ease-out;
+        }
+
+        .scale-in {
+            animation: scaleIn 0.4s ease-out;
+        }
+
+        .bounce-in {
+            animation: bounceIn 0.7s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            70% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* ✨ Enhanced UI Elements */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ✨ Loading Spinner */
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ✨ Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(400px);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        /* ✨ Modal Backdrop */
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+        }
+
+        /* ✨ Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #cbd5e1, #94a3b8);
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #94a3b8, #64748b);
+        }
+
+        /* ✨ RMIB Ranking Styles */
+        .ranking-dropdown {
+            transition: all 0.3s ease;
+        }
+
+        .ranking-dropdown:focus {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .ranking-dropdown.used {
+            background-color: #fef2f2;
+            border-color: #fca5a5;
+        }
+
+        .ranking-dropdown.valid {
+            background-color: #f0fdf4;
+            border-color: #86efac;
+        }
+
+        /* ✨ Category Cards */
+        .category-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .category-card.incomplete {
+            border-color: #fbbf24;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+        }
+
+        .category-card.complete {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        }
+
+        .category-card.duplicate {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #fecaca, #fca5a5);
+        }
+
+        /* ✨ Scoring Matrix */
+        .scoring-matrix {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 4px;
+        }
+
+        .matrix-cell {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .matrix-cell.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* ✨ Progress Ring */
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring circle {
+            transition: stroke-dashoffset 0.6s ease;
+        }
+
+        /* ✨ Gender Specific Styling */
+        .form-male {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border-color: #3b82f6;
+        }
+
+        .form-female {
+            background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+            border-color: #ec4899;
+        }
+
+        /* ✨ Validation States */
+        .validation-success {
+            animation: successPulse 0.5s ease-in-out;
+        }
+
+        .validation-error {
+            animation: errorShake 0.5s ease-in-out;
+        }
+
+        @keyframes successPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes errorShake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 font-sans min-h-screen">
+    <!-- ✨ Loading Overlay -->
+    <div id="loadingOverlay"
+        class="fixed inset-0 bg-white bg-opacity-95 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+        <div class="text-center">
+            <div class="spinner mx-auto mb-4"></div>
+            <p class="text-gray-600 text-lg" id="loadingText">Memproses input RMIB...</p>
+        </div>
+    </div>
+
+    <!-- ✨ Enhanced Toast Notification -->
+    <div id="toast" class="toast bg-white rounded-xl shadow-2xl border-l-4 border-green-500 p-4 max-w-sm hidden">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i id="toastIcon" class="fas fa-check-circle text-green-500 text-xl"></i>
+            </div>
+            <div class="ml-3">
+                <h4 class="font-semibold text-gray-900" id="toastTitle">Sukses!</h4>
+                <p class="text-sm text-gray-600" id="toastMessage">Operasi berhasil dilakukan.</p>
+            </div>
+            <button onclick="hideToast()" class="ml-auto text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ✨ Enhanced Navigation -->
+    <nav class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white shadow-2xl sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-2xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold">RMIB Career Mapping</h1>
+                            <p class="text-blue-200 text-xs">Sistem Pemetaan Minat Karir - MTs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3 bg-white bg-opacity-10 rounded-full px-4 py-2">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user-tie text-sm text-white"></i>
+                        </div>
+                        <div class="hidden md:block">
+                            <p class="text-sm font-medium">Bu Sari Rahayu</p>
+                            <p class="text-xs text-blue-200">Guru BK</p>
+                        </div>
+                    </div>
+                    <button onclick="goToDashboard()"
+                        class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-lg text-sm transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span class="hidden md:inline">Dashboard</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ✨ MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        <!-- ✨ Header Section -->
+        <div class="mb-8 fade-in">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h1
+                        class="text-3xl md:text-4xl font-bold text-gray-900 mb-2 bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                        Input Skor RMIB
+                    </h1>
+                    <p class="text-gray-600 flex items-center space-x-2">
+                        <i class="fas fa-edit text-purple-500"></i>
+                        <span>Siswa yang belum menyelesaikan tes RMIB</span>
+                        <span class="text-purple-600 font-semibold" id="pendingStudentsCount">14 siswa menunggu</span>
+                    </p>
+                </div>
+                <div class="mt-4 lg:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                    <button onclick="showInstructions()"
+                        class="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Petunjuk RMIB</span>
+                    </button>
+                    <button onclick="viewCompletedTests()"
+                        class="bg-white border-2 border-gray-300 text-gray-700 hover:border-purple-500 hover:text-purple-600 px-6 py-3 rounded-xl font-medium transition-all flex items-center space-x-2">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Lihat yang Selesai</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✨ Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover slide-in-right"
+                style="animation-delay: 0.1s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 mb-2">Belum Input RMIB</p>
+                        <p class="text-3xl font-bold text-orange-600" id="statsPending">14</p>
+                        <p class="text-xs text-orange-600 mt-1">Perlu segera dikerjakan</p>
+                    </div>
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-clock text-orange-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover slide-in-right"
+                style="animation-delay: 0.2s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 mb-2">Input Hari Ini</p>
+                        <p class="text-3xl font-bold text-green-600" id="statsToday">3</p>
+                        <p class="text-xs text-green-600 mt-1">Target: 5 siswa</p>
+                    </div>
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-calendar-check text-green-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover slide-in-right"
+                style="animation-delay: 0.3s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 mb-2">Laki-laki</p>
+                        <p class="text-3xl font-bold text-blue-600" id="statsMale">7</p>
+                        <p class="text-xs text-blue-600 mt-1">50% dari pending</p>
+                    </div>
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-mars text-blue-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover slide-in-right"
+                style="animation-delay: 0.4s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 mb-2">Perempuan</p>
+                        <p class="text-3xl font-bold text-pink-600" id="statsFemale">7</p>
+                        <p class="text-xs text-pink-600 mt-1">50% dari pending</p>
+                    </div>
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-venus text-pink-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✨ Search and Filter Section -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6 scale-in"
+            style="animation-delay: 0.5s">
+            <div class="flex flex-col lg:flex-row gap-4">
+                <div class="flex-1">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Cari nama siswa, NISN, atau kelas..."
+                            class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                            oninput="searchStudents(this.value)">
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <div id="searchClear"
+                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hidden"
+                            onclick="clearSearch()">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <select id="classFilter" onchange="filterStudents()"
+                        class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white min-w-32">
+                        <option value="">Semua Kelas</option>
+                        <option value="7A">Kelas 7A</option>
+                        <option value="7B">Kelas 7B</option>
+                        <option value="7C">Kelas 7C</option>
+                        <option value="8A">Kelas 8A</option>
+                        <option value="8B">Kelas 8B</option>
+                        <option value="8C">Kelas 8C</option>
+                        <option value="9A">Kelas 9A</option>
+                        <option value="9B">Kelas 9B</option>
+                        <option value="9C">Kelas 9C</option>
+                    </select>
+
+                    <select id="genderFilter" onchange="filterStudents()"
+                        class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white min-w-32">
+                        <option value="">Semua Gender</option>
+                        <option value="L">Laki-laki</option>
+                        <option value="P">Perempuan</option>
+                    </select>
+
+                    <select id="priorityFilter" onchange="filterStudents()"
+                        class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white min-w-32">
+                        <option value="">Semua Prioritas</option>
+                        <option value="urgent">Mendesak</option>
+                        <option value="normal">Normal</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✨ Students Waiting for RMIB Input Table -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden bounce-in"
+            style="animation-delay: 0.6s">
+            <div class="bg-gradient-to-r from-purple-50 to-indigo-100 p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-list-ul text-purple-600 mr-3"></i>
+                            Siswa Menunggu Input RMIB
+                        </h2>
+                        <p class="text-gray-600 mt-1">Daftar siswa yang belum menyelesaikan tes RMIB</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-purple-600" id="waitingCount">14</div>
+                        <div class="text-sm text-gray-600">Siswa Menunggu</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                No</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
+                                onclick="sortTable('name')">
+                                <div class="flex items-center space-x-1">
+                                    <span>Siswa</span>
+                                    <i class="fas fa-sort text-gray-400"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Kelas</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Jenis Kelamin</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Prioritas</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tanggal Target</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Aksi</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Kelola Prestasi</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Preview Hasil</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Students data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- ✨ RMIB INPUT MODAL -->
+    <div id="rmibModal"
+        class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-7xl w-full mx-4 max-h-screen overflow-hidden">
+            <!-- Modal Header -->
+            <div id="modalHeader" class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div id="studentAvatar"
+                            class="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-xl" id="studentInitials">BS</span>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800" id="modalStudentName">Budi Santoso</h2>
+                            <p class="text-gray-600" id="modalStudentInfo">Kelas 7A • NISN: 1234567892 • Laki-laki</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="text-center">
+                            <div class="text-sm text-gray-600">Progress</div>
+                            <div id="modalProgress" class="text-lg font-bold text-purple-600">0/12</div>
+                        </div>
+                        <button onclick="closeRMIBModal()" class="text-gray-500 hover:text-gray-700 transition-colors">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="overflow-y-auto custom-scrollbar" style="max-height: 80vh;">
+                <div class="p-6">
+                    <!-- RMIB Instructions -->
+                    <div
+                        class="mb-8 p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl">
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-info-circle text-yellow-600 text-2xl mt-1"></i>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-yellow-800 mb-2">Petunjuk Pengisian RMIB</h3>
+                                <ul class="text-yellow-700 text-sm space-y-1">
+                                    <li>• Berikan ranking 1-12 untuk setiap kategori minat (1 = paling tidak diminati,
+                                        12 = paling diminati)</li>
+                                    <li>• Setiap nomor ranking (1-12) hanya boleh digunakan SATU kali</li>
+                                    <li>• Form berbeda untuk siswa laki-laki dan perempuan</li>
+                                    <li>• Total validasi harus mencapai 702 untuk dapat disimpan</li>
+                                    <li>• Skor akhir: ranking terendah = minat tertinggi</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Validation Status -->
+                    <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-list-ol text-blue-600 text-xl"></i>
+                                <div>
+                                    <div class="text-lg font-bold text-blue-700" id="rankingsUsed">0/12</div>
+                                    <div class="text-sm text-blue-600">Rankings Terisi</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-calculator text-green-600 text-xl"></i>
+                                <div>
+                                    <div class="text-lg font-bold text-green-700" id="currentTotal">0</div>
+                                    <div class="text-sm text-green-600">Total Skor (Target: 702)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                                <div>
+                                    <div class="text-lg font-bold text-red-700" id="duplicateCount">0</div>
+                                    <div class="text-sm text-red-600">Duplikasi Ranking</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RMIB Categories Form -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" id="rmibCategoriesForm">
+                        <!-- Categories will be populated by JavaScript based on gender -->
+                    </div>
+
+                    <!-- Scoring Matrix Preview -->
+                    <div id="scoringMatrix" class="mb-8 bg-gray-50 rounded-2xl p-6 hidden">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-table text-blue-600 mr-2"></i>
+                            Matriks Penilaian (9x12)
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <div id="matrixGrid" class="scoring-matrix min-w-max">
+                                <!-- Matrix cells will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p><strong>Catatan:</strong> Setiap baris dijumlahkan untuk mendapatkan skor kategori. Skor
+                                terendah menunjukkan minat tertinggi.</p>
+                        </div>
+                    </div>
+
+                    <!-- Results Preview -->
+                    <div id="resultsPreview" class="mb-6 hidden">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                            Preview 3 Minat Teratas
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="top3Results">
+                            <!-- Results will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="bg-gray-50 p-6 border-t border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="text-sm text-gray-600">
+                                <i class="fas fa-save mr-1"></i>
+                                Auto-validation aktif
+                            </div>
+                            <button onclick="resetForm()"
+                                class="text-sm text-gray-600 hover:text-gray-800 transition-colors">
+                                <i class="fas fa-redo mr-1"></i>
+                                Reset Form
+                            </button>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button onclick="closeRMIBModal()"
+                                class="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all font-medium">
+                                Batal
+                            </button>
+                            <button onclick="previewScoring()"
+                                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all font-medium flex items-center space-x-2">
+                                <i class="fas fa-eye"></i>
+                                <span>Preview Skor</span>
+                            </button>
+                            <button onclick="saveRMIBScores()" id="saveButton"
+                                class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all transform hover:scale-105 shadow-lg font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled>
+                                <i class="fas fa-check"></i>
+                                <span>Simpan RMIB</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✨ KELOLA PRESTASI MODAL -->
+    <div id="kelolaPrestasiModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-6xl w-full mx-4 max-h-screen overflow-hidden">
+            <div class="bg-gradient-to-r from-yellow-50 to-orange-100 p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-trophy text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">Kelola Prestasi Siswa</h3>
+                            <p class="text-gray-600" id="kelolaPrestasiStudentInfo">Tambah, edit, atau hapus prestasi siswa</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="openAddPrestasiForm()" class="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-4 py-2 rounded-lg text-sm transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
+                            <i class="fas fa-plus"></i>
+                            <span>Tambah Prestasi</span>
+                        </button>
+                        <button onclick="closeKelolaPrestasiModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 overflow-y-auto custom-scrollbar" style="max-height: 75vh;">
+                <!-- Info Panel -->
+                <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-info-circle text-blue-600 text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-blue-800 mb-2">Pengaruh Prestasi pada RMIB</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-blue-700 text-sm">
+                                <div>
+                                    <p><strong>Akademik:</strong> Mengurangi skor Scientific (-5) & Literary (-5)</p>
+                                    <p><strong>Olahraga:</strong> Mengurangi skor Outdoor (-5) & Practical (-5)</p>
+                                    <p><strong>Seni:</strong> Mengurangi skor Aesthetic (-5) & Musical (-5)</p>
+                                </div>
+                                <div>
+                                    <p><strong>Organisasi:</strong> Mengurangi skor Personal Contact (-5) & Social Service (-5)</p>
+                                    <p><strong>Teknologi:</strong> Mengurangi skor Mechanical (-5) & Computational (-5)</p>
+                                </div>
+                            </div>
+                            <p class="text-xs mt-2 text-blue-600">*Skor lebih rendah = minat lebih tinggi dalam sistem RMIB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daftar Prestasi -->
+                <div class="bg-white rounded-xl border border-gray-200">
+                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 rounded-t-xl">
+                        <h4 class="text-lg font-semibold text-gray-800 flex items-center">
+                            <i class="fas fa-list text-purple-600 mr-2"></i>
+                            Daftar Prestasi Siswa
+                        </h4>
+                    </div>
+                    <div id="prestasiList" class="p-6">
+                        <!-- Prestasi list will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✨ FORM PRESTASI MODAL -->
+    <div id="formPrestasiModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-4xl w-full mx-4 max-h-screen overflow-hidden">
+            <div class="bg-gradient-to-r from-green-50 to-teal-100 p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-award text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800" id="formPrestasiTitle">Tambah Prestasi Baru</h3>
+                            <p class="text-gray-600">Isi detail prestasi siswa</p>
+                        </div>
+                    </div>
+                    <button onclick="closeFormPrestasiModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <form id="prestasiForm" class="p-6 overflow-y-auto custom-scrollbar" style="max-height: 70vh;">
+                <div class="space-y-6">
+                    <!-- Jenis Prestasi -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-medal text-yellow-500 mr-1"></i>
+                            Jenis Prestasi *
+                        </label>
+                        <select id="jenisPrestasiSelect" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white" onchange="updatePrestasiDescription()" required>
+                            <option value="">Pilih jenis prestasi...</option>
+                            <option value="akademik">Prestasi Akademik</option>
+                            <option value="olahraga">Prestasi Olahraga</option>
+                            <option value="seni">Prestasi Seni</option>
+                            <option value="organisasi">Prestasi Organisasi</option>
+                            <option value="teknologi">Prestasi Teknologi</option>
+                        </select>
+                        
+                        <!-- Deskripsi Otomatis -->
+                        <div id="prestasiAutoDescription" class="mt-2 p-3 bg-gray-50 rounded-lg hidden">
+                            <div class="text-sm text-gray-600" id="autoDescriptionText"></div>
+                            <div class="text-xs text-green-600 mt-1" id="autoEffectText"></div>
+                        </div>
+                    </div>
+
+                    <!-- Nama Prestasi -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-trophy text-yellow-500 mr-1"></i>
+                            Nama Prestasi *
+                        </label>
+                        <input type="text" id="namaPrestasiInput" placeholder="Contoh: Juara 1 Olimpiade Matematika Tingkat Kabupaten" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                    </div>
+
+                    <!-- Tingkat Prestasi -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-layer-group text-purple-500 mr-1"></i>
+                            Tingkat Prestasi *
+                        </label>
+                        <select id="tingkatPrestasiSelect" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white" required>
+                            <option value="">Pilih tingkat prestasi...</option>
+                            <option value="sekolah">Tingkat Sekolah</option>
+                            <option value="kecamatan">Tingkat Kecamatan</option>
+                            <option value="kabupaten">Tingkat Kabupaten/Kota</option>
+                            <option value="provinsi">Tingkat Provinsi</option>
+                            <option value="nasional">Tingkat Nasional</option>
+                            <option value="internasional">Tingkat Internasional</option>
+                        </select>
+                    </div>
+
+                    <!-- Peringkat -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-star text-yellow-500 mr-1"></i>
+                                Peringkat
+                            </label>
+                            <select id="peringkatSelect" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white">
+                                <option value="">Pilih peringkat...</option>
+                                <option value="1">Juara 1</option>
+                                <option value="2">Juara 2</option>
+                                <option value="3">Juara 3</option>
+                                <option value="finalis">Finalis</option>
+                                <option value="peserta">Peserta</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-calendar text-blue-500 mr-1"></i>
+                                Tahun Perolehan *
+                            </label>
+                            <input type="number" id="tahunPrestasiInput" min="2020" max="2025" value="2024"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                        </div>
+                    </div>
+
+                    <!-- Upload Sertifikat -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-certificate text-green-500 mr-1"></i>
+                            Upload Sertifikat
+                        </label>
+                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-green-400 transition-colors">
+                            <div class="space-y-1 text-center">
+                                <div id="uploadPreview" class="hidden">
+                                    <img id="previewImage" class="mx-auto h-32 w-auto rounded-lg" alt="Preview">
+                                    <p class="text-sm text-gray-600 mt-2" id="fileName"></p>
+                                </div>
+                                <div id="uploadPlaceholder">
+                                    <i class="fas fa-cloud-upload-alt text-gray-400 text-4xl"></i>
+                                    <div class="flex text-sm text-gray-600">
+                                        <label for="sertifikatUpload" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
+                                            <span>Upload file</span>
+                                            <input id="sertifikatUpload" name="sertifikat" type="file" class="sr-only" accept="image/*,application/pdf" onchange="previewFile(this)">
+                                        </label>
+                                        <p class="pl-1">atau drag and drop</p>
+                                    </div>
+                                    <p class="text-xs text-gray-500">PNG, JPG, PDF maksimal 5MB</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Keterangan Tambahan -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-sticky-note text-orange-500 mr-1"></i>
+                            Keterangan Tambahan
+                        </label>
+                        <textarea id="keteranganTextarea" rows="3" placeholder="Deskripsi detail tentang prestasi ini..."
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 border-t border-gray-200 mt-6 -mx-6 -mb-6">
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm text-gray-600">
+                            <span class="text-red-500">*</span> Wajib diisi
+                        </div>
+                        <div class="flex space-x-3">
+                            <button type="button" onclick="closeFormPrestasiModal()" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all font-medium">
+                                Batal
+                            </button>
+                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-green-600 to-teal-700 text-white rounded-xl hover:from-green-700 hover:to-teal-800 transition-all transform hover:scale-105 shadow-lg font-medium flex items-center space-x-2">
+                                <i class="fas fa-save"></i>
+                                <span id="submitButtonText">Simpan Prestasi</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ✨ PREVIEW HASIL MODAL -->
+    <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-5xl w-full mx-4 max-h-screen overflow-hidden">
+            <div class="bg-gradient-to-r from-green-50 to-teal-100 p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">Preview Hasil RMIB</h3>
+                            <p class="text-gray-600" id="previewStudentInfo">Hasil dengan pengaruh prestasi</p>
+                        </div>
+                    </div>
+                    <button onclick="closePreviewModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 overflow-y-auto custom-scrollbar" style="max-height: 70vh;">
+                <!-- Top 3 Results -->
+                <div class="mb-8">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                        Top 3 Minat Teratas (Dengan Bonus Prestasi)
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="previewTop3Results">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="mb-6">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-balance-scale text-blue-500 mr-2"></i>
+                        Perbandingan Skor (Sebelum vs Sesudah Prestasi)
+                    </h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border border-gray-200 rounded-xl overflow-hidden">
+                            <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Skor Asli</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Bonus</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Skor Final</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Perubahan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparisonTable" class="bg-white divide-y divide-gray-200">
+                                <!-- Comparison data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✨ INSTRUCTIONS MODAL -->
+    <div id="instructionsModal"
+        class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-4xl w-full mx-4 max-h-screen overflow-hidden">
+            <div class="bg-gradient-to-r from-orange-50 to-yellow-100 p-6 border-b">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-book text-orange-600 mr-3"></i>
+                        Petunjuk Tes RMIB
+                    </h3>
+                    <button onclick="closeInstructions()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar" style="max-height: 70vh;">
+                <div class="space-y-6">
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                        <h4 class="font-bold text-blue-800 mb-3">Apa itu RMIB?</h4>
+                        <p class="text-blue-700 text-sm">
+                            Rothwell Miller Interest Blank (RMIB) adalah tes psikologi untuk mengukur minat seseorang
+                            terhadap berbagai bidang pekerjaan dan aktivitas. Tes ini membantu siswa memahami
+                            kecenderungan
+                            minat mereka untuk perencanaan karir masa depan.
+                        </p>
+                    </div>
+
+                    <div class="bg-green-50 border border-green-200 rounded-xl p-6">
+                        <h4 class="font-bold text-green-800 mb-3">Cara Pengisian</h4>
+                        <ol class="text-green-700 text-sm space-y-2 list-decimal list-inside">
+                            <li>Baca setiap kategori minat dengan cermat</li>
+                            <li>Berikan ranking 1-12 sesuai tingkat minat siswa</li>
+                            <li>Ranking 1 = paling TIDAK diminati</li>
+                            <li>Ranking 12 = paling DIMINATI</li>
+                            <li>Setiap nomor ranking hanya boleh digunakan sekali</li>
+                            <li>Form berbeda untuk siswa laki-laki dan perempuan</li>
+                        </ol>
+                    </div>
+
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+                        <h4 class="font-bold text-yellow-800 mb-3">12 Kategori Minat</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div class="space-y-2">
+                                <div><strong>OUT:</strong> Pekerjaan di luar ruangan</div>
+                                <div><strong>ME:</strong> Menggunakan mesin, peralatan</div>
+                                <div><strong>COMP:</strong> Bekerja dengan angka</div>
+                                <div><strong>SCL:</strong> Penelitian, eksperimen</div>
+                                <div><strong>PERS:</strong> Hubungan interpersonal</div>
+                                <div><strong>AESTH:</strong> Seni, kreasi, estetika</div>
+                            </div>
+                            <div class="space-y-2">
+                                <div><strong>LIT:</strong> Membaca, menulis, sastra</div>
+                                <div><strong>MUS:</strong> Musik, instrumentalia</div>
+                                <div><strong>SOS:</strong> Pelayanan masyarakat</div>
+                                <div><strong>CLER:</strong> Tugas rutin, detail</div>
+                                <div><strong>PRAC:</strong> Keahlian praktis</div>
+                                <div><strong>MED:</strong> Pengobatan, perawatan</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+                        <h4 class="font-bold text-red-800 mb-3">Validasi Penting</h4>
+                        <ul class="text-red-700 text-sm space-y-1">
+                            <li>• Total skor harus mencapai 702</li>
+                            <li>• Tidak boleh ada ranking yang sama</li>
+                            <li>• Semua kategori harus diisi</li>
+                            <li>• Skor akhir: ranking terendah = minat tertinggi</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ✨ Global Variables
+        let studentsData = [];
+        let filteredStudents = [];
+        let currentStudent = null;
+        let currentRankings = {};
+        let usedRankings = [];
+        let scoringMatrix = [];
+
+        // ✨ Prestasi Management
+        let currentPrestasiStudent = null;
+        let currentEditingPrestasi = null;
+        let prestasiData = {};
+
+        const PRESTASI_CATEGORIES = {
+            'akademik': {
+                name: 'Prestasi Akademik',
+                description: 'Olimpiade, lomba karya ilmiah, kompetisi akademik',
+                icon: 'fa-medal',
+                bonus: { SCL: 5, LIT: 5 },
+                color: 'blue'
+            },
+            'olahraga': {
+                name: 'Prestasi Olahraga',
+                description: 'Cabang olahraga, porseni, kompetisi fisik',
+                icon: 'fa-running',
+                bonus: { OUT: 5, PRAC: 5 },
+                color: 'green'
+            },
+            'seni': {
+                name: 'Prestasi Seni',
+                description: 'Musik, tari, lukis, desain, seni kreatif',
+                icon: 'fa-palette',
+                bonus: { AESTH: 5, MUS: 5 },
+                color: 'purple'
+            },
+            'organisasi': {
+                name: 'Prestasi Organisasi',
+                description: 'Kepemimpinan, OSIS, ekstrakurikuler',
+                icon: 'fa-users',
+                bonus: { PERS: 5, SOS: 5 },
+                color: 'yellow'
+            },
+            'teknologi': {
+                name: 'Prestasi Teknologi',
+                description: 'Robotik, programming, IT, inovasi teknologi',
+                icon: 'fa-laptop-code',
+                bonus: { ME: 5, COMP: 5 },
+                color: 'indigo'
+            }
+        };
+
+        // RMIB Scoring patterns (different for male/female)
+        const SCORING_PATTERNS = {
+            male: {
+                OUT: [9, 1, 8, 2, 7, 3, 6, 4, 5, 4, 6, 3],
+                ME: [8, 2, 9, 1, 6, 4, 7, 3, 5, 5, 4, 6],
+                COMP: [7, 3, 6, 4, 9, 1, 8, 2, 5, 6, 3, 7],
+                SCL: [6, 4, 7, 3, 8, 2, 9, 1, 4, 7, 2, 8],
+                PERS: [5, 5, 4, 6, 3, 7, 2, 8, 9, 1, 8, 2],
+                AESTH: [4, 6, 5, 5, 2, 8, 3, 7, 8, 2, 9, 1],
+                LIT: [3, 7, 2, 8, 1, 9, 4, 6, 7, 3, 1, 9],
+                MUS: [2, 8, 3, 7, 4, 6, 1, 9, 6, 4, 7, 3],
+                SOS: [1, 9, 4, 6, 5, 5, 8, 2, 3, 7, 5, 5],
+                CLER: [9, 1, 7, 3, 8, 2, 5, 5, 4, 6, 8, 2],
+                PRAC: [8, 2, 6, 4, 7, 3, 9, 1, 2, 8, 6, 4],
+                MED: [7, 3, 8, 2, 6, 4, 4, 6, 1, 9, 4, 6]
+            },
+            female: {
+                OUT: [8, 2, 7, 3, 9, 1, 6, 4, 5, 5, 4, 6],
+                ME: [7, 3, 8, 2, 6, 4, 9, 1, 4, 6, 5, 5],
+                COMP: [6, 4, 9, 1, 7, 3, 8, 2, 3, 7, 6, 4],
+                SCL: [5, 5, 6, 4, 8, 2, 7, 3, 2, 8, 7, 3],
+                PERS: [9, 1, 5, 5, 4, 6, 3, 7, 8, 2, 9, 1],
+                AESTH: [8, 2, 4, 6, 5, 5, 2, 8, 9, 1, 8, 2],
+                LIT: [7, 3, 3, 7, 2, 8, 1, 9, 7, 3, 2, 8],
+                MUS: [6, 4, 2, 8, 3, 7, 4, 6, 6, 4, 3, 7],
+                SOS: [4, 6, 1, 9, 5, 5, 8, 2, 4, 6, 1, 9],
+                CLER: [3, 7, 8, 2, 9, 1, 5, 5, 3, 7, 8, 2],
+                PRAC: [2, 8, 7, 3, 6, 4, 9, 1, 1, 9, 7, 3],
+                MED: [1, 9, 9, 1, 2, 8, 7, 3, 5, 5, 6, 4]
+            }
+        };
+
+        // ✨ Initialize Application
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            showLoadingOverlay();
+            loadPendingStudents();
+            setTimeout(() => {
+                hideLoadingOverlay();
+                showToast('Data Loaded', 'Daftar siswa pending berhasil dimuat', 'success');
+            }, 1000);
+        }
+
+        // ✨ Load Pending Students Data
+        function loadPendingStudents() {
+            studentsData = [
+                {
+                    id: 1,
+                    name: 'Budi Santoso',
+                    nisn: '1234567892',
+                    class: '7A',
+                    gender: 'L',
+                    birthDate: '2010-03-10',
+                    status: 'pending',
+                    priority: 'urgent',
+                    targetDate: '2024-02-05',
+                    avatar: 'BS',
+                    avatarColor: 'green',
+                    prestasi: [],
+                    rmibRankings: null,
+                    rmibScores: null
+                },
+                {
+                    id: 2,
+                    name: 'Citra Dewi',
+                    nisn: '1234567895',
+                    class: '8A',
+                    gender: 'P',
+                    birthDate: '2009-07-22',
+                    status: 'pending',
+                    priority: 'normal',
+                    targetDate: '2024-02-10',
+                    avatar: 'CD',
+                    avatarColor: 'pink',
+                    prestasi: [],
+                    rmibRankings: null,
+                    rmibScores: null
+                },
+                {
+                    id: 3,
+                    name: 'Fajar Ramadhan',
+                    nisn: '1234567896',
+                    class: '9B',
+                    gender: 'L',
+                    birthDate: '2008-11-15',
+                    status: 'pending',
+                    priority: 'urgent',
+                    targetDate: '2024-02-03',
+                    avatar: 'FR',
+                    avatarColor: 'blue',
+                    prestasi: [],
+                    rmibRankings: null,
+                    rmibScores: null
+                }
+            ];
+
+            // Generate more pending students
+            for (let i = 4; i <= 14; i++) {
+                const genders = ['L', 'P'];
+                const classes = ['7A', '7B', '7C', '8A', '8B', '8C', '9A', '9B', '9C'];
+                const priorities = ['urgent', 'normal'];
+                const names = [
+                    'Gita Savitri', 'Hendra Wijaya', 'Indira Sari', 'Johan Prakoso', 'Kania Putri', 'Lukman Hakim',
+                    'Maya Sinta', 'Nanda Rizki', 'Oscar Ramadhan', 'Putri Ayu', 'Rio Ferdinan'
+                ];
+
+                const gender = genders[Math.floor(Math.random() * genders.length)];
+                const name = names[Math.floor(Math.random() * names.length)] + ' ' + i;
+
+                studentsData.push({
+                    id: i,
+                    name: name,
+                    nisn: `123456789${i}`,
+                    class: classes[Math.floor(Math.random() * classes.length)],
+                    gender: gender,
+                    birthDate: `200${Math.floor(Math.random() * 3) + 8}-0${Math.floor(Math.random() * 9) + 1}-${Math.floor(Math.random() * 28) + 1}`,
+                    status: 'pending',
+                    priority: priorities[Math.floor(Math.random() * priorities.length)],
+                    targetDate: `2024-02-${String(Math.floor(Math.random() * 15) + 1).padStart(2, '0')}`,
+                    avatar: name.split(' ').map(n => n[0]).join(''),
+                    avatarColor: ['blue', 'green', 'purple', 'pink', 'orange', 'indigo'][Math.floor(Math.random() * 6)],
+                    prestasi: [],
+                    rmibRankings: null,
+                    rmibScores: null
+                });
+            }
+
+            // Initialize prestasi data for each student
+            studentsData.forEach(student => {
+                prestasiData[student.id] = [];
+            });
+
+            filteredStudents = [...studentsData];
+            updateStatistics();
+            renderStudentsTable();
+        }
+
+        // ✨ Update Statistics
+        function updateStatistics() {
+            const total = studentsData.length;
+            const maleCount = studentsData.filter(s => s.gender === 'L').length;
+            const femaleCount = studentsData.filter(s => s.gender === 'P').length;
+            const todayCount = 3; // Mock data for today's input
+
+            document.getElementById('statsPending').textContent = total;
+            document.getElementById('statsToday').textContent = todayCount;
+            document.getElementById('statsMale').textContent = maleCount;
+            document.getElementById('statsFemale').textContent = femaleCount;
+            document.getElementById('pendingStudentsCount').textContent = `${total} siswa menunggu`;
+            document.getElementById('waitingCount').textContent = total;
+        }
+
+        // ✨ Prestasi CRUD Functions
+        function openKelolaPrestasiModal(studentId) {
+            const student = studentsData.find(s => s.id === studentId);
+            if (!student) return;
+
+            currentPrestasiStudent = student;
+            document.getElementById('kelolaPrestasiStudentInfo').textContent =
+                `${student.name} - ${student.class} | NISN: ${student.nisn}`;
+
+            renderPrestasiList();
+            document.getElementById('kelolaPrestasiModal').classList.remove('hidden');
+        }
+
+        function renderPrestasiList() {
+            const container = document.getElementById('prestasiList');
+            const studentPrestasi = prestasiData[currentPrestasiStudent.id] || [];
+
+            if (studentPrestasi.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fas fa-trophy text-gray-300 text-6xl mb-4"></i>
+                        <h4 class="text-lg font-medium text-gray-500 mb-2">Belum Ada Prestasi</h4>
+                        <p class="text-gray-400 mb-4">Siswa ini belum memiliki data prestasi</p>
+                        <button onclick="openAddPrestasiForm()" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2 mx-auto">
+                            <i class="fas fa-plus"></i>
+                            <span>Tambah Prestasi Pertama</span>
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = studentPrestasi.map((prestasi, index) => {
+                const categoryInfo = PRESTASI_CATEGORIES[prestasi.jenis];
+                const bonusText = Object.entries(categoryInfo.bonus).map(([cat, bonus]) => `${cat}: -${bonus}`).join(', ');
+
+                return `
+                    <div class="bg-white border border-gray-200 rounded-xl p-6 mb-4 hover:shadow-lg transition-all">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start space-x-4 flex-1">
+                                <div class="w-12 h-12 bg-${categoryInfo.color}-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i class="fas ${categoryInfo.icon} text-${categoryInfo.color}-600 text-xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <h5 class="font-bold text-gray-800">${prestasi.nama}</h5>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-${categoryInfo.color}-100 text-${categoryInfo.color}-800">
+                                            ${categoryInfo.name}
+                                        </span>
+                                    </div>
+                                    <div class="space-y-1 text-sm text-gray-600">
+                                        <p><i class="fas fa-layer-group w-4"></i> ${prestasi.tingkat}</p>
+                                        ${prestasi.peringkat ? `<p><i class="fas fa-star w-4"></i> ${prestasi.peringkat}</p>` : ''}
+                                        <p><i class="fas fa-calendar w-4"></i> Tahun ${prestasi.tahun}</p>
+                                        ${prestasi.keterangan ? `<p><i class="fas fa-sticky-note w-4"></i> ${prestasi.keterangan}</p>` : ''}
+                                    </div>
+                                    <div class="mt-3 p-2 bg-green-50 rounded-lg">
+                                        <p class="text-xs text-green-700">
+                                            <i class="fas fa-chart-line mr-1"></i>
+                                            <strong>Pengaruh RMIB:</strong> ${bonusText}
+                                        </p>
+                                    </div>
+                                    ${prestasi.sertifikat ? `
+                                        <div class="mt-2">
+                                            <button onclick="viewCertificate('${prestasi.sertifikat}')" class="text-xs text-blue-600 hover:text-blue-800 flex items-center space-x-1">
+                                                <i class="fas fa-certificate"></i>
+                                                <span>Lihat Sertifikat</span>
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2 ml-4">
+                                <button onclick="editPrestasi(${index})" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 p-2 rounded-lg transition-all">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deletePrestasi(${index})" class="bg-red-100 hover:bg-red-200 text-red-700 p-2 rounded-lg transition-all">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openAddPrestasiForm() {
+            currentEditingPrestasi = null;
+            document.getElementById('formPrestasiTitle').textContent = 'Tambah Prestasi Baru';
+            document.getElementById('submitButtonText').textContent = 'Simpan Prestasi';
+            resetPrestasiForm();
+            document.getElementById('formPrestasiModal').classList.remove('hidden');
+        }
+
+        function editPrestasi(index) {
+            const studentPrestasi = prestasiData[currentPrestasiStudent.id];
+            const prestasi = studentPrestasi[index];
+            
+            currentEditingPrestasi = index;
+            document.getElementById('formPrestasiTitle').textContent = 'Edit Prestasi';
+            document.getElementById('submitButtonText').textContent = 'Update Prestasi';
+            
+            // Fill form with existing data
+            document.getElementById('jenisPrestasiSelect').value = prestasi.jenis;
+            document.getElementById('namaPrestasiInput').value = prestasi.nama;
+            document.getElementById('tingkatPrestasiSelect').value = prestasi.tingkat;
+            document.getElementById('peringkatSelect').value = prestasi.peringkat || '';
+            document.getElementById('tahunPrestasiInput').value = prestasi.tahun;
+            document.getElementById('keteranganTextarea').value = prestasi.keterangan || '';
+            
+            updatePrestasiDescription();
+            document.getElementById('formPrestasiModal').classList.remove('hidden');
+        }
+
+        function deletePrestasi(index) {
+            const studentPrestasi = prestasiData[currentPrestasiStudent.id];
+            const prestasi = studentPrestasi[index];
+            
+            if (confirm(`Apakah Anda yakin ingin menghapus prestasi "${prestasi.nama}"?`)) {
+                studentPrestasi.splice(index, 1);
+                renderPrestasiList();
+                updateStudentPrestasiData();
+                showToast('Berhasil!', 'Prestasi berhasil dihapus', 'success');
+            }
+        }
+
+        function resetPrestasiForm() {
+            document.getElementById('prestasiForm').reset();
+            document.getElementById('prestasiAutoDescription').classList.add('hidden');
+            document.getElementById('uploadPreview').classList.add('hidden');
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
+        }
+
+        function updatePrestasiDescription() {
+            const jenis = document.getElementById('jenisPrestasiSelect').value;
+            const descContainer = document.getElementById('prestasiAutoDescription');
+            const descText = document.getElementById('autoDescriptionText');
+            const effectText = document.getElementById('autoEffectText');
+
+            if (jenis && PRESTASI_CATEGORIES[jenis]) {
+                const category = PRESTASI_CATEGORIES[jenis];
+                const bonusText = Object.entries(category.bonus).map(([cat, bonus]) => `${cat} -${bonus}`).join(', ');
+                
+                descText.textContent = category.description;
+                effectText.textContent = `Pengaruh pada RMIB: ${bonusText} poin`;
+                descContainer.classList.remove('hidden');
+            } else {
+                descContainer.classList.add('hidden');
+            }
+        }
+
+        function previewFile(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (file.type.startsWith('image/')) {
+                        document.getElementById('previewImage').src = e.target.result;
+                        document.getElementById('fileName').textContent = file.name;
+                        document.getElementById('uploadPreview').classList.remove('hidden');
+                        document.getElementById('uploadPlaceholder').classList.add('hidden');
+                    } else {
+                        // For PDF files, show file info
+                        document.getElementById('fileName').textContent = file.name;
+                        document.getElementById('previewImage').style.display = 'none';
+                        document.getElementById('uploadPreview').classList.remove('hidden');
+                        document.getElementById('uploadPlaceholder').classList.add('hidden');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function viewCertificate(sertifikatPath) {
+            showToast('Info', 'Fitur lihat sertifikat akan dibuka di tab baru', 'info');
+            // In real implementation, open the certificate file
+        }
+
+        // Handle form submission
+        document.getElementById('prestasiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                jenis: document.getElementById('jenisPrestasiSelect').value,
+                nama: document.getElementById('namaPrestasiInput').value,
+                tingkat: document.getElementById('tingkatPrestasiSelect').value,
+                peringkat: document.getElementById('peringkatSelect').value,
+                tahun: parseInt(document.getElementById('tahunPrestasiInput').value),
+                keterangan: document.getElementById('keteranganTextarea').value,
+                sertifikat: document.getElementById('sertifikatUpload').files[0] ? document.getElementById('sertifikatUpload').files[0].name : null,
+                tanggalInput: new Date().toISOString()
+            };
+
+            const studentPrestasi = prestasiData[currentPrestasiStudent.id];
+
+            if (currentEditingPrestasi !== null) {
+                // Update existing prestasi
+                studentPrestasi[currentEditingPrestasi] = formData;
+                showToast('Berhasil!', 'Prestasi berhasil diupdate', 'success');
+            } else {
+                // Add new prestasi
+                studentPrestasi.push(formData);
+                showToast('Berhasil!', 'Prestasi berhasil ditambahkan', 'success');
+            }
+
+            updateStudentPrestasiData();
+            renderPrestasiList();
+            renderStudentsTable();
+            closeFormPrestasiModal();
+        });
+
+        function updateStudentPrestasiData() {
+            // Update student's prestasi array with current categories
+            const studentPrestasi = prestasiData[currentPrestasiStudent.id];
+            const prestasiCategories = [...new Set(studentPrestasi.map(p => p.jenis))];
+            currentPrestasiStudent.prestasi = prestasiCategories;
+        }
+
+        function closeKelolaPrestasiModal() {
+            document.getElementById('kelolaPrestasiModal').classList.add('hidden');
+            currentPrestasiStudent = null;
+        }
+
+        function closeFormPrestasiModal() {
+            document.getElementById('formPrestasiModal').classList.add('hidden');
+            currentEditingPrestasi = null;
+        }
+
+        // ✨ Preview Results with Prestasi Bonus
+        function previewStudentResult(studentId) {
+            const student = studentsData.find(s => s.id === studentId);
+            if (!student || !student.rmibRankings) return;
+
+            document.getElementById('previewStudentInfo').textContent =
+                `${student.name} - ${student.class} | NISN: ${student.nisn}`;
+
+            generatePreviewResults(student);
+            document.getElementById('previewModal').classList.remove('hidden');
+        }
+
+        function generatePreviewResults(student) {
+            const originalScores = student.rmibScores || {};
+            const finalScores = calculateScoresWithPrestasi(student);
+
+            // Generate Top 3 Results
+            const sortedResults = Object.entries(finalScores)
+                .sort(([, a], [, b]) => a - b)  // Lower score = higher interest
+                .slice(0, 3);
+
+            const container = document.getElementById('previewTop3Results');
+            const colors = ['yellow', 'gray', 'orange'];
+            const positions = ['🥇', '🥈', '🥉'];
+
+            container.innerHTML = sortedResults.map(([categoryCode, score], index) => {
+                const categoryName = getCategoryName(categoryCode);
+                const originalScore = originalScores[categoryCode] || 0;
+                const bonus = originalScore - score;
+
+                return `
+                    <div class="bg-gradient-to-br from-${colors[index]}-400 to-${colors[index]}-600 text-white p-6 rounded-2xl shadow-lg">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="text-3xl">${positions[index]}</div>
+                            <span class="text-sm bg-white bg-opacity-20 px-3 py-1 rounded-full font-bold">#${index + 1}</span>
+                        </div>
+                        <h4 class="text-lg font-bold mb-2">${categoryName}</h4>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-sm">
+                                <span>Skor Final:</span>
+                                <span class="font-bold">${score}</span>
+                            </div>
+                            ${bonus > 0 ? `
+                                <div class="flex justify-between text-xs opacity-90">
+                                    <span>Bonus Prestasi:</span>
+                                    <span class="font-bold">-${bonus}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Generate Comparison Table
+            generateComparisonTable(originalScores, finalScores);
+        }
+
+        function calculateScoresWithPrestasi(student) {
+            const originalScores = student.rmibScores || {};
+            const finalScores = { ...originalScores };
+            const studentPrestasi = prestasiData[student.id] || [];
+
+            if (studentPrestasi.length > 0) {
+                studentPrestasi.forEach(prestasi => {
+                    const category = PRESTASI_CATEGORIES[prestasi.jenis];
+                    if (category) {
+                        Object.entries(category.bonus).forEach(([rmibCategory, bonus]) => {
+                            if (finalScores[rmibCategory] !== undefined) {
+                                finalScores[rmibCategory] = Math.max(0, finalScores[rmibCategory] - bonus);
+                            }
+                        });
+                    }
+                });
+            }
+
+            return finalScores;
+        }
+
+        function generateComparisonTable(originalScores, finalScores) {
+            const container = document.getElementById('comparisonTable');
+            const categories = ['OUT', 'ME', 'COMP', 'SCL', 'PERS', 'AESTH', 'LIT', 'MUS', 'SOS', 'CLER', 'PRAC', 'MED'];
+
+            container.innerHTML = categories.map(categoryCode => {
+                const originalScore = originalScores[categoryCode] || 0;
+                const finalScore = finalScores[categoryCode] || 0;
+                const bonus = originalScore - finalScore;
+                const categoryName = getCategoryName(categoryCode);
+
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 font-medium text-gray-900">${categoryName}</td>
+                        <td class="px-4 py-3 text-center text-gray-700">${originalScore}</td>
+                        <td class="px-4 py-3 text-center">
+                            ${bonus > 0 ? `<span class="text-green-600 font-bold">-${bonus}</span>` : '<span class="text-gray-400">0</span>'}
+                        </td>
+                        <td class="px-4 py-3 text-center font-bold text-purple-600">${finalScore}</td>
+                        <td class="px-4 py-3 text-center">
+                            ${bonus > 0 ?
+                                '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"><i class="fas fa-arrow-up mr-1"></i>Naik</span>' :
+                                '<span class="text-gray-400 text-xs">Tidak berubah</span>'
+                            }
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.add('hidden');
+        }
+
+        // ✨ Render Students Table
+        function renderStudentsTable() {
+            const tbody = document.getElementById('studentsTableBody');
+
+            tbody.innerHTML = filteredStudents.map((student, index) => {
+                const isUrgent = student.priority === 'urgent';
+                const targetDate = new Date(student.targetDate);
+                const today = new Date();
+                const isOverdue = targetDate < today;
+                const studentPrestasi = prestasiData[student.id] || [];
+
+                return `
+                    <tr class="hover:bg-gray-50 transition-colors ${isOverdue ? 'bg-red-50' : ''}">
+                        <td class="px-6 py-4 text-center">
+                            <span class="text-sm font-medium text-gray-700">${index + 1}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-${student.avatarColor}-100 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-${student.avatarColor}-200">
+                                    <span class="text-${student.avatarColor}-600 font-bold text-sm">${student.avatar}</span>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-gray-900">${student.name}</div>
+                                    <div class="text-sm text-gray-500">NISN: ${student.nisn}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                ${student.class}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas ${student.gender === 'L' ? 'fa-mars text-blue-500' : 'fa-venus text-pink-500'}"></i>
+                                <span class="text-sm text-gray-700">${student.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${isUrgent ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}">
+                                <i class="fas ${isUrgent ? 'fa-exclamation-circle' : 'fa-clock'} mr-1"></i>
+                                ${isUrgent ? 'Mendesak' : 'Normal'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-900">${new Date(student.targetDate).toLocaleDateString('id-ID')}</div>
+                            ${isOverdue ? '<div class="text-xs text-red-600 font-medium">Terlambat</div>' : ''}
+                        </td>
+                        <td class="px-6 py-4">
+                            <button onclick="openRMIBInput(${student.id})" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg text-sm transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
+                                <i class="fas fa-edit"></i>
+                                <span>Input RMIB</span>
+                            </button>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button onclick="openKelolaPrestasiModal(${student.id})" class="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white px-3 py-2 rounded-lg text-sm transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2 mb-1">
+                                <i class="fas fa-trophy"></i>
+                                <span>Kelola</span>
+                            </button>
+                            ${studentPrestasi.length > 0 ? `
+                                <div class="text-xs text-green-600 font-medium flex items-center space-x-1">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>${studentPrestasi.length} prestasi</span>
+                                </div>
+                            ` : `
+                                <div class="text-xs text-gray-400">Belum ada prestasi</div>
+                            `}
+                        </td>
+                        <td class="px-6 py-4">
+                            ${student.rmibRankings ? `
+                                <button onclick="previewStudentResult(${student.id})" class="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-3 py-2 rounded-lg text-sm transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
+                                    <i class="fas fa-eye"></i>
+                                    <span>Preview</span>
+                                </button>
+                            ` : `
+                                <div class="text-center">
+                                    <i class="fas fa-clock text-gray-400 text-xl"></i>
+                                    <div class="text-xs text-gray-500 mt-1">Menunggu RMIB</div>
+                                </div>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ✨ RMIB Functions (simplified for brevity)
+        function openRMIBInput(studentId) {
+            currentStudent = studentsData.find(s => s.id === studentId);
+            if (!currentStudent) return;
+
+            currentRankings = {};
+            usedRankings = [];
+            updateModalHeader();
+            
+            const modalHeader = document.getElementById('modalHeader');
+            modalHeader.className = `p-6 border-b border-gray-200 ${currentStudent.gender === 'L' ? 'form-male' : 'form-female'}`;
+            
+            populateRMIBForm();
+            document.getElementById('rmibModal').classList.remove('hidden');
+        }
+
+        function updateModalHeader() {
+            document.getElementById('studentInitials').textContent = currentStudent.avatar;
+            document.getElementById('modalStudentName').textContent = currentStudent.name;
+            document.getElementById('modalStudentInfo').textContent =
+                `${currentStudent.class} • NISN: ${currentStudent.nisn} • ${currentStudent.gender === 'L' ? 'Laki-laki' : 'Perempuan'}`;
+        }
+
+        function populateRMIBForm() {
+            const categories = [
+                { code: 'OUT', name: 'Outdoor', description: 'Pekerjaan di luar ruangan, mobilitas tinggi', icon: 'fa-tree' },
+                { code: 'ME', name: 'Mechanical', description: 'Menggunakan mesin, peralatan mekanik', icon: 'fa-cogs' },
+                { code: 'COMP', name: 'Computational', description: 'Bekerja dengan angka, analisa numerik', icon: 'fa-calculator' },
+                { code: 'SCL', name: 'Scientific', description: 'Penelitian, eksperimen, ilmu pengetahuan', icon: 'fa-flask' },
+                { code: 'PERS', name: 'Personal Contact', description: 'Hubungan interpersonal, diskusi', icon: 'fa-handshake' },
+                { code: 'AESTH', name: 'Aesthetic', description: 'Seni, kreasi, apresiasi estetika', icon: 'fa-palette' },
+                { code: 'LIT', name: 'Literary', description: 'Membaca, menulis, kegiatan sastra', icon: 'fa-book' },
+                { code: 'MUS', name: 'Musical', description: 'Musik, instrumentalia, komposisi', icon: 'fa-music' },
+                { code: 'SOS', name: 'Social Service', description: 'Pelayanan masyarakat, membantu sesama', icon: 'fa-users' },
+                { code: 'CLER', name: 'Clerical', description: 'Tugas rutin, kecermatan, detail', icon: 'fa-file-alt' },
+                { code: 'PRAC', name: 'Practical', description: 'Keahlian praktis, membuat objek', icon: 'fa-tools' },
+                { code: 'MED', name: 'Medical', description: 'Pengobatan, perawatan kesehatan', icon: 'fa-user-md' }
+            ];
+
+            const container = document.getElementById('rmibCategoriesForm');
+            container.innerHTML = categories.map(category => `
+                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-200 p-6 rounded-2xl transition-all" id="card-${category.code}">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
+                                <i class="fas ${category.icon} text-gray-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">${category.name}</h4>
+                                <span class="text-xs text-gray-500 font-medium">${category.code}</span>
+                            </div>
+                        </div>
+                        <div id="status-${category.code}" class="text-2xl text-gray-300">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                    </div>
+                    
+                    <p class="text-sm text-gray-600 mb-4 leading-relaxed">${category.description}</p>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Ranking Minat (1=Paling Tidak Diminati, 12=Paling Diminati)
+                        </label>
+                        <select 
+                            id="ranking-${category.code}" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-lg font-bold transition-all"
+                            onchange="updateRanking('${category.code}', this.value)"
+                        >
+                            <option value="">Pilih Ranking...</option>
+                            ${Array.from({ length: 12 }, (_, i) => `
+                                <option value="${i + 1}">${i + 1}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Ranking Terpilih:</span>
+                            <span class="font-bold text-purple-600" id="display-${category.code}">-</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            updateValidationStatus();
+        }
+
+        function updateRanking(categoryCode, value) {
+            const intValue = parseInt(value);
+
+            if (currentRankings[categoryCode]) {
+                const prevRanking = currentRankings[categoryCode];
+                const prevIndex = usedRankings.indexOf(prevRanking);
+                if (prevIndex > -1) {
+                    usedRankings.splice(prevIndex, 1);
+                }
+            }
+
+            if (value && intValue >= 1 && intValue <= 12) {
+                currentRankings[categoryCode] = intValue;
+                usedRankings.push(intValue);
+
+                document.getElementById(`display-${categoryCode}`).textContent = value;
+                updateCardStatus(categoryCode, intValue);
+            } else {
+                delete currentRankings[categoryCode];
+                document.getElementById(`display-${categoryCode}`).textContent = '-';
+                updateCardStatus(categoryCode, null);
+            }
+
+            updateAllDropdowns();
+            updateValidationStatus();
+        }
+
+        function updateCardStatus(categoryCode, ranking) {
+            const card = document.getElementById(`card-${categoryCode}`);
+            const status = document.getElementById(`status-${categoryCode}`);
+
+            if (ranking !== null) {
+                const duplicateCount = usedRankings.filter(r => r === ranking).length;
+                if (duplicateCount > 1) {
+                    card.className = 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300 p-6 rounded-2xl transition-all';
+                    status.innerHTML = '<i class="fas fa-exclamation-triangle text-red-500"></i>';
+                } else {
+                    card.className = 'bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 p-6 rounded-2xl transition-all';
+                    status.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+                }
+            } else {
+                card.className = 'bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-200 p-6 rounded-2xl transition-all';
+                status.innerHTML = '<i class="fas fa-circle text-gray-300"></i>';
+            }
+        }
+
+        function updateAllDropdowns() {
+            const categories = ['OUT', 'ME', 'COMP', 'SCL', 'PERS', 'AESTH', 'LIT', 'MUS', 'SOS', 'CLER', 'PRAC', 'MED'];
+
+            categories.forEach(categoryCode => {
+                const dropdown = document.getElementById(`ranking-${categoryCode}`);
+                const options = dropdown.querySelectorAll('option');
+
+                options.forEach(option => {
+                    const value = parseInt(option.value);
+                    if (value >= 1 && value <= 12) {
+                        const isUsed = usedRankings.filter(r => r === value).length > 0;
+                        const isCurrentSelection = currentRankings[categoryCode] === value;
+
+                        if (isUsed && !isCurrentSelection) {
+                            option.disabled = true;
+                            option.className = 'text-gray-400';
+                        } else {
+                            option.disabled = false;
+                            option.className = '';
+                        }
+                    }
+                });
+            });
+        }
+
+        function updateValidationStatus() {
+            const filledCount = Object.keys(currentRankings).length;
+            const duplicateCount = getDuplicateCount();
+            const totalScore = calculateTotalScore();
+
+            document.getElementById('modalProgress').textContent = `${filledCount}/12`;
+            document.getElementById('rankingsUsed').textContent = `${filledCount}/12`;
+            document.getElementById('duplicateCount').textContent = duplicateCount;
+            document.getElementById('currentTotal').textContent = totalScore;
+
+            const saveButton = document.getElementById('saveButton');
+            const isValid = filledCount === 12 && duplicateCount === 0 && totalScore === 702;
+
+            saveButton.disabled = !isValid;
+            if (isValid) {
+                saveButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                saveButton.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function getDuplicateCount() {
+            const rankingCounts = {};
+            usedRankings.forEach(ranking => {
+                rankingCounts[ranking] = (rankingCounts[ranking] || 0) + 1;
+            });
+
+            return Object.values(rankingCounts).filter(count => count > 1).reduce((sum, count) => sum + count - 1, 0);
+        }
+
+        function calculateTotalScore() {
+            if (Object.keys(currentRankings).length !== 12) return 0;
+
+            const genderPattern = currentStudent.gender === 'L' ? 'male' : 'female';
+            const pattern = SCORING_PATTERNS[genderPattern];
+            let total = 0;
+
+            Object.entries(currentRankings).forEach(([categoryCode, ranking]) => {
+                if (pattern[categoryCode]) {
+                    const rowSum = pattern[categoryCode].reduce((sum, val) => sum + val, 0);
+                    total += rowSum;
+                }
+            });
+
+            return total;
+        }
+
+        function previewScoring() {
+            if (Object.keys(currentRankings).length !== 12) {
+                showToast('Error', 'Lengkapi semua ranking terlebih dahulu', 'error');
+                return;
+            }
+
+            generateScoringMatrix();
+            document.getElementById('scoringMatrix').classList.remove('hidden');
+            generateResultsPreview();
+        }
+
+        function generateScoringMatrix() {
+            const genderPattern = currentStudent.gender === 'L' ? 'male' : 'female';
+            const pattern = SCORING_PATTERNS[genderPattern];
+            const matrixGrid = document.getElementById('matrixGrid');
+
+            const headers = ['Cat', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'R11', 'R12', 'Total'];
+
+            let gridHTML = '';
+            matrixGrid.style.gridTemplateColumns = `repeat(${headers.length}, 1fr)`;
+
+            headers.forEach(header => {
+                gridHTML += `<div class="bg-gray-600 text-white font-bold text-center p-2 border border-gray-300">${header}</div>`;
+            });
+
+            Object.entries(currentRankings).forEach(([categoryCode, ranking]) => {
+                const rowPattern = pattern[categoryCode];
+                const rowSum = rowPattern.reduce((sum, val) => sum + val, 0);
+
+                gridHTML += `<div class="bg-blue-100 font-bold text-center p-2 border border-gray-300">${categoryCode}</div>`;
+                rowPattern.forEach((value, index) => {
+                    const isActive = index === ranking - 1;
+                    gridHTML += `<div class="text-center p-2 border border-gray-300 ${isActive ? 'bg-blue-500 text-white' : 'bg-white'}">${value}</div>`;
+                });
+                gridHTML += `<div class="bg-green-100 font-bold text-center p-2 border border-gray-300">${rowSum}</div>`;
+            });
+
+            matrixGrid.innerHTML = gridHTML;
+        }
+
+        function generateResultsPreview() {
+            const genderPattern = currentStudent.gender === 'L' ? 'male' : 'female';
+            const pattern = SCORING_PATTERNS[genderPattern];
+            const categoryScores = {};
+
+            Object.entries(currentRankings).forEach(([categoryCode, ranking]) => {
+                const rowSum = pattern[categoryCode].reduce((sum, val) => sum + val, 0);
+                categoryScores[categoryCode] = rowSum;
+            });
+
+            const sortedCategories = Object.entries(categoryScores)
+                .sort(([, a], [, b]) => a - b)
+                .slice(0, 3);
+
+            const container = document.getElementById('top3Results');
+            const colors = ['yellow', 'gray', 'orange'];
+
+            container.innerHTML = sortedCategories.map(([categoryCode, score], index) => {
+                const categoryName = getCategoryName(categoryCode);
+                return `
+                    <div class="bg-gradient-to-br from-${colors[index]}-400 to-${colors[index]}-600 text-white p-6 rounded-2xl shadow-lg">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="bg-white bg-opacity-20 p-3 rounded-full">
+                                <i class="fas fa-trophy text-2xl"></i>
+                            </div>
+                            <span class="text-sm bg-white bg-opacity-20 px-3 py-1 rounded-full font-bold">#${index + 1}</span>
+                        </div>
+                        <h4 class="text-lg font-bold mb-2">${categoryName}</h4>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold">Score: ${score}</span>
+                            <div class="text-right">
+                                <div class="text-xs opacity-90">Ranking: ${currentRankings[categoryCode]}</div>
+                                <div class="text-xs opacity-75">(Skor rendah = minat tinggi)</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('resultsPreview').classList.remove('hidden');
+        }
+
+        function getCategoryName(code) {
+            const names = {
+                OUT: 'Outdoor',
+                ME: 'Mechanical',
+                COMP: 'Computational',
+                SCL: 'Scientific',
+                PERS: 'Personal Contact',
+                AESTH: 'Aesthetic',
+                LIT: 'Literary',
+                MUS: 'Musical',
+                SOS: 'Social Service',
+                CLER: 'Clerical',
+                PRAC: 'Practical',
+                MED: 'Medical'
+            };
+            return names[code] || code;
+        }
+
+        // ✨ Save RMIB Scores
+        function saveRMIBScores() {
+            if (!currentStudent) return;
+
+            const totalScore = calculateTotalScore();
+            if (totalScore !== 702) {
+                showToast('Error', `Total skor harus 702, saat ini: ${totalScore}`, 'error');
+                return;
+            }
+
+            if (getDuplicateCount() > 0) {
+                showToast('Error', 'Masih ada ranking yang duplikasi', 'error');
+                return;
+            }
+
+            if (Object.keys(currentRankings).length !== 12) {
+                showToast('Error', 'Semua kategori harus diisi', 'error');
+                return;
+            }
+
+            showLoadingOverlay();
+            document.getElementById('loadingText').textContent = 'Menyimpan hasil RMIB...';
+
+            setTimeout(() => {
+                // Update student status
+                currentStudent.status = 'completed';
+                currentStudent.rmibRankings = currentRankings;
+                currentStudent.rmibScores = calculateFinalScores();
+
+                // Remove from pending list
+                studentsData = studentsData.filter(s => s.id !== currentStudent.id);
+                filteredStudents = filteredStudents.filter(s => s.id !== currentStudent.id);
+
+                hideLoadingOverlay();
+                closeRMIBModal();
+
+                updateStatistics();
+                renderStudentsTable();
+
+                showToast('Berhasil!', `Hasil RMIB untuk ${currentStudent.name} berhasil disimpan`, 'success');
+
+                currentStudent = null;
+                currentRankings = {};
+                usedRankings = [];
+            }, 2000);
+        }
+
+        function calculateFinalScores() {
+            const genderPattern = currentStudent.gender === 'L' ? 'male' : 'female';
+            const pattern = SCORING_PATTERNS[genderPattern];
+            const finalScores = {};
+
+            Object.entries(currentRankings).forEach(([categoryCode, ranking]) => {
+                const rowSum = pattern[categoryCode].reduce((sum, val) => sum + val, 0);
+                finalScores[categoryCode] = rowSum;
+            });
+
+            return finalScores;
+        }
+
+        // ✨ Modal Functions
+        function closeRMIBModal() {
+            document.getElementById('rmibModal').classList.add('hidden');
+            document.getElementById('scoringMatrix').classList.add('hidden');
+            document.getElementById('resultsPreview').classList.add('hidden');
+            currentStudent = null;
+            currentRankings = {};
+            usedRankings = [];
+        }
+
+        function resetForm() {
+            if (confirm('Apakah Anda yakin ingin mereset semua input?')) {
+                currentRankings = {};
+                usedRankings = [];
+
+                // Reset all dropdowns
+                const categories = ['OUT', 'ME', 'COMP', 'SCL', 'PERS', 'AESTH', 'LIT', 'MUS', 'SOS', 'CLER', 'PRAC', 'MED'];
+                categories.forEach(categoryCode => {
+                    const dropdown = document.getElementById(`ranking-${categoryCode}`);
+                    dropdown.value = '';
+                    updateCardStatus(categoryCode, null);
+                    document.getElementById(`display-${categoryCode}`).textContent = '-';
+                });
+
+                updateAllDropdowns();
+                updateValidationStatus();
+
+                document.getElementById('scoringMatrix').classList.add('hidden');
+                document.getElementById('resultsPreview').classList.add('hidden');
+
+                showToast('Reset', 'Form berhasil direset', 'info');
+            }
+        }
+
+        // ✨ Instructions Modal
+        function showInstructions() {
+            document.getElementById('instructionsModal').classList.remove('hidden');
+        }
+
+        function closeInstructions() {
+            document.getElementById('instructionsModal').classList.add('hidden');
+        }
+
+        // ✨ Search and Filter Functions
+        function searchStudents(searchTerm) {
+            const clearButton = document.getElementById('searchClear');
+
+            if (searchTerm.length > 0) {
+                clearButton.classList.remove('hidden');
+            } else {
+                clearButton.classList.add('hidden');
+            }
+
+            applyFilters();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchClear').classList.add('hidden');
+            applyFilters();
+        }
+
+        function filterStudents() {
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const classFilter = document.getElementById('classFilter').value;
+            const genderFilter = document.getElementById('genderFilter').value;
+            const priorityFilter = document.getElementById('priorityFilter').value;
+
+            filteredStudents = studentsData.filter(student => {
+                const matchesSearch = !searchTerm ||
+                    student.name.toLowerCase().includes(searchTerm) ||
+                    student.nisn.includes(searchTerm) ||
+                    student.class.toLowerCase().includes(searchTerm);
+
+                const matchesClass = !classFilter || student.class === classFilter;
+                const matchesGender = !genderFilter || student.gender === genderFilter;
+                const matchesPriority = !priorityFilter || student.priority === priorityFilter;
+
+                return matchesSearch && matchesClass && matchesGender && matchesPriority;
+            });
+
+            renderStudentsTable();
+        }
+
+        function sortTable(field) {
+            filteredStudents.sort((a, b) => {
+                let valueA = a[field];
+                let valueB = b[field];
+
+                if (typeof valueA === 'string') {
+                    valueA = valueA.toLowerCase();
+                    valueB = valueB.toLowerCase();
+                }
+
+                return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+            });
+
+            renderStudentsTable();
+        }
+
+        // ✨ Utility Functions
+        function showToast(title, message, type = 'success', duration = 3000) {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+
+            const iconClasses = {
+                success: 'fas fa-check-circle text-green-500',
+                error: 'fas fa-exclamation-circle text-red-500',
+                warning: 'fas fa-exclamation-triangle text-yellow-500',
+                info: 'fas fa-info-circle text-blue-500'
+            };
+
+            const borderClasses = {
+                success: 'border-green-500',
+                error: 'border-red-500',
+                warning: 'border-yellow-500',
+                info: 'border-blue-500'
+            };
+
+            toastIcon.className = iconClasses[type] || iconClasses.success;
+            toast.className = `toast bg-white rounded-xl shadow-2xl border-l-4 p-4 max-w-sm ${borderClasses[type] || borderClasses.success}`;
+
+            toast.classList.remove('hidden');
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                hideToast();
+            }, duration);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 300);
+        }
+
+        function showLoadingOverlay() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function hideLoadingOverlay() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        function goToDashboard() {
+            window.history.back();
+        }
+
+        function viewCompletedTests() {
+            showToast('Redirect', 'Mengarahkan ke halaman daftar siswa...', 'info');
+            setTimeout(() => {
+                // Navigate to completed students page
+                window.location.href = 'daftar-siswa.html';
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>

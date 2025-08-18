@@ -1,0 +1,2317 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMIB Career Mapping - Laporan & Analisis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <style>
+        /* ✨ Enhanced Animations & Transitions */
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .slide-in-up {
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.4s ease-out;
+        }
+
+        .scale-in {
+            animation: scaleIn 0.4s ease-out;
+        }
+
+        .bounce-in {
+            animation: bounceIn 0.7s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            70% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* ✨ Enhanced UI Elements */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* ✨ Loading Spinner */
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ✨ Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(400px);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        /* ✨ Modal Backdrop */
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+        }
+
+        /* ✨ Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #cbd5e1, #94a3b8);
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #94a3b8, #64748b);
+        }
+
+        /* ✨ Report Card Styles */
+        .report-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .report-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* ✨ Chart Container */
+        .chart-container {
+            position: relative;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ✨ Filter Panel */
+        .filter-panel {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px solid #cbd5e1;
+        }
+
+        .filter-panel.active {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+
+        /* ✨ Progress Indicators */
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring circle {
+            transition: stroke-dashoffset 0.6s ease;
+        }
+
+        /* ✨ Data Table Enhancements */
+        .data-table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid #e5e7eb;
+        }
+
+        .data-table th:first-child,
+        .data-table td:first-child {
+            border-left: none;
+        }
+
+        .data-table th:last-child,
+        .data-table td:last-child {
+            border-right: none;
+        }
+
+        /* ✨ Export Button Styles */
+        .export-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            background: linear-gradient(135deg, #047857, #065f46);
+            transform: scale(1.05);
+        }
+
+        /* ✨ Metric Cards */
+        .metric-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* ✨ Tab System */
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+        }
+
+        /* ✨ Certificate Gallery */
+        .certificate-thumb {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .certificate-thumb:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ✨ Responsive Grid */
+        @media (max-width: 768px) {
+            .responsive-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 font-sans min-h-screen">
+    <!-- ✨ Loading Overlay -->
+    <div id="loadingOverlay"
+        class="fixed inset-0 bg-white bg-opacity-95 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+        <div class="text-center">
+            <div class="spinner mx-auto mb-4"></div>
+            <p class="text-gray-600 text-lg" id="loadingText">Menghasilkan laporan...</p>
+        </div>
+    </div>
+
+    <!-- ✨ Enhanced Toast Notification -->
+    <div id="toast" class="toast bg-white rounded-xl shadow-2xl border-l-4 border-green-500 p-4 max-w-sm hidden">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i id="toastIcon" class="fas fa-check-circle text-green-500 text-xl"></i>
+            </div>
+            <div class="ml-3">
+                <h4 class="font-semibold text-gray-900" id="toastTitle">Sukses!</h4>
+                <p class="text-sm text-gray-600" id="toastMessage">Operasi berhasil dilakukan.</p>
+            </div>
+            <button onclick="hideToast()" class="ml-auto text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ✨ Enhanced Navigation -->
+    <nav class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white shadow-2xl sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-2xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold">RMIB Career Mapping</h1>
+                            <p class="text-blue-200 text-xs">Sistem Pemetaan Minat Karir - MTs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3 bg-white bg-opacity-10 rounded-full px-4 py-2">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user-tie text-sm text-white"></i>
+                        </div>
+                        <div class="hidden md:block">
+                            <p class="text-sm font-medium">Bu Sari Rahayu</p>
+                            <p class="text-xs text-blue-200">Guru BK</p>
+                        </div>
+                    </div>
+                    <button onclick="goToDashboard()"
+                        class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-lg text-sm transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span class="hidden md:inline">Dashboard</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ✨ MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        <!-- ✨ Header Section -->
+        <div class="mb-8 fade-in">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h1
+                        class="text-3xl md:text-4xl font-bold text-gray-900 mb-2 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                        Laporan & Analisis RMIB
+                    </h1>
+                    <p class="text-gray-600 flex items-center space-x-2">
+                        <i class="fas fa-chart-line text-indigo-500"></i>
+                        <span>Comprehensive analytics dan insights dari data tes RMIB siswa</span>
+                    </p>
+                </div>
+                <div class="mt-4 lg:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                    <button onclick="generateComprehensiveReport()"
+                        class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Generate Report</span>
+                    </button>
+                    <button onclick="exportAllData()"
+                        class="bg-white border-2 border-gray-300 text-gray-700 hover:border-indigo-500 hover:text-indigo-600 px-6 py-3 rounded-xl font-medium transition-all flex items-center space-x-2">
+                        <i class="fas fa-download"></i>
+                        <span>Export Data</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✨ Quick Metrics Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-8">
+            <div class="metric-card p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.1s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 mb-2">Total Laporan</p>
+                        <p class="text-3xl font-bold text-indigo-600" id="totalReports">142</p>
+                        <p class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            +8 bulan ini
+                        </p>
+                    </div>
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-file-alt text-indigo-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.2s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 mb-2">Minat Populer</p>
+                        <p class="text-2xl font-bold text-blue-600">Scientific</p>
+                        <p class="text-xs text-blue-600 mt-1">28% dari siswa</p>
+                    </div>
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-flask text-blue-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.3s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 mb-2">Rata-rata Skor</p>
+                        <p class="text-3xl font-bold text-green-600">78.5</p>
+                        <p class="text-xs text-green-600 mt-1">Kategori: Baik</p>
+                    </div>
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-chart-line text-green-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.4s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 mb-2">Siswa Berprestasi</p>
+                        <p class="text-3xl font-bold text-yellow-600">68</p>
+                        <p class="text-xs text-yellow-600 mt-1">42% dari total</p>
+                    </div>
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-trophy text-yellow-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.5s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 mb-2">Export Hari Ini</p>
+                        <p class="text-3xl font-bold text-purple-600">12</p>
+                        <p class="text-xs text-purple-600 mt-1">PDF & Excel</p>
+                    </div>
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-download text-purple-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✨ Filter & Controls Panel -->
+        <div class="filter-panel rounded-2xl p-6 mb-8 scale-in" style="animation-delay: 0.5s">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-filter text-indigo-600 mr-3"></i>
+                    Filter & Kontrol Laporan
+                </h2>
+                <button onclick="resetFilters()"
+                    class="text-sm text-gray-600 hover:text-gray-800 transition-colors flex items-center space-x-1">
+                    <i class="fas fa-redo"></i>
+                    <span>Reset Filter</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
+                    <select id="classFilter" onchange="applyFilters()"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <option value="">Semua Kelas</option>
+                        <option value="7A">Kelas 7A</option>
+                        <option value="7B">Kelas 7B</option>
+                        <option value="7C">Kelas 7C</option>
+                        <option value="8A">Kelas 8A</option>
+                        <option value="8B">Kelas 8B</option>
+                        <option value="8C">Kelas 8C</option>
+                        <option value="9A">Kelas 9A</option>
+                        <option value="9B">Kelas 9B</option>
+                        <option value="9C">Kelas 9C</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin</label>
+                    <select id="genderFilter" onchange="applyFilters()"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <option value="">Semua Gender</option>
+                        <option value="L">Laki-laki</option>
+                        <option value="P">Perempuan</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Filter Prestasi</label>
+                    <select id="prestasiFilter" onchange="applyFilters()"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <option value="">Semua Siswa</option>
+                        <option value="with_prestasi">Dengan Prestasi</option>
+                        <option value="without_prestasi">Tanpa Prestasi</option>
+                        <option value="akademik">Prestasi Akademik</option>
+                        <option value="olahraga">Prestasi Olahraga</option>
+                        <option value="seni">Prestasi Seni</option>
+                        <option value="organisasi">Prestasi Organisasi</option>
+                        <option value="teknologi">Prestasi Teknologi</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai</label>
+                    <input type="date" id="startDate" onchange="applyFilters()"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Akhir</label>
+                    <input type="date" id="endDate" onchange="applyFilters()"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4">
+                <button onclick="applyFilters()"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-all flex items-center space-x-2">
+                    <i class="fas fa-search"></i>
+                    <span>Terapkan Filter</span>
+                </button>
+                <button onclick="saveFilterPreset()"
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-all flex items-center space-x-2">
+                    <i class="fas fa-save"></i>
+                    <span>Simpan Filter</span>
+                </button>
+                <button onclick="showAdvancedFilters()"
+                    class="border border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-2 rounded-lg transition-all flex items-center space-x-2">
+                    <i class="fas fa-cog"></i>
+                    <span>Filter Lanjutan</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ✨ Tab Navigation -->
+        <div class="mb-8">
+            <div class="flex flex-wrap gap-2 bg-white p-2 rounded-2xl shadow-lg">
+                <button onclick="switchTab('overview')"
+                    class="tab-button active px-6 py-3 rounded-xl font-medium transition-all flex items-center space-x-2"
+                    id="overviewTab">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Overview</span>
+                </button>
+                <button onclick="switchTab('prestasi')"
+                    class="tab-button px-6 py-3 rounded-xl font-medium text-gray-600 hover:text-gray-800 transition-all flex items-center space-x-2"
+                    id="prestasiTab">
+                    <i class="fas fa-trophy"></i>
+                    <span>Prestasi Analytics</span>
+                </button>
+                <button onclick="switchTab('detailed')"
+                    class="tab-button px-6 py-3 rounded-xl font-medium text-gray-600 hover:text-gray-800 transition-all flex items-center space-x-2"
+                    id="detailedTab">
+                    <i class="fas fa-table"></i>
+                    <span>Detailed Report</span>
+                </button>
+                <button onclick="switchTab('trends')"
+                    class="tab-button px-6 py-3 rounded-xl font-medium text-gray-600 hover:text-gray-800 transition-all flex items-center space-x-2"
+                    id="trendsTab">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Trend Analysis</span>
+                </button>
+                <button onclick="switchTab('comparison')"
+                    class="tab-button px-6 py-3 rounded-xl font-medium text-gray-600 hover:text-gray-800 transition-all flex items-center space-x-2"
+                    id="comparisonTab">
+                    <i class="fas fa-balance-scale"></i>
+                    <span>Comparison</span>
+                </button>
+                <button onclick="switchTab('export')"
+                    class="tab-button px-6 py-3 rounded-xl font-medium text-gray-600 hover:text-gray-800 transition-all flex items-center space-x-2"
+                    id="exportTab">
+                    <i class="fas fa-download"></i>
+                    <span>Export & Print</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ✨ TAB CONTENT AREAS -->
+
+        <!-- Overview Tab -->
+        <div id="overviewContent" class="tab-content">
+            <!-- Interest Distribution & Analytics -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+                <!-- Main Interest Distribution Chart -->
+                <div class="xl:col-span-2 chart-container bounce-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">Distribusi Minat Siswa</h3>
+                            <p class="text-sm text-gray-600 mt-1">Berdasarkan hasil tes RMIB seluruh siswa</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="changeChartType('pie')"
+                                class="chart-type-btn px-3 py-1 bg-indigo-600 text-white rounded-lg text-xs font-medium transition-all">Pie</button>
+                            <button onclick="changeChartType('bar')"
+                                class="chart-type-btn px-3 py-1 bg-gray-200 text-gray-600 rounded-lg text-xs font-medium transition-all">Bar</button>
+                            <button onclick="changeChartType('radar')"
+                                class="chart-type-btn px-3 py-1 bg-gray-200 text-gray-600 rounded-lg text-xs font-medium transition-all">Radar</button>
+                        </div>
+                    </div>
+                    <div class="relative" style="height: 400px;">
+                        <canvas id="interestDistributionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Categories & Statistics -->
+                <div class="chart-container bounce-in" style="animation-delay: 0.1s">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Top 5 Minat Kategori</h3>
+                    <div class="space-y-4">
+                        <div
+                            class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">1</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-blue-800">Scientific</h4>
+                                    <p class="text-sm text-blue-600">45 siswa</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-blue-700">28.8%</div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border border-green-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">2</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-green-800">Medical</h4>
+                                    <p class="text-sm text-green-600">35 siswa</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-green-700">22.4%</div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border border-purple-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">3</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-purple-800">Social Service</h4>
+                                    <p class="text-sm text-purple-600">29 siswa</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-purple-700">18.6%</div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border border-orange-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">4</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-orange-800">Computational</h4>
+                                    <p class="text-sm text-orange-600">23 siswa</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-orange-700">14.7%</div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex items-center justify-between p-4 bg-gradient-to-r from-pink-50 to-pink-100 rounded-xl border border-pink-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">5</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-pink-800">Aesthetic</h4>
+                                    <p class="text-sm text-pink-600">18 siswa</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-pink-700">11.5%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Class Performance & Gender Distribution -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Class Performance Chart -->
+                <div class="chart-container scale-in">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Performa Per Kelas</h3>
+                    <div class="relative" style="height: 300px;">
+                        <canvas id="classPerformanceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gender Distribution -->
+                <div class="chart-container scale-in" style="animation-delay: 0.1s">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Distribusi Gender & Minat</h3>
+                    <div class="relative" style="height: 300px;">
+                        <canvas id="genderDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Insights Panel -->
+            <div
+                class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-8 rounded-2xl shadow-xl slide-in-up">
+                <h3 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-lightbulb mr-3"></i>
+                    Insights & Rekomendasi
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div
+                        class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-xl p-6 border border-white border-opacity-20">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-trophy text-yellow-300 text-2xl mr-3"></i>
+                            <h4 class="font-bold">Minat Dominan</h4>
+                        </div>
+                        <p class="text-sm opacity-90 mb-3">Scientific dan Medical menjadi minat utama siswa, menunjukkan
+                            kecenderungan terhadap STEM</p>
+                        <div class="text-xs bg-white bg-opacity-20 px-3 py-1 rounded-full inline-block">50.2% STEM
+                            Interest</div>
+                    </div>
+
+                    <div
+                        class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-xl p-6 border border-white border-opacity-20">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-chart-line text-green-300 text-2xl mr-3"></i>
+                            <h4 class="font-bold">Prestasi Impact</h4>
+                        </div>
+                        <p class="text-sm opacity-90 mb-3">Siswa berprestasi menunjukkan peningkatan skor RMIB rata-rata
+                            8.5 poin</p>
+                        <div class="text-xs bg-white bg-opacity-20 px-3 py-1 rounded-full inline-block">42% Siswa
+                            Berprestasi</div>
+                    </div>
+
+                    <div
+                        class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-xl p-6 border border-white border-opacity-20">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-balance-scale text-blue-300 text-2xl mr-3"></i>
+                            <h4 class="font-bold">Gender Balance</h4>
+                        </div>
+                        <p class="text-sm opacity-90 mb-3">Distribusi minat yang seimbang antara laki-laki dan perempuan
+                            di sebagian besar kategori</p>
+                        <div class="text-xs bg-white bg-opacity-20 px-3 py-1 rounded-full inline-block">52% L : 48% P
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✨ PRESTASI ANALYTICS TAB -->
+        <div id="prestasiContent" class="tab-content hidden">
+            <!-- Prestasi Performance Matrix -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+                <!-- Prestasi by Category -->
+                <div class="xl:col-span-2 chart-container bounce-in">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Prestasi per Kategori & Pengaruhnya</h3>
+                    <div class="relative" style="height: 400px;">
+                        <canvas id="prestasiCategoryChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Prestasi Students -->
+                <div class="chart-container bounce-in" style="animation-delay: 0.1s">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Top 5 Siswa Berprestasi</h3>
+                    <div class="space-y-4" id="topPrestasiStudents">
+                        <div
+                            class="flex items-center justify-between p-4 bg-gradient-to-r from-gold-50 to-yellow-100 rounded-xl border border-yellow-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-crown text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-yellow-800">Ahmad Rizki</h4>
+                                    <p class="text-sm text-yellow-600">8A • 4 Prestasi • +12 poin</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-yellow-700">95.2</div>
+                                <div class="text-xs text-yellow-600">Final Score</div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gray-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">2</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">Siti Nurhaliza</h4>
+                                    <p class="text-sm text-gray-600">9B • 3 Prestasi • +10 poin</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-gray-700">92.1</div>
+                                <div class="text-xs text-gray-600">Final Score</div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border border-orange-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">3</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-orange-800">Dewi Sartika</h4>
+                                    <p class="text-sm text-orange-600">9A • 3 Prestasi • +9 poin</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-orange-700">89.3</div>
+                                <div class="text-xs text-orange-600">Final Score</div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">4</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-blue-800">Rino Pratama</h4>
+                                    <p class="text-sm text-blue-600">8C • 2 Prestasi • +7 poin</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-blue-700">86.2</div>
+                                <div class="text-xs text-blue-600">Final Score</div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border border-green-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">5</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-green-800">Maya Sinta</h4>
+                                    <p class="text-sm text-green-600">7A • 2 Prestasi • +6 poin</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-green-700">84.1</div>
+                                <div class="text-xs text-green-600">Final Score</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prestasi Impact Analysis -->
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+                <!-- Prestasi Distribution Chart -->
+                <div class="chart-container scale-in">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Distribusi Prestasi Siswa</h3>
+                    <div class="relative" style="height: 350px;">
+                        <canvas id="prestasiDistributionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Prestasi Impact on RMIB -->
+                <div class="chart-container scale-in" style="animation-delay: 0.1s">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Pengaruh Prestasi terhadap Skor RMIB</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-semibold text-green-800">Siswa dengan Prestasi</h4>
+                                    <p class="text-sm text-green-600">Rata-rata peningkatan skor</p>
+                                </div>
+                                <div class="text-2xl font-bold text-green-700">+8.5</div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-semibold text-blue-800">STEM Prestasi</h4>
+                                    <p class="text-sm text-blue-600">Dominasi Scientific & Computational</p>
+                                </div>
+                                <div class="text-2xl font-bold text-blue-700">65%</div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-semibold text-purple-800">Multi-Prestasi</h4>
+                                    <p class="text-sm text-purple-600">Siswa dengan >2 prestasi</p>
+                                </div>
+                                <div class="text-2xl font-bold text-purple-700">28</div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-semibold text-orange-800">Sertifikat Terupload</h4>
+                                    <p class="text-sm text-orange-600">Total dokumen prestasi</p>
+                                </div>
+                                <div class="text-2xl font-bold text-orange-700">142</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificate Gallery -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Galeri Sertifikat Prestasi</h3>
+                    <button onclick="viewAllCertificates()"
+                        class="text-blue-600 hover:text-blue-800 text-sm flex items-center space-x-1">
+                        <i class="fas fa-images"></i>
+                        <span>Lihat Semua</span>
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4" id="certificateGallery">
+                    <div
+                        class="certificate-thumb bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-4 h-32 flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-certificate text-blue-600 text-2xl mb-2"></i>
+                            <p class="text-xs text-blue-800 font-medium">Olimpiade Sains</p>
+                        </div>
+                    </div>
+                    <div
+                        class="certificate-thumb bg-gradient-to-br from-green-100 to-green-200 rounded-xl p-4 h-32 flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-trophy text-green-600 text-2xl mb-2"></i>
+                            <p class="text-xs text-green-800 font-medium">Lomba Olahraga</p>
+                        </div>
+                    </div>
+                    <div
+                        class="certificate-thumb bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl p-4 h-32 flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-palette text-purple-600 text-2xl mb-2"></i>
+                            <p class="text-xs text-purple-800 font-medium">Seni & Budaya</p>
+                        </div>
+                    </div>
+                    <div
+                        class="certificate-thumb bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl p-4 h-32 flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-users text-yellow-600 text-2xl mb-2"></i>
+                            <p class="text-xs text-yellow-800 font-medium">Organisasi</p>
+                        </div>
+                    </div>
+                    <div
+                        class="certificate-thumb bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl p-4 h-32 flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-laptop-code text-indigo-600 text-2xl mb-2"></i>
+                            <p class="text-xs text-indigo-800 font-medium">Teknologi</p>
+                        </div>
+                    </div>
+                    <div class="certificate-thumb bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-4 h-32 flex items-center justify-center cursor-pointer"
+                        onclick="uploadCertificate()">
+                        <div class="text-center">
+                            <i class="fas fa-plus text-gray-500 text-2xl mb-2"></i>
+                            <p class="text-xs text-gray-600 font-medium">Upload Baru</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Report Tab -->
+        <div id="detailedContent" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-gray-800">Detailed Student Reports</h3>
+                        <div class="flex space-x-2">
+                            <button onclick="exportDetailedReport('pdf')"
+                                class="export-btn text-white px-4 py-2 rounded-lg text-sm transition-all flex items-center space-x-2">
+                                <i class="fas fa-file-pdf"></i>
+                                <span>PDF</span>
+                            </button>
+                            <button onclick="exportDetailedReport('excel')"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-all flex items-center space-x-2">
+                                <i class="fas fa-file-excel"></i>
+                                <span>Excel</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="data-table w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Nama Siswa
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Kelas</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Prestasi
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Skor Asli
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Skor Final
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Bonus Impact
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Minat #1
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Minat #2
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Minat #3
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailedReportTable" class="divide-y divide-gray-200">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trends Analysis Tab -->
+        <div id="trendsContent" class="tab-content hidden">
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+                <!-- Monthly Trends -->
+                <div class="chart-container">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Trend Bulanan Tes RMIB</h3>
+                    <div class="relative" style="height: 350px;">
+                        <canvas id="monthlyTrendsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Interest Evolution -->
+                <div class="chart-container">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Evolusi Minat per Kategori</h3>
+                    <div class="relative" style="height: 350px;">
+                        <canvas id="interestEvolutionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Predictive Analytics -->
+            <div class="bg-gradient-to-r from-purple-50 to-indigo-100 rounded-2xl p-8 border border-purple-200">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-crystal-ball text-purple-600 mr-3"></i>
+                    Predictive Analytics
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl p-6 shadow-md">
+                        <h4 class="font-bold text-gray-800 mb-3">Prediksi Minat Q2</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Scientific</span>
+                                <span class="font-bold text-blue-600">↗ +5%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Medical</span>
+                                <span class="font-bold text-green-600">↗ +3%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Aesthetic</span>
+                                <span class="font-bold text-red-600">↘ -2%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-md">
+                        <h4 class="font-bold text-gray-800 mb-3">Rekomendasi Program</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Tambah lab
+                                sains</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Program coding
+                            </li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Klinik
+                                kesehatan</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-md">
+                        <h4 class="font-bold text-gray-800 mb-3">Proyeksi Karir</h4>
+                        <div class="space-y-2">
+                            <div class="text-sm text-gray-600">Potensial STEM: <span
+                                    class="font-bold text-blue-600">65%</span></div>
+                            <div class="text-sm text-gray-600">Potensial Seni: <span
+                                    class="font-bold text-purple-600">20%</span></div>
+                            <div class="text-sm text-gray-600">Potensial Sosial: <span
+                                    class="font-bold text-green-600">15%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Tab -->
+        <div id="comparisonContent" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Class Comparison -->
+                <div class="chart-container">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Perbandingan Antar Kelas</h3>
+                    <div class="relative" style="height: 350px;">
+                        <canvas id="classComparisonChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Prestasi vs Non-Prestasi Comparison -->
+                <div class="chart-container">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Perbandingan: Siswa Berprestasi vs Non-Prestasi
+                    </h3>
+                    <div class="relative" style="height: 350px;">
+                        <canvas id="prestasiComparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prestasi Impact Matrix -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">Matriks Dampak Prestasi pada RMIB</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Jenis Prestasi</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Jumlah Siswa</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Kategori RMIB
+                                    Terpengaruh</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Rata-rata Bonus</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Peningkatan Ranking
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="prestasiImpactTable" class="divide-y divide-gray-200">
+                            <!-- Data populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Comparative Statistics -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">Statistik Perbandingan</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Kategori</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Kelas 7</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Kelas 8</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Kelas 9</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Laki-laki</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Perempuan</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200" id="comparisonStatsTable">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export & Print Tab -->
+        <div id="exportContent" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Individual Reports -->
+                <div class="report-card rounded-2xl p-6 card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Laporan Individual</h3>
+                            <p class="text-sm text-gray-600">Per siswa</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Generate laporan detail untuk siswa tertentu dengan analisis
+                        lengkap minat dan rekomendasi karir.</p>
+                    <div class="space-y-3">
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <option>Pilih Siswa...</option>
+                            <option>Ahmad Rizki - 8A</option>
+                            <option>Siti Nurhaliza - 8B</option>
+                            <option>Budi Santoso - 7A</option>
+                        </select>
+                        <div class="flex space-x-2">
+                            <button onclick="exportIndividualPDF()"
+                                class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg text-sm transition-all">
+                                <i class="fas fa-file-pdf mr-1"></i>PDF
+                            </button>
+                            <button onclick="printIndividual()"
+                                class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-3 rounded-lg text-sm transition-all">
+                                <i class="fas fa-print mr-1"></i>Print
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class Reports -->
+                <div class="report-card rounded-2xl p-6 card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-users text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Laporan Kelas</h3>
+                            <p class="text-sm text-gray-600">Per kelas</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Ringkasan analisis minat untuk seluruh siswa dalam satu kelas
+                        dengan statistik dan visualisasi.</p>
+                    <div class="space-y-3">
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <option>Pilih Kelas...</option>
+                            <option>Kelas 7A (32 siswa)</option>
+                            <option>Kelas 7B (30 siswa)</option>
+                            <option>Kelas 8A (31 siswa)</option>
+                        </select>
+                        <div class="flex space-x-2">
+                            <button onclick="exportClassPDF()"
+                                class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg text-sm transition-all">
+                                <i class="fas fa-file-pdf mr-1"></i>PDF
+                            </button>
+                            <button onclick="exportClassExcel()"
+                                class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-lg text-sm transition-all">
+                                <i class="fas fa-file-excel mr-1"></i>Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prestasi Reports -->
+                <div class="report-card rounded-2xl p-6 card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-trophy text-yellow-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Laporan Prestasi</h3>
+                            <p class="text-sm text-gray-600">Analisis komprehensif</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Generate laporan analisis prestasi siswa dengan dampaknya
+                        terhadap hasil RMIB dan rekomendasi pengembangan.</p>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" class="mr-2" checked> Sertifikat
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" class="mr-2" checked> Impact Matrix
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" class="mr-2"> Raw Scores
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" class="mr-2"> Recommendations
+                            </label>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="exportPrestasiPDF()"
+                                class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-3 rounded-lg text-sm transition-all">
+                                <i class="fas fa-file-pdf mr-1"></i>PDF
+                            </button>
+                            <button onclick="exportPrestasiExcel()"
+                                class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-lg text-sm transition-all">
+                                <i class="fas fa-file-excel mr-1"></i>Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comprehensive Reports -->
+                <div class="report-card rounded-2xl p-6 card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Laporan Komprehensif</h3>
+                            <p class="text-sm text-gray-600">Seluruh sekolah</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Analisis menyeluruh untuk seluruh siswa dengan insights,
+                        trends, dan rekomendasi strategis.</p>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" class="mr-2" checked> Charts
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" class="mr-2" checked> Statistics
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" class="mr-2"> Raw Data
+                            </label>
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" class="mr-2"> Insights
+                            </label>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="exportComprehensivePDF()"
+                                class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg text-sm transition-all">
+                                <i class="fas fa-file-pdf mr-1"></i>PDF
+                            </button>
+                            <button onclick="exportComprehensiveExcel()"
+                                class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-lg text-sm transition-all">
+                                <i class="fas fa-file-excel mr-1"></i>Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Reports -->
+                <div class="report-card rounded-2xl p-6 card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-cog text-orange-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Custom Report</h3>
+                            <p class="text-sm text-gray-600">Sesuai kebutuhan</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Buat laporan kustom dengan kriteria dan format yang dapat
+                        disesuaikan sesuai kebutuhan.</p>
+                    <div class="space-y-3">
+                        <button onclick="openCustomReportBuilder()"
+                            class="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-3 rounded-lg text-sm transition-all">
+                            <i class="fas fa-magic mr-2"></i>Report Builder
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Data Export -->
+                <div class="report-card rounded-2xl p-6 card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-database text-teal-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Raw Data Export</h3>
+                            <p class="text-sm text-gray-600">Data mentah</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Export data mentah dalam berbagai format untuk analisis
+                        lanjutan atau integrasi dengan sistem lain.</p>
+                    <div class="space-y-3">
+                        <div class="flex space-x-2">
+                            <button onclick="exportRawCSV()"
+                                class="flex-1 bg-teal-600 hover:bg-teal-700 text-white py-2 px-3 rounded-lg text-sm transition-all">
+                                <i class="fas fa-file-csv mr-1"></i>CSV
+                            </button>
+                            <button onclick="exportRawJSON()"
+                                class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-3 rounded-lg text-sm transition-all">
+                                <i class="fas fa-code mr-1"></i>JSON
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        // ✨ Global Variables
+        let currentTab = 'overview';
+        let currentChartType = 'pie';
+        let currentFilters = {};
+        let chartInstances = {};
+
+        // ✨ Prestasi Categories
+        const PRESTASI_CATEGORIES = {
+            'akademik': { name: 'Prestasi Akademik', bonus: { SCL: 5, LIT: 5 }, color: 'blue' },
+            'olahraga': { name: 'Prestasi Olahraga', bonus: { OUT: 5, PRAC: 5 }, color: 'green' },
+            'seni': { name: 'Prestasi Seni', bonus: { AESTH: 5, MUS: 5 }, color: 'purple' },
+            'organisasi': { name: 'Prestasi Organisasi', bonus: { PERS: 5, SOS: 5 }, color: 'yellow' },
+            'teknologi': { name: 'Prestasi Teknologi', bonus: { ME: 5, COMP: 5 }, color: 'indigo' }
+        };
+
+        // ✨ Initialize Application
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            showLoadingOverlay();
+            loadReportsData();
+            initializeCharts();
+            populateDetailedReport();
+            populateComparisonStats();
+            populatePrestasiImpactTable();
+            setTimeout(() => {
+                hideLoadingOverlay();
+                showToast('Reports Ready', 'Semua laporan berhasil dimuat', 'success');
+            }, 1500);
+        }
+
+        // ✨ Load Reports Data
+        function loadReportsData() {
+            // Mock data for reports - in real implementation, this would fetch from Django backend
+            console.log('Loading reports data...');
+        }
+
+        // ✨ Tab System
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('text-gray-600');
+            });
+
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.remove('text-gray-600');
+
+            // Show/hide content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            document.getElementById(tabName + 'Content').classList.remove('hidden');
+
+            currentTab = tabName;
+
+            // Refresh charts for the current tab
+            setTimeout(() => {
+                if (tabName === 'prestasi') {
+                    initializePrestasiCharts();
+                } else if (tabName === 'trends') {
+                    initializeTrendsCharts();
+                } else if (tabName === 'comparison') {
+                    initializeComparisonCharts();
+                }
+            }, 100);
+        }
+
+        // ✨ Initialize Charts
+        function initializeCharts() {
+            initializeInterestDistributionChart();
+            initializeClassPerformanceChart();
+            initializeGenderDistributionChart();
+        }
+
+        function initializeInterestDistributionChart() {
+            const ctx = document.getElementById('interestDistributionChart');
+            if (!ctx) return;
+
+            const data = {
+                labels: ['Scientific', 'Medical', 'Social Service', 'Computational', 'Aesthetic', 'Literary', 'Mechanical', 'Musical', 'Outdoor', 'Clerical', 'Practical', 'Personal'],
+                datasets: [{
+                    data: [28.8, 22.4, 18.6, 14.7, 11.5, 8.2, 7.1, 5.9, 4.3, 3.8, 2.7, 1.5],
+                    backgroundColor: [
+                        '#3B82F6', '#10B981', '#8B5CF6', '#F59E0B',
+                        '#EF4444', '#6366F1', '#EC4899', '#14B8A6',
+                        '#F97316', '#6B7280', '#84CC16', '#06B6D4'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            };
+
+            chartInstances.interestDistribution = new Chart(ctx, {
+                type: currentChartType,
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function (context) {
+                                    return context.label + ': ' + context.parsed + '% (' +
+                                        Math.round(context.parsed * 156 / 100) + ' siswa)';
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true,
+                        duration: 1500
+                    }
+                }
+            });
+        }
+
+        function initializeClassPerformanceChart() {
+            const ctx = document.getElementById('classPerformanceChart');
+            if (!ctx) return;
+
+            chartInstances.classPerformance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['7A', '7B', '7C', '8A', '8B', '8C', '9A', '9B', '9C'],
+                    datasets: [{
+                        label: 'Rata-rata Skor',
+                        data: [75, 82, 78, 86, 81, 79, 88, 84, 90],
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                        borderColor: '#3B82F6',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                        },
+                        x: { grid: { display: false } }
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        function initializeGenderDistributionChart() {
+            const ctx = document.getElementById('genderDistributionChart');
+            if (!ctx) return;
+
+            chartInstances.genderDistribution = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Laki-laki', 'Perempuan'],
+                    datasets: [{
+                        data: [52, 48],
+                        backgroundColor: ['#3B82F6', '#EC4899'],
+                        borderWidth: 3,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function (context) {
+                                    return context.label + ': ' + context.parsed + '% (' +
+                                        Math.round(context.parsed * 156 / 100) + ' siswa)';
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true,
+                        duration: 1500
+                    }
+                }
+            });
+        }
+
+        // ✨ Initialize Prestasi Charts
+        function initializePrestasiCharts() {
+            initializePrestasiDistributionChart();
+            initializePrestasiCategoryChart();
+        }
+
+        function initializePrestasiDistributionChart() {
+            const ctx = document.getElementById('prestasiDistributionChart');
+            if (!ctx || chartInstances.prestasiDistribution) return;
+
+            chartInstances.prestasiDistribution = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Akademik', 'Olahraga', 'Seni', 'Organisasi', 'Teknologi'],
+                    datasets: [{
+                        data: [35, 28, 20, 15, 12],
+                        backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#6366F1'],
+                        borderWidth: 3,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true,
+                        duration: 1500
+                    }
+                }
+            });
+        }
+
+        function initializePrestasiCategoryChart() {
+            const ctx = document.getElementById('prestasiCategoryChart');
+            if (!ctx || chartInstances.prestasiCategory) return;
+
+            chartInstances.prestasiCategory = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Akademik', 'Olahraga', 'Seni', 'Organisasi', 'Teknologi'],
+                    datasets: [{
+                        label: 'Jumlah Siswa',
+                        data: [35, 28, 20, 15, 12],
+                        backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(139, 92, 246, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(99, 102, 241, 0.8)'],
+                        borderColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#6366F1'],
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }, {
+                        label: 'Avg Impact Score',
+                        data: [8.5, 7.2, 6.8, 9.1, 8.8],
+                        type: 'line',
+                        borderColor: '#EF4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#EF4444',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            beginAtZero: true
+                        },
+                        x: { grid: { display: false } }
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        function initializeTrendsCharts() {
+            // Monthly Trends Chart
+            const monthlyCtx = document.getElementById('monthlyTrendsChart');
+            if (monthlyCtx && !chartInstances.monthlyTrends) {
+                chartInstances.monthlyTrends = new Chart(monthlyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Jumlah Tes',
+                            data: [15, 25, 35, 28, 42, 38],
+                            borderColor: '#3B82F6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#3B82F6',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.1)' } },
+                            x: { grid: { display: false } }
+                        },
+                        animation: { duration: 2000, easing: 'easeOutQuart' }
+                    }
+                });
+            }
+
+            // Interest Evolution Chart
+            const evolutionCtx = document.getElementById('interestEvolutionChart');
+            if (evolutionCtx && !chartInstances.interestEvolution) {
+                chartInstances.interestEvolution = new Chart(evolutionCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Scientific',
+                            data: [25, 27, 29, 28, 30, 29],
+                            borderColor: '#3B82F6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Medical',
+                            data: [20, 22, 21, 24, 23, 22],
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Aesthetic',
+                            data: [15, 14, 16, 15, 14, 12],
+                            borderColor: '#EF4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.1)' } },
+                            x: { grid: { display: false } }
+                        },
+                        animation: { duration: 2000, easing: 'easeOutQuart' }
+                    }
+                });
+            }
+        }
+
+        function initializeComparisonCharts() {
+            // Class Comparison Chart
+            const classCompCtx = document.getElementById('classComparisonChart');
+            if (classCompCtx && !chartInstances.classComparison) {
+                chartInstances.classComparison = new Chart(classCompCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Scientific', 'Medical', 'Aesthetic', 'Social Service', 'Computational'],
+                        datasets: [{
+                            label: 'Kelas 7',
+                            data: [65, 59, 80, 81, 56],
+                            borderColor: '#3B82F6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            pointBackgroundColor: '#3B82F6'
+                        }, {
+                            label: 'Kelas 8',
+                            data: [28, 48, 40, 19, 86],
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            pointBackgroundColor: '#10B981'
+                        }, {
+                            label: 'Kelas 9',
+                            data: [90, 69, 30, 45, 75],
+                            borderColor: '#EF4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                            pointBackgroundColor: '#EF4444'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: { r: { beginAtZero: true, max: 100 } },
+                        animation: { duration: 2000, easing: 'easeOutQuart' }
+                    }
+                });
+            }
+
+            // Prestasi Comparison Chart
+            const prestasiCompCtx = document.getElementById('prestasiComparisonChart');
+            if (prestasiCompCtx && !chartInstances.prestasiComparison) {
+                chartInstances.prestasiComparison = new Chart(prestasiCompCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Scientific', 'Medical', 'Aesthetic', 'Social Service', 'Computational'],
+                        datasets: [{
+                            label: 'Dengan Prestasi',
+                            data: [45, 38, 25, 32, 28],
+                            backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                            borderColor: '#22C55E',
+                            borderWidth: 2
+                        }, {
+                            label: 'Tanpa Prestasi',
+                            data: [35, 28, 18, 22, 20],
+                            backgroundColor: 'rgba(156, 163, 175, 0.8)',
+                            borderColor: '#9CA3AF',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.1)' } },
+                            x: { grid: { display: false } }
+                        },
+                        animation: { duration: 1500, easing: 'easeOutQuart' }
+                    }
+                });
+            }
+        }
+
+        // ✨ Chart Type Switching
+        function changeChartType(type) {
+            currentChartType = type;
+
+            // Update button states
+            document.querySelectorAll('.chart-type-btn').forEach(btn => {
+                btn.className = 'chart-type-btn px-3 py-1 bg-gray-200 text-gray-600 rounded-lg text-xs font-medium transition-all';
+            });
+            event.target.className = 'chart-type-btn px-3 py-1 bg-indigo-600 text-white rounded-lg text-xs font-medium transition-all';
+
+            // Destroy and recreate chart
+            if (chartInstances.interestDistribution) {
+                chartInstances.interestDistribution.destroy();
+                delete chartInstances.interestDistribution;
+                initializeInterestDistributionChart();
+            }
+        }
+
+        // ✨ Populate Detailed Report Table
+        function populateDetailedReport() {
+            const tbody = document.getElementById('detailedReportTable');
+            if (!tbody) return;
+
+            const mockData = [
+                { name: 'Ahmad Rizki', class: '8A', prestasi: '4 prestasi', originalScore: 78.5, finalScore: 87.2, bonus: '+8.7', interest1: 'Scientific (87)', interest2: 'Medical (79)', interest3: 'Computational (74)' },
+                { name: 'Siti Nurhaliza', class: '8B', prestasi: '3 prestasi', originalScore: 82.1, finalScore: 89.6, bonus: '+7.5', interest1: 'Aesthetic (92)', interest2: 'Literary (87)', interest3: 'Musical (83)' },
+                { name: 'Dewi Sartika', class: '9A', prestasi: '3 prestasi', originalScore: 85.3, finalScore: 91.8, bonus: '+6.5', interest1: 'Social Service (91)', interest2: 'Literary (89)', interest3: 'Medical (82)' },
+                { name: 'Budi Santoso', class: '7A', prestasi: 'Tidak ada', originalScore: 72.1, finalScore: 72.1, bonus: '0', interest1: 'Outdoor (78)', interest2: 'Practical (75)', interest3: 'Mechanical (70)' }
+            ];
+
+            tbody.innerHTML = mockData.map(student => `
+            <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4">
+                    <div class="font-medium text-gray-900">${student.name}</div>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        ${student.class}
+                    </span>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${student.prestasi !== 'Tidak ada' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                        ${student.prestasi}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-700">${student.originalScore}</td>
+                <td class="px-6 py-4">
+                    <span class="font-medium text-green-600">${student.finalScore}</span>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${student.bonus !== '0' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                        ${student.bonus}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-900">${student.interest1}</td>
+                <td class="px-6 py-4 text-sm text-gray-900">${student.interest2}</td>
+                <td class="px-6 py-4 text-sm text-gray-900">${student.interest3}</td>
+                <td class="px-6 py-4">
+                    <div class="flex space-x-2">
+                        <button onclick="viewStudentDetail('${student.name}')" class="text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="exportStudentPDF('${student.name}')" class="text-green-600 hover:text-green-800 text-sm">
+                            <i class="fas fa-file-pdf"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        }
+
+        // ✨ Populate Comparison Statistics
+        function populateComparisonStats() {
+            const tbody = document.getElementById('comparisonStatsTable');
+            if (!tbody) return;
+
+            const mockStats = [
+                { category: 'Scientific', kelas7: '25%', kelas8: '30%', kelas9: '32%', male: '35%', female: '22%' },
+                { category: 'Medical', kelas7: '20%', kelas8: '22%', kelas9: '25%', male: '18%', female: '28%' },
+                { category: 'Aesthetic', kelas7: '15%', kelas8: '12%', kelas9: '10%', male: '8%', female: '20%' },
+                { category: 'Social Service', kelas7: '18%', kelas8: '20%', kelas9: '15%', male: '12%', female: '25%' },
+                { category: 'Computational', kelas7: '12%', kelas8: '16%', kelas9: '18%', male: '22%', female: '8%' }
+            ];
+
+            tbody.innerHTML = mockStats.map(stat => `
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 font-medium text-gray-900">${stat.category}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">${stat.kelas7}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">${stat.kelas8}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">${stat.kelas9}</td>
+                <td class="px-4 py-3 text-sm text-blue-700">${stat.male}</td>
+                <td class="px-4 py-3 text-sm text-pink-700">${stat.female}</td>
+            </tr>
+        `).join('');
+        }
+
+        // ✨ Populate Prestasi Impact Table
+        function populatePrestasiImpactTable() {
+            const tbody = document.getElementById('prestasiImpactTable');
+            if (!tbody) return;
+
+            const mockData = [
+                { jenis: 'Akademik', jumlah: 35, kategori: 'SCL, LIT', bonus: '+8.5', ranking: '↑ 2.3 posisi' },
+                { jenis: 'Olahraga', jumlah: 28, kategori: 'OUT, PRAC', bonus: '+7.2', ranking: '↑ 1.8 posisi' },
+                { jenis: 'Seni', jumlah: 20, kategori: 'AESTH, MUS', bonus: '+6.8', ranking: '↑ 1.9 posisi' },
+                { jenis: 'Organisasi', jumlah: 15, kategori: 'PERS, SOS', bonus: '+9.1', ranking: '↑ 2.7 posisi' },
+                { jenis: 'Teknologi', jumlah: 12, kategori: 'ME, COMP', bonus: '+8.8', ranking: '↑ 2.5 posisi' }
+            ];
+
+            tbody.innerHTML = mockData.map(prestasi => `
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 font-medium text-gray-900">${prestasi.jenis}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">${prestasi.jumlah} siswa</td>
+                <td class="px-4 py-3 text-sm text-blue-700">${prestasi.kategori}</td>
+                <td class="px-4 py-3">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        ${prestasi.bonus}
+                    </span>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                        ${prestasi.ranking}
+                    </span>
+                </td>
+            </tr>
+        `).join('');
+        }
+
+        // ✨ Filter Functions
+        function applyFilters() {
+            const classFilter = document.getElementById('classFilter').value;
+            const genderFilter = document.getElementById('genderFilter').value;
+            const prestasiFilter = document.getElementById('prestasiFilter').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            currentFilters = {
+                class: classFilter,
+                gender: genderFilter,
+                prestasi: prestasiFilter,
+                startDate: startDate,
+                endDate: endDate
+            };
+
+            // Apply filters to data and refresh charts
+            showLoadingOverlay();
+            setTimeout(() => {
+                // Simulate filtering process
+                hideLoadingOverlay();
+                showToast('Filter Applied', 'Filter berhasil diterapkan pada laporan', 'success');
+            }, 1000);
+        }
+
+        function resetFilters() {
+            document.getElementById('classFilter').value = '';
+            document.getElementById('genderFilter').value = '';
+            document.getElementById('prestasiFilter').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+
+            currentFilters = {};
+            showToast('Filters Reset', 'Semua filter berhasil direset', 'info');
+        }
+
+        function saveFilterPreset() {
+            const presetName = prompt('Nama preset filter:');
+            if (presetName) {
+                localStorage.setItem(`filter_preset_${presetName}`, JSON.stringify(currentFilters));
+                showToast('Preset Saved', `Filter preset "${presetName}" berhasil disimpan`, 'success');
+            }
+        }
+
+        function showAdvancedFilters() {
+            showToast('Advanced Filters', 'Fitur filter lanjutan akan segera tersedia', 'info');
+        }
+
+        // ✨ Export Functions
+        function generateComprehensiveReport() {
+            showLoadingOverlay();
+            document.getElementById('loadingText').textContent = 'Generating comprehensive report...';
+
+            setTimeout(() => {
+                hideLoadingOverlay();
+                showToast('Report Generated', 'Laporan komprehensif berhasil dibuat', 'success');
+            }, 3000);
+        }
+
+        function exportAllData() {
+            showLoadingOverlay();
+            document.getElementById('loadingText').textContent = 'Exporting all data...';
+
+            setTimeout(() => {
+                hideLoadingOverlay();
+                showToast('Export Complete', 'Semua data berhasil diexport', 'success');
+            }, 2000);
+        }
+
+        function exportDetailedReport(format) {
+            showLoadingOverlay();
+            document.getElementById('loadingText').textContent = `Exporting to ${format.toUpperCase()}...`;
+
+            setTimeout(() => {
+                hideLoadingOverlay();
+                showToast('Export Complete', `Detailed report berhasil diexport ke ${format.toUpperCase()}`, 'success');
+            }, 1500);
+        }
+
+        // ✨ Individual Export Functions
+        function exportIndividualPDF() {
+            showToast('Individual PDF', 'Generating individual student report...', 'info');
+            setTimeout(() => {
+                showToast('PDF Ready', 'Individual PDF report siap diunduh', 'success');
+            }, 2000);
+        }
+
+        function printIndividual() {
+            showToast('Print Individual', 'Preparing individual report for print...', 'info');
+        }
+
+        function exportClassPDF() {
+            showToast('Class PDF', 'Generating class report PDF...', 'info');
+            setTimeout(() => {
+                showToast('PDF Ready', 'Class PDF report siap diunduh', 'success');
+            }, 2500);
+        }
+
+        function exportClassExcel() {
+            showToast('Class Excel', 'Generating class report Excel...', 'info');
+            setTimeout(() => {
+                showToast('Excel Ready', 'Class Excel report siap diunduh', 'success');
+            }, 2000);
+        }
+
+        function exportComprehensivePDF() {
+            showLoadingOverlay();
+            document.getElementById('loadingText').textContent = 'Creating comprehensive PDF report...';
+
+            setTimeout(() => {
+                hideLoadingOverlay();
+                showToast('Comprehensive PDF Ready', 'Comprehensive PDF report siap diunduh', 'success');
+            }, 4000);
+        }
+
+        function exportComprehensiveExcel() {
+            showLoadingOverlay();
+            document.getElementById('loadingText').textContent = 'Creating comprehensive Excel report...';
+
+            setTimeout(() => {
+                hideLoadingOverlay();
+                showToast('Comprehensive Excel Ready', 'Comprehensive Excel report siap diunduh', 'success');
+            }, 3500);
+        }
+
+        // ✨ Prestasi Export Functions
+        function exportPrestasiPDF() {
+            showLoadingOverlay();
+            document.getElementById('loadingText').textContent = 'Creating prestasi analysis PDF...';
+
+            setTimeout(() => {
+                hideLoadingOverlay();
+                showToast('Prestasi PDF Ready', 'Prestasi analysis PDF siap diunduh', 'success');
+            }, 3000);
+        }
+
+        function exportPrestasiExcel() {
+            showLoadingOverlay();
+            document.getElementById('loadingText').textContent = 'Creating prestasi analysis Excel...';
+
+            setTimeout(() => {
+                hideLoadingOverlay();
+                showToast('Prestasi Excel Ready', 'Prestasi analysis Excel siap diunduh', 'success');
+            }, 2500);
+        }
+
+        // ✨ Custom Report Functions
+        function openCustomReportBuilder() {
+            showToast('Custom Report Builder', 'Opening custom report builder...', 'info');
+            // In real implementation, this would open a modal or redirect to report builder
+        }
+
+        function exportRawCSV() {
+            showToast('CSV Export', 'Exporting raw data to CSV...', 'info');
+            setTimeout(() => {
+                showToast('CSV Ready', 'Raw data CSV siap diunduh', 'success');
+            }, 1000);
+        }
+
+        function exportRawJSON() {
+            showToast('JSON Export', 'Exporting raw data to JSON...', 'info');
+            setTimeout(() => {
+                showToast('JSON Ready', 'Raw data JSON siap diunduh', 'success');
+            }, 1000);
+        }
+
+        function printTemplate() {
+            showToast('Print Template', 'Preparing template for print...', 'info');
+        }
+
+        // ✨ Student Detail Functions
+        function viewStudentDetail(studentName) {
+            showToast('Student Detail', `Loading detail for ${studentName}...`, 'info');
+            // In real implementation, this would open a modal or redirect to student detail page
+        }
+
+        function exportStudentPDF(studentName) {
+            showToast('Student PDF', `Generating PDF for ${studentName}...`, 'info');
+            setTimeout(() => {
+                showToast('PDF Ready', `PDF report untuk ${studentName} siap diunduh`, 'success');
+            }, 1500);
+        }
+
+        // ✨ Prestasi-specific Functions
+        function calculatePrestasiImpact(studentData) {
+            let totalImpact = 0;
+            studentData.prestasi.forEach(prestasi => {
+                const category = PRESTASI_CATEGORIES[prestasi.jenis];
+                if (category) {
+                    Object.values(category.bonus).forEach(bonus => {
+                        totalImpact += bonus;
+                    });
+                }
+            });
+            return totalImpact;
+        }
+
+        function generatePrestasiInsights() {
+            return {
+                topPrestasiCategory: 'Akademik',
+                averageImpact: 8.5,
+                prestasiStudentsPercentage: 42,
+                stemDominance: 65,
+                recommendations: [
+                    'Tingkatkan program olimpiade sains',
+                    'Buat kompetisi teknologi rutin',
+                    'Kembangkan lab praktikum'
+                ]
+            };
+        }
+
+        function viewAllCertificates() {
+            showToast('Certificate Gallery', 'Opening certificate gallery...', 'info');
+            // In real implementation, this would open a modal or redirect to certificate gallery
+        }
+
+        function uploadCertificate() {
+            showToast('Upload Certificate', 'Opening certificate upload...', 'info');
+            // In real implementation, this would open file upload modal
+        }
+
+        // ✨ Utility Functions
+        function showToast(title, message, type = 'success', duration = 3000) {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+
+            const iconClasses = {
+                success: 'fas fa-check-circle text-green-500',
+                error: 'fas fa-exclamation-circle text-red-500',
+                warning: 'fas fa-exclamation-triangle text-yellow-500',
+                info: 'fas fa-info-circle text-blue-500'
+            };
+
+            const borderClasses = {
+                success: 'border-green-500',
+                error: 'border-red-500',
+                warning: 'border-yellow-500',
+                info: 'border-blue-500'
+            };
+
+            toastIcon.className = iconClasses[type] || iconClasses.success;
+            toast.className = `toast bg-white rounded-xl shadow-2xl border-l-4 p-4 max-w-sm ${borderClasses[type] || borderClasses.success}`;
+
+            toast.classList.remove('hidden');
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                hideToast();
+            }, duration);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 300);
+        }
+
+        function showLoadingOverlay() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function hideLoadingOverlay() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        function goToDashboard() {
+            window.history.back();
+            // Or redirect to specific dashboard URL
+            // window.location.href = '/dashboard/';
+        }
+
+        // ✨ Data Processing Functions
+        function processPrestasiData(rawData) {
+            // Process and transform prestasi data for charts
+            const processed = {
+                distribution: {},
+                impactScores: {},
+                categoryBreakdown: {}
+            };
+
+            rawData.forEach(student => {
+                if (student.prestasi && student.prestasi.length > 0) {
+                    student.prestasi.forEach(prestasi => {
+                        if (!processed.distribution[prestasi.jenis]) {
+                            processed.distribution[prestasi.jenis] = 0;
+                        }
+                        processed.distribution[prestasi.jenis]++;
+                    });
+                }
+            });
+
+            return processed;
+        }
+
+        function updateChartsWithFilter(filteredData) {
+            // Update all charts with filtered data
+            if (chartInstances.interestDistribution) {
+                // Update interest distribution chart with filtered data
+            }
+
+            if (chartInstances.prestasiDistribution) {
+                // Update prestasi distribution chart with filtered data
+            }
+
+            // Update other charts as needed
+        }
+
+        // ✨ Real-time Data Functions (for future implementation)
+        function startDataRefresh() {
+            // Set up periodic data refresh
+            setInterval(() => {
+                if (currentTab === 'overview') {
+                    // Refresh overview data
+                    loadReportsData();
+                }
+            }, 30000); // Refresh every 30 seconds
+        }
+
+        function stopDataRefresh() {
+            // Stop periodic refresh
+            clearInterval();
+        }
+    </script>
+
+</body>
+
+</html>
