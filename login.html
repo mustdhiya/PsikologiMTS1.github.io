@@ -746,6 +746,9 @@
         function switchTab(tab) {
             currentTab = tab;
             
+            // Update URL hash
+            window.location.hash = tab;
+            
             // Update tab buttons
             document.querySelectorAll('.tab-button').forEach(btn => {
                 btn.classList.remove('active');
@@ -767,6 +770,25 @@
             setTimeout(() => {
                 activeForm.style.animation = 'card-slide-in 0.6s ease-out';
             }, 10);
+        }
+
+        // ✨ Handle URL hash changes
+        function handleHashChange() {
+            const hash = window.location.hash.substring(1); // Remove the # symbol
+            if (hash === 'guru' || hash === 'siswa') {
+                switchTab(hash);
+            }
+        }
+
+        // ✨ Initialize tab based on URL hash
+        function initializeTabFromURL() {
+            const hash = window.location.hash.substring(1);
+            if (hash === 'guru' || hash === 'siswa') {
+                switchTab(hash);
+            } else {
+                // Default to guru tab if no hash or invalid hash
+                switchTab('guru');
+            }
         }
 
         // ✨ Toggle Password Visibility
@@ -833,7 +855,7 @@
                     
                     setTimeout(() => {
                         // Redirect to teacher dashboard
-                        window.location.href = 'dashboard-guru.html';
+                        window.location.href = '1dashboard.html';
                     }, 1500);
                 } else {
                     showNotification('NIG atau password salah!', 'error');
@@ -882,7 +904,7 @@
                     
                     setTimeout(() => {
                         // Redirect to student test
-                        window.location.href = 'tes-rmib.html';
+                        window.location.href = '6certif.html';
                     }, 1500);
                 } else {
                     showNotification('NIS tidak ditemukan!', 'error');
@@ -922,15 +944,27 @@
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
             
+            // Initialize tab based on URL hash
+            initializeTabFromURL();
+            
             // Add entrance animations
             const elements = document.querySelectorAll('.login-card, .welcome-text');
             elements.forEach((el, index) => {
                 el.style.animationDelay = (index * 0.2) + 's';
             });
             
-            // Auto-focus first input
-            document.getElementById('nig').focus();
+            // Auto-focus first input based on current tab
+            setTimeout(() => {
+                if (currentTab === 'guru') {
+                    document.getElementById('nig').focus();
+                } else {
+                    document.getElementById('nis').focus();
+                }
+            }, 100);
         });
+
+        // ✨ Listen for hash changes (browser back/forward buttons)
+        window.addEventListener('hashchange', handleHashChange);
 
         // ✨ Keyboard shortcuts
         document.addEventListener('keydown', function(e) {

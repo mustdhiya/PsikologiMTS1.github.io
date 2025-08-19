@@ -142,7 +142,7 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 1000;
+            z-index: 60;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             transform: translateX(400px);
         }
@@ -248,6 +248,151 @@
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             border-bottom: 1px solid #e2e8f0;
         }
+
+        /* ✨ Interactive Elements */
+        .interactive-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .interactive-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .interactive-card:hover::before {
+            left: 100%;
+        }
+
+        /* ✨ Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 45;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+        }
+
+        /* ✨ Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        /* ✨ Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ✨ Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 45;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            z-index: 46;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        /* ✨ Live Chart Updates */
+        .chart-updating {
+            position: relative;
+        }
+
+        .chart-updating::after {
+            content: '🔄';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* ✨ Progress Bars */
+        .progress-bar {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            height: 4px;
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        /* ✨ Confetti Animation */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #3b82f6;
+            animation: confetti-fall 3s linear infinite;
+            z-index: 55;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 font-sans min-h-screen">
@@ -279,7 +424,7 @@
     </div>
 
     <!-- ✨ Mobile Menu Overlay -->
-    <div id="mobileOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden backdrop-blur-sm" onclick="toggleMobileMenu()"></div>
+    <div id="mobileOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden md:hidden backdrop-blur-sm" onclick="toggleMobileMenu()"></div>
 
     <!-- ✨ Enhanced Navigation -->
     <nav class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white shadow-2xl sticky top-0 z-30">
@@ -290,8 +435,8 @@
                         <i class="fas fa-bars text-xl"></i>
                     </button>
                     <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                            <i class="fas fa-graduation-cap text-2xl"></i>
+                        <div class="w-12 h-12 bg-white bg-opacity-90 rounded-xl flex items-center justify-center overflow-hidden border border-white border-opacity-30 shadow-lg">
+                            <img src="logo.png" alt="Logo PRESTISIA" class="w-15 h-15 object-contain">
                         </div>
                         <div>
                             <h1 class="text-xl font-bold">PRESTISIA</h1>
@@ -514,15 +659,16 @@
                     </div>
                 </div>
 
-                <!-- ✨ KEY METRICS CARDS -->
+                <!-- ✨ Enhanced KEY METRICS CARDS -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
                     <!-- Total Students Card -->
-                    <div class="metric-card card-hover p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.1s">
+                    <div class="metric-card card-hover interactive-card p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.1s" onclick="showStudentDetails()">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <div class="flex items-center space-x-2 mb-2">
                                     <h3 class="text-sm font-semibold text-gray-600">Total Siswa</h3>
                                     <i class="fas fa-info-circle text-gray-400 text-xs cursor-help" title="Total siswa terdaftar dalam sistem"></i>
+                                    <div class="notification-badge">+3</div>
                                 </div>
                                 <p class="text-3xl md:text-4xl font-bold text-gray-900 counter" data-target="156">0</p>
                                 <div class="flex items-center mt-2 space-x-2">
@@ -533,7 +679,7 @@
                                 </div>
                             </div>
                             <div class="ml-4">
-                                <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
+                                <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center hover:scale-110 transition-transform cursor-pointer">
                                     <i class="fas fa-users text-blue-600 text-2xl"></i>
                                 </div>
                             </div>
@@ -543,14 +689,14 @@
                                 <span>Kapasitas sistem</span>
                                 <span>78%</span>
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-1000" style="width: 78%"></div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                                <div class="progress-bar h-2 rounded-full transition-all duration-1000" style="width: 78%"></div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tests Completed Card -->
-                    <div class="metric-card card-hover p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.2s">
+                    <div class="metric-card card-hover interactive-card p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.2s" onclick="showCompletedTests()">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <div class="flex items-center space-x-2 mb-2">
@@ -561,12 +707,12 @@
                                 <div class="flex items-center mt-2 space-x-2">
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         <i class="fas fa-percentage mr-1"></i>
-                                        91% completion
+                                        <span id="completionRate">91</span>% completion
                                     </span>
                                 </div>
                             </div>
                             <div class="ml-4">
-                                <div class="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center">
+                                <div class="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center hover:scale-110 transition-transform cursor-pointer">
                                     <i class="fas fa-check-circle text-green-600 text-2xl"></i>
                                 </div>
                             </div>
@@ -574,21 +720,22 @@
                         <div class="mt-4">
                             <div class="flex justify-between text-xs text-gray-500 mb-1">
                                 <span>Target completion</span>
-                                <span>91%</span>
+                                <span id="targetRate">91%</span>
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-1000" style="width: 91%"></div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                                <div class="progress-bar bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-1000" style="width: 91%"></div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Pending Tests Card -->
-                    <div class="metric-card card-hover p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.3s">
+                    <div class="metric-card card-hover interactive-card p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.3s" onclick="showPendingTests()">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <div class="flex items-center space-x-2 mb-2">
                                     <h3 class="text-sm font-semibold text-gray-600">Belum Tes</h3>
                                     <i class="fas fa-info-circle text-gray-400 text-xs cursor-help" title="Siswa yang belum menyelesaikan tes"></i>
+                                    <div class="notification-badge bg-red-500">!</div>
                                 </div>
                                 <p class="text-3xl md:text-4xl font-bold text-orange-600 counter" data-target="14">0</p>
                                 <div class="flex items-center mt-2 space-x-2">
@@ -599,7 +746,7 @@
                                 </div>
                             </div>
                             <div class="ml-4">
-                                <div class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center">
+                                <div class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center hover:scale-110 transition-transform cursor-pointer">
                                     <i class="fas fa-hourglass-half text-orange-600 text-2xl pulse-slow"></i>
                                 </div>
                             </div>
@@ -609,14 +756,14 @@
                                 <span>Dari total siswa</span>
                                 <span>9%</span>
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-gradient-to-r from-orange-500 to-orange-600 h-2 rounded-full transition-all duration-1000" style="width: 9%"></div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                                <div class="progress-bar bg-gradient-to-r from-orange-500 to-orange-600 h-2 rounded-full transition-all duration-1000" style="width: 9%"></div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Average Score Card -->
-                    <div class="metric-card card-hover p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.4s">
+                    <div class="metric-card card-hover interactive-card p-6 rounded-2xl shadow-lg slide-in-right" style="animation-delay: 0.4s" onclick="showScoreAnalysis()">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <div class="flex items-center space-x-2 mb-2">
@@ -630,26 +777,26 @@
                                 <div class="flex items-center mt-2 space-x-2">
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                         <i class="fas fa-chart-line mr-1"></i>
-                                        Kategori: Baik
+                                        Kategori: <span id="scoreCategory">Baik</span>
                                     </span>
                                 </div>
                             </div>
                             <div class="ml-4">
-                                <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center">
+                                <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center hover:scale-110 transition-transform cursor-pointer">
                                     <i class="fas fa-chart-line text-purple-600 text-2xl"></i>
                                 </div>
                             </div>
                         </div>
                         <div class="mt-4">
-                            <!-- ✨ Circular Progress -->
-                            <div class="flex items-center justify-center">
+                            <!-- ✨ Enhanced Circular Progress -->
+                            <div class="flex items-center justify-center relative">
                                 <svg class="w-12 h-12 transform -rotate-90">
                                     <circle cx="24" cy="24" r="20" stroke="#e2e8f0" stroke-width="4" fill="none"/>
                                     <circle cx="24" cy="24" r="20" stroke="#8b5cf6" stroke-width="4" fill="none" 
                                             stroke-dasharray="125.6" stroke-dashoffset="31.4" 
-                                            class="transition-all duration-1000"/>
+                                            class="transition-all duration-1000" id="scoreProgress"/>
                                 </svg>
-                                <span class="absolute text-xs font-bold text-purple-600">78%</span>
+                                <span class="absolute text-xs font-bold text-purple-600" id="scorePercentage">78%</span>
                             </div>
                         </div>
                     </div>
@@ -988,14 +1135,102 @@
         </main>
     </div>
 
+    <!-- ✨ Floating Action Button -->
+    <button class="fab bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700" onclick="showQuickActions()" title="Aksi Cepat">
+        <i class="fas fa-plus text-xl"></i>
+    </button>
+
+    <!-- ✨ Quick Actions Modal -->
+    <div id="quickActionsModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-bolt text-yellow-500 mr-2"></i>
+                        Aksi Cepat
+                    </h3>
+                    <button onclick="hideQuickActions()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="triggerAddStudent()" class="flex flex-col items-center p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all">
+                        <i class="fas fa-user-plus text-blue-600 text-2xl mb-2"></i>
+                        <span class="text-sm font-medium text-blue-700">Tambah Siswa</span>
+                    </button>
+                    <button onclick="triggerRMIBInput()" class="flex flex-col items-center p-4 bg-green-50 hover:bg-green-100 rounded-xl transition-all">
+                        <i class="fas fa-edit text-green-600 text-2xl mb-2"></i>
+                        <span class="text-sm font-medium text-green-700">Input RMIB</span>
+                    </button>
+                    <button onclick="triggerExport()" class="flex flex-col items-center p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition-all">
+                        <i class="fas fa-download text-purple-600 text-2xl mb-2"></i>
+                        <span class="text-sm font-medium text-purple-700">Export Data</span>
+                    </button>
+                    <button onclick="triggerReports()" class="flex flex-col items-center p-4 bg-orange-50 hover:bg-orange-100 rounded-xl transition-all">
+                        <i class="fas fa-chart-bar text-orange-600 text-2xl mb-2"></i>
+                        <span class="text-sm font-medium text-orange-700">Laporan</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✨ Student Details Modal -->
+    <div id="studentModal" class="modal-overlay">
+        <div class="modal-content max-w-2xl">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-users text-blue-500 mr-2"></i>
+                        Detail Siswa
+                    </h3>
+                    <button onclick="hideModal('studentModal')" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600">52</div>
+                        <div class="text-sm text-gray-600">Kelas 7</div>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600">54</div>
+                        <div class="text-sm text-gray-600">Kelas 8</div>
+                    </div>
+                    <div class="text-center p-4 bg-purple-50 rounded-lg">
+                        <div class="text-2xl font-bold text-purple-600">50</div>
+                        <div class="text-sm text-gray-600">Kelas 9</div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span class="text-sm font-medium">Total Laki-laki</span>
+                        <span class="font-bold text-blue-600">78 siswa</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span class="text-sm font-medium">Total Perempuan</span>
+                        <span class="font-bold text-pink-600">78 siswa</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span class="text-sm font-medium">Siswa Aktif</span>
+                        <span class="font-bold text-green-600">156 siswa</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ✨ ENHANCED JAVASCRIPT FUNCTIONALITY
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-        });
-
         function initializeApp() {
-            showLoadingOverlay();
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.classList.remove('hidden');
+            }
             
             // Initialize all components with delay for smooth loading
             setTimeout(() => {
@@ -1005,47 +1240,468 @@
                 startCounterAnimations();
                 updateCurrentDate();
                 initializeRealTimeUpdates();
+                initializeInteractiveElements();
+                initializeLiveUpdates();
                 
                 hideLoadingOverlay();
                 showToast('Sistem Siap', 'Dashboard berhasil dimuat dan siap digunakan', 'success');
+                playWelcomeAnimation();
             }, 1000);
         }
 
-        // ✨ Navigation System
+        // ✨ Interactive Elements
+        function initializeInteractiveElements() {
+            // Add ripple effect to cards
+            document.querySelectorAll('.metric-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    createRipple(e, this);
+                });
+            });
+
+            // Initialize tooltips
+            initializeTooltips();
+            
+            // Initialize auto-refresh toggle
+            initializeAutoRefresh();
+        }
+
+        function createRipple(event, element) {
+            const ripple = document.createElement('div');
+            const rect = element.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s ease-out;
+                pointer-events: none;
+                z-index: 1;
+            `;
+            
+            // Add ripple animation CSS if not exists
+            if (!document.querySelector('#ripple-style')) {
+                const style = document.createElement('style');
+                style.id = 'ripple-style';
+                style.textContent = `
+                    @keyframes ripple {
+                        to {
+                            transform: scale(2);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            element.style.position = 'relative';
+            element.style.overflow = 'hidden';
+            element.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        }
+
+        // ✨ Live Data Updates
+        function initializeLiveUpdates() {
+            setInterval(() => {
+                updateMetrics();
+                updateCharts();
+                animateProgressBars();
+            }, 5000); // Update every 5 seconds
+        }
+
+        function updateMetrics() {
+            // Simulate dynamic data updates
+            const completionRate = document.getElementById('completionRate');
+            const targetRate = document.getElementById('targetRate');
+            const scoreCategory = document.getElementById('scoreCategory');
+            const scorePercentage = document.getElementById('scorePercentage');
+            
+            if (completionRate) {
+                const newRate = Math.min(95, parseInt(completionRate.textContent) + Math.floor(Math.random() * 2));
+                completionRate.textContent = newRate;
+                targetRate.textContent = newRate + '%';
+                
+                // Update progress bar
+                const progressBar = document.querySelector('.progress-bar');
+                if (progressBar) {
+                    progressBar.style.width = newRate + '%';
+                }
+            }
+            
+            // Update score category
+            if (scoreCategory && scorePercentage) {
+                const score = parseInt(scorePercentage.textContent);
+                if (score >= 85) scoreCategory.textContent = 'Sangat Baik';
+                else if (score >= 75) scoreCategory.textContent = 'Baik';
+                else if (score >= 65) scoreCategory.textContent = 'Cukup';
+                else scoreCategory.textContent = 'Perlu Perbaikan';
+            }
+        }
+
+        function updateCharts() {
+            // Add visual indicator for chart updates
+            const chartContainers = document.querySelectorAll('.chart-container');
+            chartContainers.forEach(container => {
+                container.classList.add('chart-updating');
+                setTimeout(() => {
+                    container.classList.remove('chart-updating');
+                }, 1000);
+            });
+        }
+
+        function animateProgressBars() {
+            document.querySelectorAll('.progress-bar').forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        }
+
+        // ✨ Modal Functions
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // ✨ Quick Actions
+        function showQuickActions() {
+            showModal('quickActionsModal');
+        }
+
+        function hideQuickActions() {
+            hideModal('quickActionsModal');
+        }
+
+        // ✨ Card Click Handlers
+        function showStudentDetails() {
+            showModal('studentModal');
+            playCountUpAnimation();
+        }
+
+        function showCompletedTests() {
+            showToast('Info', 'Menampilkan detail tes yang telah selesai...', 'info');
+            // Navigate to daftar siswa page
+            setTimeout(() => {
+                navigateToPage('2daftar.html');
+            }, 1000);
+        }
+
+        function showPendingTests() {
+            showToast('Peringatan', 'Ada 14 siswa yang belum menyelesaikan tes!', 'warning');
+            // Navigate to input page for pending tests
+            setTimeout(() => {
+                navigateToPage('4input.html');
+                createConfetti();
+            }, 500);
+        }
+
+        function showScoreAnalysis() {
+            showToast('Analisis', 'Menampilkan detail analisis skor...', 'info');
+            // Navigate to laporan page
+            setTimeout(() => {
+                navigateToPage('5laporan.html');
+            }, 1000);
+            // Animate score visualization
+            animateScoreProgress();
+        }
+
+        // ✨ Navigation Functions - Navigate to actual HTML files
+        function navigateToPage(htmlFile) {
+            showLoadingOverlay();
+            showToast('Navigasi', 'Memuat halaman...', 'info', 1000);
+            
+            setTimeout(() => {
+                window.location.href = htmlFile;
+            }, 1200);
+        }
+
+        // ✨ Update Navigation System for HTML files
         function initializeNavigation() {
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const targetPage = this.getAttribute('data-page');
-                    showPage(targetPage);
-                    updateActiveNav(this);
+                    
+                    // Map pages to actual HTML files
+                    const pageMapping = {
+                        'dashboard': '1dashboard.html',
+                        'students': '2daftar.html',
+                        'add-student': '3tambah.html',
+                        'rmib-input': '4input.html',
+                        'reports': '5laporan.html',
+                        'certificates': '6certif.html'
+                    };
+                    
+                    const htmlFile = pageMapping[targetPage];
+                    if (htmlFile) {
+                        if (htmlFile === '1dashboard.html') {
+                            // Stay on current page but update active nav
+                            updateActiveNav(this);
+                        } else {
+                            navigateToPage(htmlFile);
+                        }
+                    }
                 });
             });
         }
 
-        function showPage(pageId) {
-            // Hide all pages with fade out
-            document.querySelectorAll('.page').forEach(page => {
-                page.style.opacity = '0';
+        // ✨ Update sidebar navigation links to match HTML files
+        function updateSidebarNavigation() {
+            const sidebarNav = document.querySelector('nav.space-y-2');
+            if (sidebarNav) {
+                sidebarNav.innerHTML = `
+                    <a href="1dashboard.html" class="nav-link group flex items-center space-x-3 text-blue-600 bg-blue-50 p-3 rounded-xl font-medium border-l-4 border-blue-600 transition-all" data-page="dashboard">
+                        <div class="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-tachometer-alt text-white text-sm"></i>
+                        </div>
+                        <span>Dashboard</span>
+                        <div class="ml-auto flex items-center space-x-2">
+                            <span class="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">156</span>
+                            <i class="fas fa-chevron-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="2daftar.html" class="nav-link group flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-3 rounded-xl transition-all" data-page="students">
+                        <div class="w-6 h-6 bg-gray-400 group-hover:bg-blue-600 rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-users text-white text-sm"></i>
+                        </div>
+                        <span>Daftar Siswa</span>
+                        <i class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </a>
+                    
+                    <a href="3tambah.html" class="nav-link group flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-3 rounded-xl transition-all" data-page="add-student">
+                        <div class="w-6 h-6 bg-gray-400 group-hover:bg-green-600 rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-user-plus text-white text-sm"></i>
+                        </div>
+                        <span>Tambah Siswa</span>
+                        <i class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </a>
+                    
+                    <a href="4input.html" class="nav-link group flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-3 rounded-xl transition-all" data-page="rmib-input">
+                        <div class="w-6 h-6 bg-gray-400 group-hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-edit text-white text-sm"></i>
+                        </div>
+                        <span>Input Skor RMIB</span>
+                        <i class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </a>
+                    
+                    <a href="5laporan.html" class="nav-link group flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-3 rounded-xl transition-all" data-page="reports">
+                        <div class="w-6 h-6 bg-gray-400 group-hover:bg-indigo-600 rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-chart-bar text-white text-sm"></i>
+                        </div>
+                        <span>Laporan & Analisis</span>
+                        <i class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </a>
+                    
+                    <a href="6certif.html" class="nav-link group flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-3 rounded-xl transition-all" data-page="certificates">
+                        <div class="w-6 h-6 bg-gray-400 group-hover:bg-yellow-600 rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-certificate text-white text-sm"></i>
+                        </div>
+                        <span>Sertifikat</span>
+                        <i class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </a>
+                `;
+            }
+        }
+
+        // ✨ Animation Functions
+        function playWelcomeAnimation() {
+            // Create welcome confetti
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => createConfetti(), i * 100);
+            }
+        }
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * window.innerWidth + 'px';
+            confetti.style.backgroundColor = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444'][Math.floor(Math.random() * 5)];
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 3000);
+        }
+
+        function animateScoreProgress() {
+            const progressCircle = document.getElementById('scoreProgress');
+            if (progressCircle) {
+                progressCircle.style.strokeDashoffset = '125.6';
                 setTimeout(() => {
-                    page.classList.add('hidden');
-                }, 150);
+                    progressCircle.style.strokeDashoffset = '31.4';
+                }, 100);
+            }
+        }
+
+        function playCountUpAnimation() {
+            // Animate numbers in modal
+            const numberElements = document.querySelectorAll('#studentModal .text-2xl');
+            numberElements.forEach((element, index) => {
+                const target = parseInt(element.textContent);
+                let current = 0;
+                const increment = target / 50;
+                
+                const animation = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        element.textContent = target;
+                        clearInterval(animation);
+                    } else {
+                        element.textContent = Math.floor(current);
+                    }
+                }, 20);
+            });
+        }
+
+        // ✨ Quick Action Triggers - Updated to navigate to HTML files
+        function triggerAddStudent() {
+            hideQuickActions();
+            showToast('Navigasi', 'Membuka halaman tambah siswa...', 'info');
+            setTimeout(() => navigateToPage('3tambah.html'), 1000);
+        }
+
+        function triggerRMIBInput() {
+            hideQuickActions();
+            showToast('Navigasi', 'Membuka halaman input RMIB...', 'info');
+            setTimeout(() => navigateToPage('4input.html'), 1000);
+        }
+
+        function triggerExport() {
+            hideQuickActions();
+            exportAllData();
+        }
+
+        function triggerReports() {
+            hideQuickActions();
+            showToast('Navigasi', 'Membuka halaman laporan...', 'info');
+            setTimeout(() => navigateToPage('5laporan.html'), 1000);
+        }
+
+        function triggerCertificates() {
+            hideQuickActions();
+            showToast('Navigasi', 'Membuka halaman sertifikat...', 'info');
+            setTimeout(() => navigateToPage('6certif.html'), 1000);
+        }
+
+        // ✨ Update Quick Actions buttons in dashboard
+        function updateQuickActionButtons() {
+            const quickActionsGrid = document.querySelector('.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4.gap-4');
+            if (quickActionsGrid) {
+                quickActionsGrid.innerHTML = `
+                    <button onclick="navigateToPage('3tambah.html')" class="group flex flex-col items-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 rounded-2xl transition-all transform hover:scale-105 border-2 border-blue-200 hover:border-blue-300">
+                        <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-user-plus text-white text-xl"></i>
+                        </div>
+                        <span class="font-semibold text-blue-700 text-sm">Tambah Siswa</span>
+                        <span class="text-xs text-blue-600 mt-1">Daftar siswa baru</span>
+                    </button>
+
+                    <button onclick="navigateToPage('4input.html')" class="group flex flex-col items-center p-6 bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 rounded-2xl transition-all transform hover:scale-105 border-2 border-green-200 hover:border-green-300">
+                        <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-edit text-white text-xl"></i>
+                        </div>
+                        <span class="font-semibold text-green-700 text-sm">Input Skor RMIB</span>
+                        <span class="text-xs text-green-600 mt-1">Entry hasil tes</span>
+                    </button>
+
+                    <button onclick="navigateToPage('5laporan.html')" class="group flex flex-col items-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 rounded-2xl transition-all transform hover:scale-105 border-2 border-purple-200 hover:border-purple-300">
+                        <div class="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-chart-line text-white text-xl"></i>
+                        </div>
+                        <span class="font-semibold text-purple-700 text-sm">Lihat Laporan</span>
+                        <span class="text-xs text-purple-600 mt-1">Analisis & statistik</span>
+                    </button>
+
+                    <button onclick="navigateToPage('6certif.html')" class="group flex flex-col items-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 rounded-2xl transition-all transform hover:scale-105 border-2 border-orange-200 hover:border-orange-300">
+                        <div class="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-certificate text-white text-xl"></i>
+                        </div>
+                        <span class="font-semibold text-orange-700 text-sm">Sertifikat</span>
+                        <span class="text-xs text-orange-600 mt-1">Generate sertifikat</span>
+                    </button>
+                `;
+            }
+        }
+
+        // ✨ Auto-refresh Toggle
+        function initializeAutoRefresh() {
+            let autoRefreshEnabled = true;
+            const toggleButton = document.createElement('button');
+            toggleButton.innerHTML = '<i class="fas fa-sync-alt mr-1"></i> Auto-refresh: ON';
+            toggleButton.className = 'text-xs bg-green-100 text-green-600 px-2 py-1 rounded-lg hover:bg-green-200 transition-colors';
+            
+            toggleButton.addEventListener('click', () => {
+                autoRefreshEnabled = !autoRefreshEnabled;
+                toggleButton.innerHTML = `<i class="fas fa-sync-alt mr-1"></i> Auto-refresh: ${autoRefreshEnabled ? 'ON' : 'OFF'}`;
+                toggleButton.className = autoRefreshEnabled 
+                    ? 'text-xs bg-green-100 text-green-600 px-2 py-1 rounded-lg hover:bg-green-200 transition-colors'
+                    : 'text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg hover:bg-gray-200 transition-colors';
+                
+                showToast('Setting', `Auto-refresh ${autoRefreshEnabled ? 'diaktifkan' : 'dinonaktifkan'}`, 'info');
             });
             
-            // Show target page with fade in
-            setTimeout(() => {
-                const targetPage = document.getElementById(pageId);
-                if (targetPage) {
-                    targetPage.classList.remove('hidden');
-                    targetPage.classList.add('fade-in');
-                    setTimeout(() => {
-                        targetPage.style.opacity = '1';
-                    }, 50);
-                }
-            }, 200);
+            // Add to navigation if exists
+            const statusElement = document.querySelector('.flex.items-center.space-x-4.text-sm');
+            if (statusElement) {
+                statusElement.appendChild(toggleButton);
+            }
+        }
+
+        // ✨ Tooltips
+        function initializeTooltips() {
+            document.querySelectorAll('[title]').forEach(element => {
+                element.addEventListener('mouseenter', showTooltip);
+                element.addEventListener('mouseleave', hideTooltip);
+            });
+        }
+
+        function showTooltip(event) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'fixed bg-black text-white text-xs px-2 py-1 rounded z-50 pointer-events-none';
+            tooltip.textContent = event.target.getAttribute('title');
+            tooltip.style.left = event.pageX + 10 + 'px';
+            tooltip.style.top = event.pageY - 30 + 'px';
+            tooltip.id = 'tooltip';
+            document.body.appendChild(tooltip);
             
-            closeMobileMenu();
+            event.target.removeAttribute('title');
+            event.target.setAttribute('data-original-title', tooltip.textContent);
+        }
+
+        function hideTooltip(event) {
+            const tooltip = document.getElementById('tooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
+            
+            const originalTitle = event.target.getAttribute('data-original-title');
+            if (originalTitle) {
+                event.target.setAttribute('title', originalTitle);
+                event.target.removeAttribute('data-original-title');
+            }
         }
 
         function updateActiveNav(activeLink) {
@@ -1355,19 +2011,27 @@
                     switch(e.key) {
                         case '1':
                             e.preventDefault();
-                            showPage('dashboard');
+                            navigateToPage('1dashboard.html');
                             break;
                         case '2':
                             e.preventDefault();
-                            showPage('students');
+                            navigateToPage('2daftar.html');
                             break;
                         case '3':
                             e.preventDefault();
-                            showPage('rmib-input');
+                            navigateToPage('3tambah.html');
                             break;
                         case '4':
                             e.preventDefault();
-                            showPage('reports');
+                            navigateToPage('4input.html');
+                            break;
+                        case '5':
+                            e.preventDefault();
+                            navigateToPage('5laporan.html');
+                            break;
+                        case '6':
+                            e.preventDefault();
+                            navigateToPage('6certif.html');
                             break;
                     }
                 }
@@ -1411,9 +2075,15 @@
 
         // ✨ Initialize app when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeApp);
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeApp();
+                updateSidebarNavigation();
+                updateQuickActionButtons();
+            });
         } else {
             initializeApp();
+            updateSidebarNavigation();
+            updateQuickActionButtons();
         }
     </script>
 </body>

@@ -1,31 +1,32 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRESTISIA - Platform Digital untuk Minat Karir & Prestasi Siswa 🌟</title>
+    <title>PRESTISIA - Platform Digital untuk Minat & Bakat Siswa 🌟</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" type="image/x-icon" href="logo.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        
+
         * {
             scroll-behavior: smooth;
         }
-        
+
         body {
             font-family: 'Inter', sans-serif;
             background: #0f0f23;
             overflow-x: hidden;
         }
-        
+
         .hero-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             position: relative;
             overflow: hidden;
         }
-        
+
         .hero-bg::before {
             content: '';
             position: absolute;
@@ -34,46 +35,53 @@
             right: 0;
             bottom: 0;
             background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
             animation: float 15s ease-in-out infinite;
         }
-        
+
         @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
         }
-        
+
         .glassmorphism {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .card {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .card:hover {
             transform: translateY(-12px);
             box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
             border-color: rgba(255, 255, 255, 0.3);
         }
-        
+
         .gradient-text {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         .gradient-button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             position: relative;
             overflow: hidden;
         }
-        
+
         .gradient-button::before {
             content: '';
             position: absolute;
@@ -84,85 +92,135 @@
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s;
         }
-        
+
         .gradient-button:hover::before {
             left: 100%;
         }
-        
+
         .floating {
             animation: floating 3s ease-in-out infinite;
         }
-        
+
         .feature-icon {
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        
+
         .feature-icon:hover {
             transform: scale(1.15) rotate(10deg);
         }
-        
+
         @keyframes floating {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
-        
+
         .fade-in-up {
             opacity: 0;
             transform: translateY(60px);
             transition: all 0.8s ease-out;
         }
-        
+
         .fade-in-up.animate {
             opacity: 1;
             transform: translateY(0);
         }
-        
-        .stagger-1 { transition-delay: 0.1s; }
-        .stagger-2 { transition-delay: 0.2s; }
-        .stagger-3 { transition-delay: 0.3s; }
-        .stagger-4 { transition-delay: 0.4s; }
-        .stagger-5 { transition-delay: 0.5s; }
-        .stagger-6 { transition-delay: 0.6s; }
-        
+
+        .stagger-1 {
+            transition-delay: 0.1s;
+        }
+
+        .stagger-2 {
+            transition-delay: 0.2s;
+        }
+
+        .stagger-3 {
+            transition-delay: 0.3s;
+        }
+
+        .stagger-4 {
+            transition-delay: 0.4s;
+        }
+
+        .stagger-5 {
+            transition-delay: 0.5s;
+        }
+
+        .stagger-6 {
+            transition-delay: 0.6s;
+        }
+
         .neon-glow {
             box-shadow: 0 0 30px rgba(102, 126, 234, 0.6),
-                        0 0 60px rgba(102, 126, 234, 0.4);
+                0 0 60px rgba(102, 126, 234, 0.4);
         }
-        
+
         .scroll-indicator {
             animation: bounce 2s infinite;
         }
-        
+
         .mobile-menu {
             transform: translateX(100%);
             transition: transform 0.3s ease-in-out;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
-        
+
         .mobile-menu.open {
             transform: translateX(0);
         }
-        
+
+        .mobile-menu.open::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            filter: blur(8px);
+            -webkit-filter: blur(8px);
+            z-index: -1;
+        }
+
+        /* Mobile menu backdrop blur for body content */
+        body.mobile-menu-open {
+            overflow: hidden;
+        }
+
+        body.mobile-menu-open > *:not(nav) {
+            filter: blur(8px);
+            -webkit-filter: blur(8px);
+            transition: filter 0.3s ease;
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.5rem;
                 line-height: 1.1;
             }
         }
-        
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
-        
+
         ::-webkit-scrollbar-track {
             background: #1a1a2e;
         }
-        
+
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 4px;
         }
-        
+
         /* Improved button styles */
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -177,12 +235,12 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
-        
+
         .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -195,7 +253,7 @@
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
         }
-        
+
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.2);
             border-color: rgba(255, 255, 255, 0.5);
@@ -203,64 +261,194 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 glassmorphism transition-all duration-300">
+    <nav class="fixed w-full z-50 glassmorphism transition-all duration-300" role="navigation"
+        aria-label="Main navigation">
         <div class="container mx-auto px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl flex items-center justify-center shadow-lg">
-                        <span class="text-white font-bold text-xl">P</span>
+                    <div
+                        class="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl flex items-center justify-center shadow-lg">
+                        <img src="logo.png" alt="Logo" class="w-8 h-8">
                     </div>
                     <div>
                         <span class="text-white font-bold text-xl">PRESTISIA</span>
-                        <div class="text-purple-200 text-xs">Platform Karir Digital</div>
+                        <div class="text-purple-200 text-xs">Platform Minat & Bakat Digital</div>
                     </div>
                 </div>
-                
+
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex space-x-8">
-                    <a href="#home" class="text-white hover:text-purple-200 transition-colors font-medium">Beranda</a>
-                    <a href="#features" class="text-white hover:text-purple-200 transition-colors font-medium">Fitur</a>
-                    <a href="#demo" class="text-white hover:text-purple-200 transition-colors font-medium">Demo</a>
-                    <a href="#contact" class="text-white hover:text-purple-200 transition-colors font-medium">Kontak</a>
+                    <a href="#home" class="text-white hover:text-purple-200 transition-colors font-medium"
+                        aria-label="Go to Home section">Beranda</a>
+                    <a href="#features" class="text-white hover:text-purple-200 transition-colors font-medium"
+                        aria-label="Go to Features section">Fitur</a>
+                    <a href="#demo" class="text-white hover:text-purple-200 transition-colors font-medium"
+                        aria-label="Go to Demo section">Demo</a>
+                    <a href="#contact" class="text-white hover:text-purple-200 transition-colors font-medium"
+                        aria-label="Go to Contact section">Kontak</a>
                 </div>
-                
+
                 <!-- Desktop Buttons -->
                 <div class="hidden md:flex space-x-3">
-                    <button class="btn-secondary">
+                    <a href="login.html#guru" class="btn-secondary inline-flex items-center justify-center"
+                        aria-label="Teacher Login">
                         👩‍🏫 Login Guru
-                    </button>
-                    <button class="btn-primary">
+                    </a>
+                    <a href="login.html#siswa" class="btn-primary inline-flex items-center justify-center"
+                        aria-label="Student Login">
                         👨‍🎓 Login Siswa
-                    </button>
+                    </a>
                 </div>
-                
+
                 <!-- Mobile Menu Button -->
-                <button id="mobileMenuBtn" class="md:hidden text-white p-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                <button id="mobileMenuBtn" class="md:hidden text-white p-2" type="button" aria-label="Open mobile menu"
+                    aria-expanded="false" aria-controls="mobileMenu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
             </div>
         </div>
-        
+
         <!-- Mobile Menu -->
-        <div id="mobileMenu" class="mobile-menu fixed top-0 right-0 h-full w-80 bg-purple-900 bg-opacity-95 backdrop-filter backdrop-blur-lg md:hidden">
-            <div class="p-6">
-                <button id="closeMobileMenu" class="text-white float-right p-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-                <div class="clear-both pt-8 space-y-6">
-                    <a href="#home" class="block text-white text-lg font-medium">Beranda</a>
-                    <a href="#features" class="block text-white text-lg font-medium">Fitur</a>
-                    <a href="#demo" class="block text-white text-lg font-medium">Demo</a>
-                    <a href="#contact" class="block text-white text-lg font-medium">Kontak</a>
-                    <div class="space-y-3 pt-6">
-                        <button class="w-full btn-secondary">👩‍🏫 Login Guru</button>
-                        <button class="w-full btn-primary">👨‍🎓 Login Siswa</button>
+        <div id="mobileMenu"
+            class="mobile-menu fixed top-0 right-0 h-full w-80 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 bg-opacity-95 backdrop-filter backdrop-blur-xl md:hidden z-50 shadow-2xl"
+            role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title">
+            <!-- Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-blue-500/10 to-indigo-500/20"></div>
+
+            <!-- Animated Background Particles -->
+            <div class="absolute inset-0 overflow-hidden">
+                <div class="absolute w-32 h-32 bg-purple-400 rounded-full opacity-10 -top-16 -right-16 animate-pulse">
+                </div>
+                <div class="absolute w-24 h-24 bg-blue-400 rounded-full opacity-15 top-1/3 -right-12 floating"
+                    style="animation-delay: 1s;"></div>
+                <div class="absolute w-20 h-20 bg-indigo-400 rounded-full opacity-10 bottom-1/4 -right-10 floating"
+                    style="animation-delay: 2s;"></div>
+            </div>
+
+            <div class="relative z-10 p-6 h-full flex flex-col bg-white bg-opacity-10 rounded-2xl">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <div class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl flex items-center justify-center shadow-lg">
+                            <img src="logo.png" alt="Logo" class="w-6 h-6">
+                        </div>
+                        <div>
+                            <h2 id="mobile-menu-title" class="text-white text-lg font-bold">PRESTISIA</h2>
+                            <p class="text-purple-200 text-xs">Platform Digital</p>
+                        </div>
+                    </div>
+                    <button id="closeMobileMenu"
+                        class="text-white p-2 hover:bg-white hover:bg-opacity-20 rounded-xl transition-all duration-300 transform hover:scale-105"
+                        type="button" aria-label="Close mobile menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="flex-1 backdrop-filter backdrop-blur-xl bg-white bg-opacity-10 rounded-2xl p-4"
+                    role="navigation" aria-label="Mobile navigation">
+                    <div class="space-y-3">
+                        <a href="#home"
+                            class="group flex items-center space-x-4 p-4 rounded-2xl text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 transform hover:translate-x-2"
+                            aria-label="Go to Home section">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                <span class="text-lg">🏠</span>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-lg">Beranda</div>
+                                <div class="text-purple-200 text-sm">Platform utama</div>
+                            </div>
+                        </a>
+
+                        <a href="#features"
+                            class="group flex items-center space-x-4 p-4 rounded-2xl text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 transform hover:translate-x-2"
+                            aria-label="Go to Features section">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-r from-green-400 to-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                <span class="text-lg">✨</span>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-lg">Fitur</div>
+                                <div class="text-purple-200 text-sm">Teknologi canggih</div>
+                            </div>
+                        </a>
+
+                        <a href="#demo"
+                            class="group flex items-center space-x-4 p-4 rounded-2xl text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 transform hover:translate-x-2"
+                            aria-label="Go to Demo section">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                <span class="text-lg">🎮</span>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-lg">Demo</div>
+                                <div class="text-purple-200 text-sm">Coba interaktif</div>
+                            </div>
+                        </a>
+
+                        <a href="#contact"
+                            class="group flex items-center space-x-4 p-4 rounded-2xl text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 transform hover:translate-x-2"
+                            aria-label="Go to Contact section">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-r from-pink-400 to-red-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                <span class="text-lg">📞</span>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-lg">Kontak</div>
+                                <div class="text-purple-200 text-sm">Hubungi kami</div>
+                            </div>
+                        </a>
+                    </div>
+                </nav>
+
+                <!-- Login Buttons -->
+                <div class="space-y-4 pt-6 border-t border-white border-opacity-20">
+                    <a href="login.html#guru"
+                        class="group w-full glassmorphism border border-white border-opacity-30 text-white p-4 rounded-2xl font-semibold text-center transition-all duration-300 hover:bg-white hover:bg-opacity-20 hover:scale-105 flex items-center justify-center space-x-3"
+                        aria-label="Teacher Login">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            <span>👩‍🏫</span>
+                        </div>
+                        <span>Login Guru</span>
+                    </a>
+
+                    <a href="login.html#siswa"
+                        class="group w-full bg-gradient-to-r from-purple-500 to-blue-600 text-white p-4 rounded-2xl font-semibold text-center transition-all duration-300 hover:from-purple-400 hover:to-blue-500 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3"
+                        aria-label="Student Login">
+                        <div
+                            class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            <span>👨‍🎓</span>
+                        </div>
+                        <span>Login Siswa</span>
+                    </a>
+                </div>
+
+                <!-- Footer Info -->
+                <div class="mt-6 pt-6 border-t border-white border-opacity-20 text-center">
+                    <div class="text-purple-200 text-sm">
+                        <div class="flex items-center justify-center space-x-4 mb-3">
+                            <div class="flex items-center space-x-1">
+                                <span class="text-green-400">✓</span>
+                                <span>100% Gratis</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <span class="text-blue-400">🔒</span>
+                                <span>Aman</span>
+                            </div>
+                        </div>
+                        <p>&copy; 2024 PRESTISIA Platform</p>
                     </div>
                 </div>
             </div>
@@ -277,21 +465,22 @@
                             <span class="text-sm font-medium">🚀 Platform Terdepan untuk Siswa SMP</span>
                         </div>
                         <h1 class="hero-title text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-                            Temukan 
+                            Temukan
                             <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                                Passion
+                                Minat & Bakat
                             </span>
-                            Karirmu!
+                            Terbaikmu!
                         </h1>
                         <p class="text-xl mb-8 text-purple-100 leading-relaxed max-w-lg">
-                            Platform digital interaktif yang membantu siswa SMP menemukan minat karir dan memantau prestasi akademik dengan teknologi AI terdepan.
+                            Platform digital interaktif yang membantu siswa SMP menemukan minat dan mengembangkan bakat
+                            dengan teknologi AI terdepan untuk prestasi akademik maksimal.
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4">
-                            <button class="btn-primary neon-glow flex items-center justify-center gap-2">
+                            <a href="login.html#siswa" class="btn-primary neon-glow flex items-center justify-center gap-2">
                                 <span>🎯</span>
-                                Mulai Tes Minat Gratis
-                            </button>
-                            <button class="btn-secondary flex items-center justify-center gap-2">
+                                Mulai Tes Minat & Bakat Gratis
+                            </a>
+                            <button class="btn-secondary flex items-center justify-center gap-2" onclick="document.getElementById('demo').scrollIntoView({behavior: 'smooth'})">
                                 <span>▶️</span>
                                 Tonton Demo
                             </button>
@@ -312,32 +501,37 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="lg:w-1/2 fade-in-up stagger-2">
                     <div class="relative">
                         <div class="floating">
                             <div class="glassmorphism rounded-3xl p-8 shadow-2xl max-w-md mx-auto">
                                 <div class="text-center mb-6">
-                                    <div class="w-20 h-20 bg-gradient-to-r from-purple-400 to-pink-400 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+                                    <div
+                                        class="w-20 h-20 bg-gradient-to-r from-purple-400 to-pink-400 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
                                         <span class="text-3xl">🎓</span>
                                     </div>
                                     <h3 class="text-white text-xl font-bold">Dashboard Siswa</h3>
                                     <p class="text-purple-200 text-sm">Real-time Progress</p>
                                 </div>
                                 <div class="space-y-4">
-                                    <div class="bg-white bg-opacity-20 rounded-xl p-4 border border-white border-opacity-20">
+                                    <div
+                                        class="bg-white bg-opacity-20 rounded-xl p-4 border border-white border-opacity-20">
                                         <div class="flex items-center justify-between text-white">
                                             <div class="flex items-center gap-3">
                                                 <span class="text-green-400">🎯</span>
-                                                <span class="font-medium">Tes Minat Karir</span>
+                                                <span class="font-medium">Tes Minat & Bakat</span>
                                             </div>
                                             <span class="text-green-300 font-semibold">✅ Selesai</span>
                                         </div>
                                         <div class="mt-2 bg-white bg-opacity-20 rounded-full h-2">
-                                            <div class="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full w-full"></div>
+                                            <div
+                                                class="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full w-full">
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="bg-white bg-opacity-20 rounded-xl p-4 border border-white border-opacity-20">
+                                    <div
+                                        class="bg-white bg-opacity-20 rounded-xl p-4 border border-white border-opacity-20">
                                         <div class="flex items-center justify-between text-white">
                                             <div class="flex items-center gap-3">
                                                 <span class="text-blue-400">📊</span>
@@ -346,7 +540,8 @@
                                             <span class="text-blue-300 font-semibold">📈 8.5/10</span>
                                         </div>
                                     </div>
-                                    <div class="bg-white bg-opacity-20 rounded-xl p-4 border border-white border-opacity-20">
+                                    <div
+                                        class="bg-white bg-opacity-20 rounded-xl p-4 border border-white border-opacity-20">
                                         <div class="flex items-center justify-between text-white">
                                             <div class="flex items-center gap-3">
                                                 <span class="text-yellow-400">🏆</span>
@@ -358,22 +553,25 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Floating Elements -->
-                        <div class="absolute -top-6 -right-6 w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center text-2xl floating shadow-lg" style="animation-delay: 0.5s">
+                        <div class="absolute -top-6 -right-6 w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center text-2xl floating shadow-lg"
+                            style="animation-delay: 0.5s">
                             ⭐
                         </div>
-                        <div class="absolute -bottom-6 -left-6 w-14 h-14 bg-gradient-to-r from-pink-400 to-purple-500 rounded-2xl flex items-center justify-center text-xl floating shadow-lg" style="animation-delay: 1s">
+                        <div class="absolute -bottom-6 -left-6 w-14 h-14 bg-gradient-to-r from-pink-400 to-purple-500 rounded-2xl flex items-center justify-center text-xl floating shadow-lg"
+                            style="animation-delay: 1s">
                             🎯
                         </div>
-                        <div class="absolute top-1/2 -left-8 w-12 h-12 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center text-lg floating shadow-lg" style="animation-delay: 1.5s">
+                        <div class="absolute top-1/2 -left-8 w-12 h-12 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center text-lg floating shadow-lg"
+                            style="animation-delay: 1.5s">
                             ✨
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Scroll Indicator -->
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2">
             <div class="scroll-indicator text-white text-center">
@@ -403,97 +601,127 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Feature 1 -->
                 <div class="card bg-white rounded-3xl p-8 shadow-lg fade-in-up stagger-1">
-                    <div class="feature-icon w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mb-6 mx-auto shadow-lg">
+                    <div
+                        class="feature-icon w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mb-6 mx-auto shadow-lg">
                         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                            </path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Tes Minat AI-Powered</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Tes Minat & Bakat AI</h3>
                     <p class="text-gray-600 text-center mb-6 leading-relaxed">
-                        Algoritma cerdas yang menganalisis kepribadian dan minat siswa dengan akurasi tinggi berdasarkan teori psikologi modern.
+                        Algoritma cerdas yang menganalisis minat dan bakat siswa dengan akurasi tinggi berdasarkan teori
+                        psikologi pendidikan modern.
                     </p>
                     <div class="text-center">
-                        <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">🎮 Interactive & Fun</span>
+                        <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">🎮
+                            Interactive & Fun</span>
                     </div>
                 </div>
 
                 <!-- Feature 2 -->
                 <div class="card bg-white rounded-3xl p-8 shadow-lg fade-in-up stagger-2">
-                    <div class="feature-icon w-20 h-20 bg-gradient-to-r from-green-500 to-teal-600 rounded-3xl flex items-center justify-center mb-6 mx-auto shadow-lg">
+                    <div
+                        class="feature-icon w-20 h-20 bg-gradient-to-r from-green-500 to-teal-600 rounded-3xl flex items-center justify-center mb-6 mx-auto shadow-lg">
                         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                            </path>
                         </svg>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Analytics Dashboard</h3>
                     <p class="text-gray-600 text-center mb-6 leading-relaxed">
-                        Dashboard interaktif dengan visualisasi data real-time untuk memantau progress dan perkembangan siswa secara detail.
+                        Dashboard interaktif dengan visualisasi data real-time untuk memantau perkembangan minat, bakat,
+                        dan prestasi siswa secara detail.
                     </p>
                     <div class="text-center">
-                        <span class="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">📊 Real-time Data</span>
+                        <span class="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">📊
+                            Real-time Data</span>
                     </div>
                 </div>
 
                 <!-- Feature 3 -->
                 <div class="card bg-white rounded-3xl p-8 shadow-lg fade-in-up stagger-3">
-                    <div class="feature-icon w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl flex items-center justify-center mb-6 mx-auto shadow-lg">
+                    <div
+                        class="feature-icon w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl flex items-center justify-center mb-6 mx-auto shadow-lg">
                         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                            </path>
                         </svg>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Digital Certificate</h3>
                     <p class="text-gray-600 text-center mb-6 leading-relaxed">
-                        Sertifikat digital blockchain-verified yang dapat digunakan untuk portofolio akademik dan aplikasi beasiswa.
+                        Sertifikat digital blockchain-verified untuk pencapaian minat dan bakat yang dapat digunakan
+                        untuk portofolio akademik dan aplikasi beasiswa.
                     </p>
                     <div class="text-center">
-                        <span class="bg-purple-100 text-purple-800 px-4 py-2 rounded-full text-sm font-medium">🏆 Blockchain Verified</span>
+                        <span class="bg-purple-100 text-purple-800 px-4 py-2 rounded-full text-sm font-medium">🏆
+                            Blockchain Verified</span>
                     </div>
                 </div>
 
                 <!-- Feature 4 -->
                 <div class="card bg-white rounded-3xl p-8 shadow-lg fade-in-up stagger-4">
-                    <div class="feature-icon w-20 h-20 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-3xl flex items-center justify-center mb-6 mx-auto shadow-lg">
+                    <div
+                        class="feature-icon w-20 h-20 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-3xl flex items-center justify-center mb-6 mx-auto shadow-lg">
                         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                            </path>
                         </svg>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Multi-User Platform</h3>
                     <p class="text-gray-600 text-center mb-6 leading-relaxed">
-                        Platform terintegrasi untuk siswa, guru, dan orang tua dengan role-based access dan komunikasi yang efektif.
+                        Platform terintegrasi untuk siswa, guru, dan orang tua dengan role-based access dan komunikasi
+                        yang efektif untuk mengembangkan minat dan bakat.
                     </p>
                     <div class="text-center">
-                        <span class="bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm font-medium">👥 Collaborative</span>
+                        <span class="bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm font-medium">👥
+                            Collaborative</span>
                     </div>
                 </div>
 
                 <!-- Feature 5 -->
                 <div class="card bg-white rounded-3xl p-8 shadow-lg fade-in-up stagger-5">
-                    <div class="feature-icon w-20 h-20 bg-gradient-to-r from-red-500 to-pink-600 rounded-3xl flex items-center justify-center mb-6 mx-auto shadow-lg">
+                    <div
+                        class="feature-icon w-20 h-20 bg-gradient-to-r from-red-500 to-pink-600 rounded-3xl flex items-center justify-center mb-6 mx-auto shadow-lg">
                         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z">
+                            </path>
                         </svg>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Smart Recommendations</h3>
                     <p class="text-gray-600 text-center mb-6 leading-relaxed">
-                        Rekomendasi jalur karir, jurusan SMA/SMK, dan kegiatan ekstrakurikuler berdasarkan AI machine learning.
+                        Rekomendasi pengembangan bakat, jalur pembelajaran, jurusan SMA/SMK, dan kegiatan
+                        ekstrakurikuler berdasarkan AI machine learning.
                     </p>
                     <div class="text-center">
-                        <span class="bg-red-100 text-red-800 px-4 py-2 rounded-full text-sm font-medium">🤖 ML-Powered</span>
+                        <span class="bg-red-100 text-red-800 px-4 py-2 rounded-full text-sm font-medium">🤖
+                            ML-Powered</span>
                     </div>
                 </div>
 
                 <!-- Feature 6 -->
                 <div class="card bg-white rounded-3xl p-8 shadow-lg fade-in-up stagger-6">
-                    <div class="feature-icon w-20 h-20 bg-gradient-to-r from-indigo-500 to-blue-600 rounded-3xl flex items-center justify-center mb-6 mx-auto shadow-lg">
+                    <div
+                        class="feature-icon w-20 h-20 bg-gradient-to-r from-indigo-500 to-blue-600 rounded-3xl flex items-center justify-center mb-6 mx-auto shadow-lg">
                         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                            </path>
                         </svg>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Enterprise Security</h3>
                     <p class="text-gray-600 text-center mb-6 leading-relaxed">
-                        Keamanan tingkat enterprise dengan enkripsi end-to-end dan compliance GDPR untuk melindungi data siswa.
+                        Keamanan tingkat enterprise dengan enkripsi end-to-end dan compliance GDPR untuk melindungi data
+                        minat dan bakat siswa.
                     </p>
                     <div class="text-center">
-                        <span class="bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full text-sm font-medium">🔐 GDPR Compliant</span>
+                        <span class="bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full text-sm font-medium">🔐 GDPR
+                            Compliant</span>
                     </div>
                 </div>
             </div>
@@ -501,7 +729,8 @@
     </section>
 
     <!-- Interactive Demo Section -->
-    <section id="demo" class="py-24 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+    <section id="demo"
+        class="py-24 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-20"></div>
         <div class="container mx-auto px-6 relative z-10">
             <div class="text-center mb-16 fade-in-up">
@@ -509,9 +738,9 @@
                     <span class="text-white text-sm font-medium">🎮 Interactive Experience</span>
                 </div>
                 <h2 class="text-4xl lg:text-6xl font-bold text-white mb-6">
-                    Try Our Demo! 
+                    Try Our Demo!
                 </h2>
-                <p class="text-xl text-purple-100 max-w-3xl mx-auto leading-relaxed">
+                <p class="text-xl text-white max-w-3xl mx-auto leading-relaxed">
                     Experience the power of PRESTISIA with our interactive demo
                 </p>
             </div>
@@ -521,10 +750,12 @@
                     <div class="flex justify-center mb-8">
                         <div class="bg-white bg-opacity-20 rounded-2xl p-2">
                             <div class="flex space-x-2">
-                                <button id="demoStudentBtn" class="px-8 py-3 rounded-xl transition-all duration-300 bg-white text-purple-600 font-semibold shadow-lg">
+                                <button id="demoStudentBtn"
+                                    class="px-8 py-3 rounded-xl transition-all duration-300 bg-white text-purple-600 font-semibold shadow-lg">
                                     👨‍🎓 Student View
                                 </button>
-                                <button id="demoTeacherBtn" class="px-8 py-3 rounded-xl transition-all duration-300 text-white hover:bg-white hover:bg-opacity-20 font-semibold">
+                                <button id="demoTeacherBtn"
+                                    class="px-8 py-3 rounded-xl transition-all duration-300 text-white hover:bg-white hover:bg-opacity-20 font-semibold">
                                     👩‍🏫 Teacher View
                                 </button>
                             </div>
@@ -540,7 +771,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white">
                                         <div class="text-4xl mb-3">🎯</div>
-                                        <div class="text-xl font-bold">Career Test</div>
+                                        <div class="text-xl font-bold">Minat & Bakat Test</div>
                                         <div class="text-blue-100 text-sm mt-2">85% Complete</div>
                                         <div class="w-full bg-white bg-opacity-30 rounded-full h-2 mt-3">
                                             <div class="bg-white h-2 rounded-full" style="width: 85%"></div>
@@ -555,19 +786,21 @@
                                             <span class="ml-2 text-sm">+15% this month</span>
                                         </div>
                                     </div>
-                                    <div class="bg-gradient-to-r from-yellow-500 to-orange-600 rounded-xl p-6 text-white">
+                                    <div
+                                        class="bg-gradient-to-r from-yellow-500 to-orange-600 rounded-xl p-6 text-white">
                                         <div class="text-4xl mb-3">🏆</div>
                                         <div class="text-xl font-bold">Certificates</div>
                                         <div class="text-yellow-100 text-sm mt-2">3 Available</div>
-                                        <div class="flex items-center mt-3">
-                                            <span class="bg-white bg-opacity-30 px-2 py-1 rounded text-xs">Download</span>
+                                        <div class="flex items-center justify-center mt-3">
+                                            <span
+                                                class="bg-white bg-opacity-30 px-2 py-1 rounded text-xs">Download</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn-primary neon-glow text-lg px-10 py-4">
+                            <a href="login.html#siswa" class="btn-primary neon-glow text-lg px-10 py-4 inline-flex items-center justify-center">
                                 🚀 Start Your Journey
-                            </button>
+                            </a>
                         </div>
 
                         <!-- Teacher Demo Content -->
@@ -595,9 +828,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="bg-gradient-to-r from-green-500 to-blue-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:from-green-400 hover:to-blue-500 transition-all transform hover:scale-105 shadow-lg">
+                            <a href="login.html#guru"
+                                class="bg-gradient-to-r from-green-500 to-blue-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:from-green-400 hover:to-blue-500 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center">
                                 📊 Manage Student Data
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -614,20 +848,22 @@
                     <span class="text-white text-sm font-medium">🌟 Join Thousands of Students</span>
                 </div>
                 <h2 class="text-4xl lg:text-6xl font-bold text-white mb-6">
-                    Ready to Discover Your Future?
+                    Ready to Discover Your Talents?
                 </h2>
                 <p class="text-xl text-orange-100 mb-12 max-w-2xl mx-auto leading-relaxed">
-                    Join thousands of students who have already discovered their passion with PRESTISIA!
+                    Join thousands of students who have already discovered their interests and talents with PRESTISIA!
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center gap-6 mb-12">
-                    <button class="bg-white text-orange-600 px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2">
+                    <a href="login.html#siswa"
+                        class="bg-white text-orange-600 px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2">
                         <span>🎯</span>
                         Register as Student
-                    </button>
-                    <button class="bg-purple-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-purple-700 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2">
+                    </a>
+                    <a href="login.html#guru"
+                        class="bg-purple-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-purple-700 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2">
                         <span>👩‍🏫</span>
                         Register as Teacher
-                    </button>
+                    </a>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-white">
                     <div class="text-center">
@@ -653,25 +889,30 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                 <div>
                     <div class="flex items-center space-x-3 mb-6">
-                        <div class="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl flex items-center justify-center">
-                            <span class="text-white font-bold text-lg">P</span>
+                        <div
+                            class="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl flex items-center justify-center">
+                            <img src="logo.png" alt="PRESTISIA Logo" class="w-6 h-6">
                         </div>
                         <div>
                             <span class="text-xl font-bold">PRESTISIA</span>
-                            <div class="text-gray-400 text-xs">Platform Karir Digital</div>
+                            <div class="text-gray-400 text-xs">Platform Minat & Bakat Digital</div>
                         </div>
                     </div>
                     <p class="text-gray-400 leading-relaxed">
-                        Empowering Indonesian students to discover their career passion through innovative AI-powered platform.
+                        Empowering Indonesian students to discover their interests and develop their talents through
+                        innovative AI-powered platform.
                     </p>
                     <div class="flex space-x-4 mt-6">
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-colors">
+                        <a href="#"
+                            class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-colors">
                             <span>📧</span>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-colors">
+                        <a href="#"
+                            class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-colors">
                             <span>📱</span>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-colors">
+                        <a href="#"
+                            class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-colors">
                             <span>🌐</span>
                         </a>
                     </div>
@@ -679,7 +920,7 @@
                 <div>
                     <h3 class="font-bold text-lg mb-6">Platform</h3>
                     <ul class="space-y-3 text-gray-400">
-                        <li><a href="#" class="hover:text-white transition-colors">Career Assessment</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Interest & Talent Assessment</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Performance Analytics</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Digital Certificates</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">AI Recommendations</a></li>
@@ -696,28 +937,60 @@
                 </div>
                 <div>
                     <h3 class="font-bold text-lg mb-6">Contact Info</h3>
-                    <ul class="space-y-3 text-gray-400">
-                        <li class="flex items-center gap-2">
-                            <span>📧</span>
-                            <span>hello@prestisia.id</span>
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <span>📱</span>
-                            <span>+62 800 PRESTISIA</span>
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <span>🌐</span>
-                            <span>www.prestisia.id</span>
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <span>📍</span>
-                            <span>Jakarta, Indonesia</span>
-                        </li>
-                    </ul>
+                    <div class="space-y-4 text-gray-400">
+                        <div>
+                            <h4 class="text-white font-semibold mb-2">MTs Muhammadiyah 1 Samarinda</h4>
+                            <div class="space-y-2">
+                                <div class="flex items-start gap-2">
+                                    <span>🎓</span>
+                                    <span class="text-sm">Berakhlak Mulia, Trampil dan Berwawasan Qur'ani</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span>🏅</span>
+                                    <span class="text-sm">Qualified Dream School</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span>📱</span>
+                                    <a href="https://wa.me/6281234777686" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       class="hover:text-green-400 transition-colors duration-300 underline decoration-dotted underline-offset-2">
+                                        08 1234 777 686
+                                    </a>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <span>📍</span>
+                                    <a href="https://www.google.com/maps/place/Madrasah+Tsanawiyah+Muhammadiyah+1+Samarinda/data=!4m2!3m1!1s0x0:0x5ed527772974498e?sa=X&ved=1t:2428&ictx=111" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       class="text-sm hover:text-white transition-colors duration-300 underline decoration-dotted underline-offset-2">
+                                        Jl.A.W.Syahranie RT.25 Kel.Air Hitam, Samarinda, Kalimantan Timur
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
-                <p>&copy; 2024 PRESTISIA. Made with ❤️ for Indonesian students. All rights reserved.</p>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-4">
+                    <p>&copy; 2024 PRESTISIA. Made with ❤️ for Indonesian students. All rights reserved.</p>
+                    <div class="flex items-center gap-2">
+                        <span>•</span>
+                        <span>Created by</span>
+                        <a href="https://mustdhiya-io.vercel.app/" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           class="text-purple-400 hover:text-purple-300 font-semibold transition-colors duration-300 flex items-center gap-2">
+                            <img src="logoCp.png" alt="Creator Logo" class="w-5 h-5 rounded-full">
+                            Must Dhiya' Muhammad Fauzan Nur Ilham
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
@@ -768,7 +1041,7 @@
             demoStudentBtn.classList.remove('text-white');
             demoTeacherBtn.classList.remove('bg-white', 'text-purple-600', 'shadow-lg');
             demoTeacherBtn.classList.add('text-white');
-            
+
             teacherDemo.classList.add('hidden');
             studentDemo.classList.remove('hidden');
         }
@@ -778,7 +1051,7 @@
             demoTeacherBtn.classList.remove('text-white');
             demoStudentBtn.classList.remove('bg-white', 'text-purple-600', 'shadow-lg');
             demoStudentBtn.classList.add('text-white');
-            
+
             studentDemo.classList.add('hidden');
             teacherDemo.classList.remove('hidden');
         }
@@ -811,7 +1084,7 @@
 
         window.addEventListener('scroll', () => {
             const currentScrollY = window.scrollY;
-            
+
             if (currentScrollY > 100) {
                 navbar.style.background = 'rgba(15, 15, 35, 0.95)';
                 navbar.style.borderBottom = '1px solid rgba(255, 255, 255, 0.1)';
@@ -826,18 +1099,18 @@
             } else {
                 navbar.style.transform = 'translateY(0)';
             }
-            
+
             lastScrollY = currentScrollY;
         });
 
         // Enhanced card hover effects
         document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
+            card.addEventListener('mouseenter', function () {
                 this.style.transform = 'translateY(-12px)';
                 this.style.boxShadow = '0 32px 64px -12px rgba(0, 0, 0, 0.35)';
             });
-            
-            card.addEventListener('mouseleave', function() {
+
+            card.addEventListener('mouseleave', function () {
                 this.style.transform = 'translateY(0)';
                 this.style.boxShadow = '';
             });
@@ -852,7 +1125,7 @@
         window.addEventListener('scroll', () => {
             const scrolled = window.pageYOffset;
             const parallaxElements = document.querySelectorAll('.floating');
-            
+
             parallaxElements.forEach(element => {
                 const speed = 0.5;
                 element.style.transform = `translateY(${scrolled * speed}px)`;
@@ -860,4 +1133,5 @@
         });
     </script>
 </body>
+
 </html>
