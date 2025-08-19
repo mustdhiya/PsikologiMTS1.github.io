@@ -271,6 +271,298 @@
                 transform: translateX(5px);
             }
         }
+
+        /* ✨ Additional Animation & Transitions */
+        .slide-in-up {
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse-slow {
+            animation: pulse 3s infinite;
+        }
+
+        /* ✨ Enhanced UI Elements */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1);
+        }
+
+        /* ✨ Custom Gradient Buttons */
+        .btn-gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient-primary:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(118, 75, 162, 0.3);
+        }
+
+        .btn-gradient-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .btn-gradient-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .btn-gradient-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        /* ✨ Mobile Optimization */
+        @media (max-width: 768px) {
+            .sidebar-mobile {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar-mobile.open {
+                transform: translateX(0);
+            }
+
+            .mobile-metric {
+                padding: 1rem;
+            }
+
+            .mobile-chart {
+                height: 250px;
+            }
+        }
+
+        /* ✨ Chart Container Enhancements */
+        .chart-container {
+            position: relative;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ✨ Activity Timeline */
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(180deg, #e2e8f0, #cbd5e1);
+        }
+
+        .timeline-item:last-child::before {
+            height: 20px;
+        }
+
+        /* ✨ Status Indicators */
+        .status-indicator {
+            position: relative;
+        }
+
+        .status-indicator::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        /* ✨ Data Visualization Enhancements */
+        .data-widget {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .data-widget:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .widget-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        /* ✨ Interactive Elements */
+        .interactive-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .interactive-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .interactive-card:hover::before {
+            left: 100%;
+        }
+
+        /* ✨ Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 45;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ✨ Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        /* ✨ Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ✨ Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 45;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            z-index: 46;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        /* ✨ Live Chart Updates */
+        .chart-updating {
+            position: relative;
+        }
+
+        .chart-updating::after {
+            content: '🔄';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* ✨ Progress Bars */
+        .progress-bar {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            height: 4px;
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        /* ✨ Confetti Animation */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #3b82f6;
+            animation: confetti-fall 3s linear infinite;
+            z-index: 55;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
     </style>
 </head>
 
@@ -300,22 +592,47 @@
         </div>
     </div>
 
+    <!-- ✨ Mobile Menu Overlay -->
+    <div id="mobileOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden md:hidden backdrop-blur-sm"
+        onclick="toggleMobileMenu()"></div>
+
     <!-- ✨ Enhanced Navigation -->
     <nav class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white shadow-2xl sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center space-x-4">
+                    <button class="md:hidden text-white hover:text-blue-200 transition-colors p-2 rounded-lg"
+                        onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
                     <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                            <i class="fas fa-graduation-cap text-2xl"></i>
+                        <div
+                            class="w-12 h-12 bg-white bg-opacity-90 rounded-xl flex items-center justify-center overflow-hidden border border-white border-opacity-30 shadow-lg">
+                            <img src="logo.png" alt="Logo PRESTISIA" class="w-15 h-15 object-contain">
                         </div>
                         <div>
-                            <h1 class="text-xl font-bold">RMIB Career Mapping</h1>
-                            <p class="text-blue-200 text-xs">Sistem Pemetaan Minat Karir - MTs</p>
+                            <h1 class="text-xl font-bold">PRESTISIA</h1>
+                            <p class="text-blue-200 text-xs">Sistem Pemetaan Minat dan Bakat - MTs Muhammadiyah 1
+                                Samarinda</p>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
+                    <!-- ✨ Quick Actions -->
+                    <div class="hidden lg:flex items-center space-x-2">
+                        <button
+                            class="bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg text-sm transition-all flex items-center space-x-2">
+                            <i class="fas fa-bell"></i>
+                            <span class="hidden xl:inline">3 Notifikasi</span>
+                        </button>
+                        <button
+                            class="bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg text-sm transition-all flex items-center space-x-2">
+                            <i class="fas fa-download"></i>
+                            <span class="hidden xl:inline">Export</span>
+                        </button>
+                    </div>
+
+                    <!-- ✨ User Profile -->
                     <div class="flex items-center space-x-3 bg-white bg-opacity-10 rounded-full px-4 py-2">
                         <div
                             class="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
@@ -326,215 +643,394 @@
                             <p class="text-xs text-blue-200">Guru BK</p>
                         </div>
                     </div>
-                    <button onclick="goToDashboard()"
-                        class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-lg text-sm transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
-                        <i class="fas fa-arrow-left"></i>
-                        <span class="hidden md:inline">Dashboard</span>
+
+                    <button
+                        class="btn-gradient-danger px-4 py-2 rounded-lg text-sm transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="hidden md:inline">Keluar</span>
                     </button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- ✨ MAIN CONTENT -->
-    <main class="max-w-7xl mx-auto px-4 py-6">
-        <!-- ✨ Header Section -->
-        <div class="mb-8 fade-in">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                    <h1
-                        class="text-3xl md:text-4xl font-bold text-gray-900 mb-2 bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                        Input Skor RMIB
-                    </h1>
-                    <p class="text-gray-600 flex items-center space-x-2">
-                        <i class="fas fa-edit text-purple-500"></i>
-                        <span>Siswa yang belum menyelesaikan tes RMIB</span>
-                        <span class="text-purple-600 font-semibold" id="pendingStudentsCount">14 siswa menunggu</span>
-                    </p>
-                </div>
-                <div class="mt-4 lg:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-                    <button onclick="showInstructions()"
-                        class="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Petunjuk RMIB</span>
-                    </button>
-                    <button onclick="viewCompletedTests()"
-                        class="bg-white border-2 border-gray-300 text-gray-700 hover:border-purple-500 hover:text-purple-600 px-6 py-3 rounded-xl font-medium transition-all flex items-center space-x-2">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Lihat yang Selesai</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ✨ Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover slide-in-right"
-                style="animation-delay: 0.1s">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-semibold text-gray-600 mb-2">Belum Input RMIB</p>
-                        <p class="text-3xl font-bold text-orange-600" id="statsPending">14</p>
-                        <p class="text-xs text-orange-600 mt-1">Perlu segera dikerjakan</p>
+    <div class="flex">
+        <!-- ✨ Enhanced Sidebar -->
+        <aside id="sidebar"
+            class="sidebar-mobile w-72 bg-white shadow-2xl min-h-screen fixed md:relative z-20 custom-scrollbar overflow-y-auto">
+            <div class="p-6">
+                <!-- ✨ Quick Stats in Sidebar -->
+                <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-100 rounded-xl border border-blue-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-bold text-gray-700">Ringkasan Hari Ini</h3>
+                        <div class="status-indicator w-3 h-3 bg-green-500 rounded-full"></div>
                     </div>
-                    <div
-                        class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-clock text-orange-600 text-2xl"></i>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-600 flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Tes Selesai
+                            </span>
+                            <span class="font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs"
+                                id="todayCompleted">12</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-600 flex items-center">
+                                <i class="fas fa-clock text-orange-500 mr-2"></i>
+                                Belum Input
+                            </span>
+                            <span class="font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded-full text-xs"
+                                id="todayPending">8</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-600 flex items-center">
+                                <i class="fas fa-user-plus text-blue-500 mr-2"></i>
+                                Siswa Baru
+                            </span>
+                            <span class="font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs"
+                                id="todayNew">3</span>
+                        </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover slide-in-right"
-                style="animation-delay: 0.2s">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-semibold text-gray-600 mb-2">Input Hari Ini</p>
-                        <p class="text-3xl font-bold text-green-600" id="statsToday">3</p>
-                        <p class="text-xs text-green-600 mt-1">Target: 5 siswa</p>
-                    </div>
-                    <div
-                        class="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-calendar-check text-green-600 text-2xl"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover slide-in-right"
-                style="animation-delay: 0.3s">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-semibold text-gray-600 mb-2">Laki-laki</p>
-                        <p class="text-3xl font-bold text-blue-600" id="statsMale">7</p>
-                        <p class="text-xs text-blue-600 mt-1">50% dari pending</p>
-                    </div>
-                    <div
-                        class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-mars text-blue-600 text-2xl"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover slide-in-right"
-                style="animation-delay: 0.4s">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-semibold text-gray-600 mb-2">Perempuan</p>
-                        <p class="text-3xl font-bold text-pink-600" id="statsFemale">7</p>
-                        <p class="text-xs text-pink-600 mt-1">50% dari pending</p>
-                    </div>
-                    <div
-                        class="w-16 h-16 bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-venus text-pink-600 text-2xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ✨ Search and Filter Section -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6 scale-in"
-            style="animation-delay: 0.5s">
-            <div class="flex flex-col lg:flex-row gap-4">
-                <div class="flex-1">
-                    <div class="relative">
-                        <input type="text" id="searchInput" placeholder="Cari nama siswa, NISN, atau kelas..."
-                            class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                            oninput="searchStudents(this.value)">
-                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <div id="searchClear"
-                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hidden"
-                            onclick="clearSearch()">
-                            <i class="fas fa-times"></i>
+                    <div class="mt-3 pt-3 border-t border-blue-200">
+                        <div class="flex justify-between text-xs text-gray-600 mb-1">
+                            <span>Progress Hari Ini</span>
+                            <span>60%</span>
+                        </div>
+                        <div class="w-full bg-blue-200 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-500"
+                                style="width: 60%"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <select id="classFilter" onchange="filterStudents()"
-                        class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white min-w-32">
-                        <option value="">Semua Kelas</option>
-                        <option value="7A">Kelas 7A</option>
-                        <option value="7B">Kelas 7B</option>
-                        <option value="7C">Kelas 7C</option>
-                        <option value="8A">Kelas 8A</option>
-                        <option value="8B">Kelas 8B</option>
-                        <option value="8C">Kelas 8C</option>
-                        <option value="9A">Kelas 9A</option>
-                        <option value="9B">Kelas 9B</option>
-                        <option value="9C">Kelas 9C</option>
-                    </select>
+                <!-- ✨ Enhanced Navigation Menu -->
+                <nav class="space-y-2">
+                    <a href="#dashboard"
+                        class="nav-link group flex items-center space-x-3 text-blue-600 bg-blue-50 p-3 rounded-xl font-medium border-l-4 border-blue-600 transition-all"
+                        data-page="dashboard">
+                        <div class="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-tachometer-alt text-white text-sm"></i>
+                        </div>
+                        <span>Dashboard</span>
+                        <div class="ml-auto flex items-center space-x-2">
+                            <span class="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">156</span>
+                            <i class="fas fa-chevron-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </a>
 
-                    <select id="genderFilter" onchange="filterStudents()"
-                        class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white min-w-32">
-                        <option value="">Semua Gender</option>
-                        <option value="L">Laki-laki</option>
-                        <option value="P">Perempuan</option>
-                    </select>
+                    <a href="#students"
+                        class="nav-link group flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-3 rounded-xl transition-all"
+                        data-page="students">
+                        <div
+                            class="w-6 h-6 bg-gray-400 group-hover:bg-blue-600 rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-users text-white text-sm"></i>
+                        </div>
+                        <span>Daftar Siswa</span>
+                        <i
+                            class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </a>
 
-                    <select id="priorityFilter" onchange="filterStudents()"
-                        class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white min-w-32">
-                        <option value="">Semua Prioritas</option>
-                        <option value="urgent">Mendesak</option>
-                        <option value="normal">Normal</option>
-                    </select>
+                    <a href="#add-student"
+                        class="nav-link group flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-3 rounded-xl transition-all"
+                        data-page="add-student">
+                        <div
+                            class="w-6 h-6 bg-gray-400 group-hover:bg-green-600 rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-user-plus text-white text-sm"></i>
+                        </div>
+                        <span>Tambah Siswa</span>
+                        <i
+                            class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </a>
+
+                    <a href="#rmib-input"
+                        class="nav-link group flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-3 rounded-xl transition-all"
+                        data-page="rmib-input">
+                        <div
+                            class="w-6 h-6 bg-gray-400 group-hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-edit text-white text-sm"></i>
+                        </div>
+                        <span>Input Skor RMIB</span>
+                        <i
+                            class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </a>
+
+                    <a href="#reports"
+                        class="nav-link group flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-3 rounded-xl transition-all"
+                        data-page="reports">
+                        <div
+                            class="w-6 h-6 bg-gray-400 group-hover:bg-indigo-600 rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-chart-bar text-white text-sm"></i>
+                        </div>
+                        <span>Laporan & Analisis</span>
+                        <i
+                            class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </a>
+                </nav>
+
+                <!-- ✨ Quick Tools -->
+                <div class="mt-8">
+                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Tools Cepat</h4>
+                    <div class="space-y-2">
+                        <button
+                            class="w-full flex items-center space-x-3 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 p-2 rounded-lg transition-all text-sm">
+                            <i class="fas fa-file-export text-indigo-500"></i>
+                            <span>Export Semua Data</span>
+                        </button>
+                        <button
+                            class="w-full flex items-center space-x-3 text-gray-600 hover:text-green-600 hover:bg-green-50 p-2 rounded-lg transition-all text-sm">
+                            <i class="fas fa-file-import text-green-500"></i>
+                            <span>Import Data Excel</span>
+                        </button>
+                        <button
+                            class="w-full flex items-center space-x-3 text-gray-600 hover:text-purple-600 hover:bg-purple-50 p-2 rounded-lg transition-all text-sm">
+                            <i class="fas fa-cog text-purple-500"></i>
+                            <span>Pengaturan</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ✨ Keyboard Shortcuts Help -->
+                <div class="mt-8 p-4 bg-gradient-to-r from-gray-50 to-slate-100 rounded-xl border">
+                    <h4 class="text-xs font-bold text-gray-600 mb-3 flex items-center">
+                        <i class="fas fa-keyboard mr-2"></i>
+                        Pintasan Keyboard
+                    </h4>
+                    <div class="space-y-2 text-xs text-gray-500">
+                        <div class="flex justify-between items-center">
+                            <span>Dashboard</span>
+                            <kbd class="bg-gray-200 px-2 py-1 rounded text-gray-700">Alt+1</kbd>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Daftar Siswa</span>
+                            <kbd class="bg-gray-200 px-2 py-1 rounded text-gray-700">Alt+2</kbd>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Input RMIB</span>
+                            <kbd class="bg-gray-200 px-2 py-1 rounded text-gray-700">Alt+3</kbd>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ✨ System Status -->
+                <div class="mt-6 p-3 bg-green-50 rounded-lg border border-green-200">
+                    <div class="flex items-center space-x-2 text-sm text-green-700">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="font-medium">Sistem Online</span>
+                    </div>
+                    <p class="text-xs text-green-600 mt-1">Terakhir backup: 2 jam lalu</p>
                 </div>
             </div>
-        </div>
-
-        <!-- ✨ Students Waiting for RMIB Input Table -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden bounce-in"
-            style="animation-delay: 0.6s">
-            <div class="bg-gradient-to-r from-purple-50 to-indigo-100 p-6 border-b border-gray-200">
-                <div class="flex items-center justify-between">
+        </aside>
+        <!-- ✨ MAIN DASHBOARD CONTENT -->
+        <main class="flex-1 p-4 md:p-6 transition-all duration-300" id="mainContent">
+            <!-- ✨ Header Section -->
+            <div class="mb-8 fade-in">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-list-ul text-purple-600 mr-3"></i>
-                            Siswa Menunggu Input RMIB
-                        </h2>
-                        <p class="text-gray-600 mt-1">Daftar siswa yang belum menyelesaikan tes RMIB</p>
+                        <h1
+                            class="text-3xl md:text-4xl font-bold text-gray-900 mb-2 bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                            Input Skor RMIB
+                        </h1>
+                        <p class="text-gray-600 flex items-center space-x-2">
+                            <i class="fas fa-edit text-purple-500"></i>
+                            <span>Siswa yang belum menyelesaikan tes RMIB</span>
+                            <span class="text-purple-600 font-semibold" id="pendingStudentsCount">14 siswa
+                                menunggu</span>
+                        </p>
                     </div>
-                    <div class="text-right">
-                        <div class="text-2xl font-bold text-purple-600" id="waitingCount">14</div>
-                        <div class="text-sm text-gray-600">Siswa Menunggu</div>
+                    <div class="mt-4 lg:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                        <button onclick="showInstructions()"
+                            class="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Petunjuk RMIB</span>
+                        </button>
+                        <button onclick="viewCompletedTests()"
+                            class="bg-white border-2 border-gray-300 text-gray-700 hover:border-purple-500 hover:text-purple-600 px-6 py-3 rounded-xl font-medium transition-all flex items-center space-x-2">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Lihat yang Selesai</span>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
-                        <tr>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                No</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
-                                onclick="sortTable('name')">
-                                <div class="flex items-center space-x-1">
-                                    <span>Siswa</span>
-                                    <i class="fas fa-sort text-gray-400"></i>
-                                </div>
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Kelas</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Jenis Kelamin</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Prioritas</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Tanggal Target</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Aksi</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Kelola Prestasi</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Preview Hasil</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentsTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Students data will be populated by JavaScript -->
-                    </tbody>
-                </table>
+            <!-- ✨ Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover slide-in-right"
+                    style="animation-delay: 0.1s">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-600 mb-2">Belum Input RMIB</p>
+                            <p class="text-3xl font-bold text-orange-600" id="statsPending">14</p>
+                            <p class="text-xs text-orange-600 mt-1">Perlu segera dikerjakan</p>
+                        </div>
+                        <div
+                            class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-clock text-orange-600 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover slide-in-right"
+                    style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-600 mb-2">Input Hari Ini</p>
+                            <p class="text-3xl font-bold text-green-600" id="statsToday">3</p>
+                            <p class="text-xs text-green-600 mt-1">Target: 5 siswa</p>
+                        </div>
+                        <div
+                            class="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-calendar-check text-green-600 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover slide-in-right"
+                    style="animation-delay: 0.3s">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-600 mb-2">Laki-laki</p>
+                            <p class="text-3xl font-bold text-blue-600" id="statsMale">7</p>
+                            <p class="text-xs text-blue-600 mt-1">50% dari pending</p>
+                        </div>
+                        <div
+                            class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-mars text-blue-600 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover slide-in-right"
+                    style="animation-delay: 0.4s">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-600 mb-2">Perempuan</p>
+                            <p class="text-3xl font-bold text-pink-600" id="statsFemale">7</p>
+                            <p class="text-xs text-pink-600 mt-1">50% dari pending</p>
+                        </div>
+                        <div
+                            class="w-16 h-16 bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-venus text-pink-600 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </main>
+
+            <!-- ✨ Search and Filter Section -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6 scale-in"
+                style="animation-delay: 0.5s">
+                <div class="flex flex-col lg:flex-row gap-4">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <input type="text" id="searchInput" placeholder="Cari nama siswa, NISN, atau kelas..."
+                                class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                                oninput="searchStudents(this.value)">
+                            <i
+                                class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <div id="searchClear"
+                                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hidden"
+                                onclick="clearSearch()">
+                                <i class="fas fa-times"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <select id="classFilter" onchange="filterStudents()"
+                            class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white min-w-32">
+                            <option value="">Semua Kelas</option>
+                            <option value="7A">Kelas 7A</option>
+                            <option value="7B">Kelas 7B</option>
+                            <option value="7C">Kelas 7C</option>
+                            <option value="8A">Kelas 8A</option>
+                            <option value="8B">Kelas 8B</option>
+                            <option value="8C">Kelas 8C</option>
+                            <option value="9A">Kelas 9A</option>
+                            <option value="9B">Kelas 9B</option>
+                            <option value="9C">Kelas 9C</option>
+                        </select>
+
+                        <select id="genderFilter" onchange="filterStudents()"
+                            class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white min-w-32">
+                            <option value="">Semua Gender</option>
+                            <option value="L">Laki-laki</option>
+                            <option value="P">Perempuan</option>
+                        </select>
+
+                        <select id="priorityFilter" onchange="filterStudents()"
+                            class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white min-w-32">
+                            <option value="">Semua Prioritas</option>
+                            <option value="urgent">Mendesak</option>
+                            <option value="normal">Normal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✨ Students Waiting for RMIB Input Table -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden bounce-in"
+                style="animation-delay: 0.6s">
+                <div class="bg-gradient-to-r from-purple-50 to-indigo-100 p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-list-ul text-purple-600 mr-3"></i>
+                                Siswa Menunggu Input RMIB
+                            </h2>
+                            <p class="text-gray-600 mt-1">Daftar siswa yang belum menyelesaikan tes RMIB</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-purple-600" id="waitingCount">14</div>
+                            <div class="text-sm text-gray-600">Siswa Menunggu</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                            <tr>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    No</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
+                                    onclick="sortTable('name')">
+                                    <div class="flex items-center space-x-1">
+                                        <span>Siswa</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Kelas</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Jenis Kelamin</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Prioritas</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Tanggal Target</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Aksi</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Kelola Prestasi</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Preview Hasil</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Students data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <!-- ✨ RMIB INPUT MODAL -->
     <div id="rmibModal"
@@ -550,7 +1046,8 @@
                         </div>
                         <div>
                             <h2 class="text-2xl font-bold text-gray-800" id="modalStudentName">Budi Santoso</h2>
-                            <p class="text-gray-600" id="modalStudentInfo">Kelas 7A • NISN: 1234567892 • Laki-laki</p>
+                            <p class="text-gray-600" id="modalStudentInfo">Kelas 7A • NISN: 1234567892 • Laki-laki
+                            </p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-3">
@@ -576,7 +1073,8 @@
                             <div class="flex-1">
                                 <h3 class="font-bold text-yellow-800 mb-2">Petunjuk Pengisian RMIB</h3>
                                 <ul class="text-yellow-700 text-sm space-y-1">
-                                    <li>• Berikan ranking 1-12 untuk setiap kategori minat (1 = paling tidak diminati,
+                                    <li>• Berikan ranking 1-12 untuk setiap kategori minat (1 = paling tidak
+                                        diminati,
                                         12 = paling diminati)</li>
                                     <li>• Setiap nomor ranking (1-12) hanya boleh digunakan SATU kali</li>
                                     <li>• Form berbeda untuk siswa laki-laki dan perempuan</li>
@@ -637,7 +1135,8 @@
                             </div>
                         </div>
                         <div class="mt-4 text-sm text-gray-600">
-                            <p><strong>Catatan:</strong> Setiap baris dijumlahkan untuk mendapatkan skor kategori. Skor
+                            <p><strong>Catatan:</strong> Setiap baris dijumlahkan untuk mendapatkan skor kategori.
+                                Skor
                                 terendah menunjukkan minat tertinggi.</p>
                         </div>
                     </div>
@@ -692,21 +1191,25 @@
     </div>
 
     <!-- ✨ KELOLA PRESTASI MODAL -->
-    <div id="kelolaPrestasiModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-50 hidden">
+    <div id="kelolaPrestasiModal"
+        class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl max-w-6xl w-full mx-4 max-h-screen overflow-hidden">
             <div class="bg-gradient-to-r from-yellow-50 to-orange-100 p-6 border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center">
+                        <div
+                            class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center">
                             <i class="fas fa-trophy text-white text-xl"></i>
                         </div>
                         <div>
                             <h3 class="text-2xl font-bold text-gray-800">Kelola Prestasi Siswa</h3>
-                            <p class="text-gray-600" id="kelolaPrestasiStudentInfo">Tambah, edit, atau hapus prestasi siswa</p>
+                            <p class="text-gray-600" id="kelolaPrestasiStudentInfo">Tambah, edit, atau hapus
+                                prestasi siswa</p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <button onclick="openAddPrestasiForm()" class="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-4 py-2 rounded-lg text-sm transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
+                        <button onclick="openAddPrestasiForm()"
+                            class="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-4 py-2 rounded-lg text-sm transition-all transform hover:scale-105 shadow-lg flex items-center space-x-2">
                             <i class="fas fa-plus"></i>
                             <span>Tambah Prestasi</span>
                         </button>
@@ -726,16 +1229,20 @@
                             <h4 class="font-bold text-blue-800 mb-2">Pengaruh Prestasi pada RMIB</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-blue-700 text-sm">
                                 <div>
-                                    <p><strong>Akademik:</strong> Mengurangi skor Scientific (-5) & Literary (-5)</p>
+                                    <p><strong>Akademik:</strong> Mengurangi skor Scientific (-5) & Literary (-5)
+                                    </p>
                                     <p><strong>Olahraga:</strong> Mengurangi skor Outdoor (-5) & Practical (-5)</p>
                                     <p><strong>Seni:</strong> Mengurangi skor Aesthetic (-5) & Musical (-5)</p>
                                 </div>
                                 <div>
-                                    <p><strong>Organisasi:</strong> Mengurangi skor Personal Contact (-5) & Social Service (-5)</p>
-                                    <p><strong>Teknologi:</strong> Mengurangi skor Mechanical (-5) & Computational (-5)</p>
+                                    <p><strong>Organisasi:</strong> Mengurangi skor Personal Contact (-5) & Social
+                                        Service (-5)</p>
+                                    <p><strong>Teknologi:</strong> Mengurangi skor Mechanical (-5) & Computational
+                                        (-5)</p>
                                 </div>
                             </div>
-                            <p class="text-xs mt-2 text-blue-600">*Skor lebih rendah = minat lebih tinggi dalam sistem RMIB</p>
+                            <p class="text-xs mt-2 text-blue-600">*Skor lebih rendah = minat lebih tinggi dalam
+                                sistem RMIB</p>
                         </div>
                     </div>
                 </div>
@@ -757,16 +1264,19 @@
     </div>
 
     <!-- ✨ FORM PRESTASI MODAL -->
-    <div id="formPrestasiModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-50 hidden">
+    <div id="formPrestasiModal"
+        class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl max-w-4xl w-full mx-4 max-h-screen overflow-hidden">
             <div class="bg-gradient-to-r from-green-50 to-teal-100 p-6 border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center">
+                        <div
+                            class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center">
                             <i class="fas fa-award text-white text-xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-gray-800" id="formPrestasiTitle">Tambah Prestasi Baru</h3>
+                            <h3 class="text-2xl font-bold text-gray-800" id="formPrestasiTitle">Tambah Prestasi Baru
+                            </h3>
                             <p class="text-gray-600">Isi detail prestasi siswa</p>
                         </div>
                     </div>
@@ -784,7 +1294,9 @@
                             <i class="fas fa-medal text-yellow-500 mr-1"></i>
                             Jenis Prestasi *
                         </label>
-                        <select id="jenisPrestasiSelect" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white" onchange="updatePrestasiDescription()" required>
+                        <select id="jenisPrestasiSelect"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+                            onchange="updatePrestasiDescription()" required>
                             <option value="">Pilih jenis prestasi...</option>
                             <option value="akademik">Prestasi Akademik</option>
                             <option value="olahraga">Prestasi Olahraga</option>
@@ -792,7 +1304,7 @@
                             <option value="organisasi">Prestasi Organisasi</option>
                             <option value="teknologi">Prestasi Teknologi</option>
                         </select>
-                        
+
                         <!-- Deskripsi Otomatis -->
                         <div id="prestasiAutoDescription" class="mt-2 p-3 bg-gray-50 rounded-lg hidden">
                             <div class="text-sm text-gray-600" id="autoDescriptionText"></div>
@@ -806,8 +1318,10 @@
                             <i class="fas fa-trophy text-yellow-500 mr-1"></i>
                             Nama Prestasi *
                         </label>
-                        <input type="text" id="namaPrestasiInput" placeholder="Contoh: Juara 1 Olimpiade Matematika Tingkat Kabupaten" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                        <input type="text" id="namaPrestasiInput"
+                            placeholder="Contoh: Juara 1 Olimpiade Matematika Tingkat Kabupaten"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            required>
                     </div>
 
                     <!-- Tingkat Prestasi -->
@@ -816,7 +1330,9 @@
                             <i class="fas fa-layer-group text-purple-500 mr-1"></i>
                             Tingkat Prestasi *
                         </label>
-                        <select id="tingkatPrestasiSelect" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white" required>
+                        <select id="tingkatPrestasiSelect"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+                            required>
                             <option value="">Pilih tingkat prestasi...</option>
                             <option value="sekolah">Tingkat Sekolah</option>
                             <option value="kecamatan">Tingkat Kecamatan</option>
@@ -834,7 +1350,8 @@
                                 <i class="fas fa-star text-yellow-500 mr-1"></i>
                                 Peringkat
                             </label>
-                            <select id="peringkatSelect" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white">
+                            <select id="peringkatSelect"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white">
                                 <option value="">Pilih peringkat...</option>
                                 <option value="1">Juara 1</option>
                                 <option value="2">Juara 2</option>
@@ -843,14 +1360,15 @@
                                 <option value="peserta">Peserta</option>
                             </select>
                         </div>
-                        
+
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">
                                 <i class="fas fa-calendar text-blue-500 mr-1"></i>
                                 Tahun Perolehan *
                             </label>
                             <input type="number" id="tahunPrestasiInput" min="2020" max="2025" value="2024"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                required>
                         </div>
                     </div>
 
@@ -860,7 +1378,8 @@
                             <i class="fas fa-certificate text-green-500 mr-1"></i>
                             Upload Sertifikat
                         </label>
-                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-green-400 transition-colors">
+                        <div
+                            class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-green-400 transition-colors">
                             <div class="space-y-1 text-center">
                                 <div id="uploadPreview" class="hidden">
                                     <img id="previewImage" class="mx-auto h-32 w-auto rounded-lg" alt="Preview">
@@ -869,9 +1388,11 @@
                                 <div id="uploadPlaceholder">
                                     <i class="fas fa-cloud-upload-alt text-gray-400 text-4xl"></i>
                                     <div class="flex text-sm text-gray-600">
-                                        <label for="sertifikatUpload" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
+                                        <label for="sertifikatUpload"
+                                            class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
                                             <span>Upload file</span>
-                                            <input id="sertifikatUpload" name="sertifikat" type="file" class="sr-only" accept="image/*,application/pdf" onchange="previewFile(this)">
+                                            <input id="sertifikatUpload" name="sertifikat" type="file" class="sr-only"
+                                                accept="image/*,application/pdf" onchange="previewFile(this)">
                                         </label>
                                         <p class="pl-1">atau drag and drop</p>
                                     </div>
@@ -887,8 +1408,9 @@
                             <i class="fas fa-sticky-note text-orange-500 mr-1"></i>
                             Keterangan Tambahan
                         </label>
-                        <textarea id="keteranganTextarea" rows="3" placeholder="Deskripsi detail tentang prestasi ini..."
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"></textarea>
+                        <textarea id="keteranganTextarea" rows="3"
+                            placeholder="Deskripsi detail tentang prestasi ini..."
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"></textarea>
                     </div>
                 </div>
 
@@ -898,10 +1420,12 @@
                             <span class="text-red-500">*</span> Wajib diisi
                         </div>
                         <div class="flex space-x-3">
-                            <button type="button" onclick="closeFormPrestasiModal()" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all font-medium">
+                            <button type="button" onclick="closeFormPrestasiModal()"
+                                class="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all font-medium">
                                 Batal
                             </button>
-                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-green-600 to-teal-700 text-white rounded-xl hover:from-green-700 hover:to-teal-800 transition-all transform hover:scale-105 shadow-lg font-medium flex items-center space-x-2">
+                            <button type="submit"
+                                class="px-6 py-3 bg-gradient-to-r from-green-600 to-teal-700 text-white rounded-xl hover:from-green-700 hover:to-teal-800 transition-all transform hover:scale-105 shadow-lg font-medium flex items-center space-x-2">
                                 <i class="fas fa-save"></i>
                                 <span id="submitButtonText">Simpan Prestasi</span>
                             </button>
@@ -913,12 +1437,14 @@
     </div>
 
     <!-- ✨ PREVIEW HASIL MODAL -->
-    <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-50 hidden">
+    <div id="previewModal"
+        class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl max-w-5xl w-full mx-4 max-h-screen overflow-hidden">
             <div class="bg-gradient-to-r from-green-50 to-teal-100 p-6 border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center">
+                        <div
+                            class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center">
                             <i class="fas fa-chart-line text-white text-xl"></i>
                         </div>
                         <div>
@@ -954,11 +1480,16 @@
                         <table class="w-full border border-gray-200 rounded-xl overflow-hidden">
                             <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
                                 <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
-                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Skor Asli</th>
-                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Bonus</th>
-                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Skor Final</th>
-                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Perubahan</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Kategori</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                                        Skor Asli</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                                        Bonus</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                                        Skor Final</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                                        Perubahan</th>
                                 </tr>
                             </thead>
                             <tbody id="comparisonTable" class="bg-white divide-y divide-gray-200">
@@ -991,7 +1522,8 @@
                     <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
                         <h4 class="font-bold text-blue-800 mb-3">Apa itu RMIB?</h4>
                         <p class="text-blue-700 text-sm">
-                            Rothwell Miller Interest Blank (RMIB) adalah tes psikologi untuk mengukur minat seseorang
+                            Rothwell Miller Interest Blank (RMIB) adalah tes psikologi untuk mengukur minat
+                            seseorang
                             terhadap berbagai bidang pekerjaan dan aktivitas. Tes ini membantu siswa memahami
                             kecenderungan
                             minat mereka untuk perencanaan karir masa depan.
@@ -1045,7 +1577,7 @@
             </div>
         </div>
     </div>
-
+    <script src="header.js"></script>
     <script>
         // ✨ Global Variables
         let studentsData = [];
@@ -1350,11 +1882,11 @@
         function editPrestasi(index) {
             const studentPrestasi = prestasiData[currentPrestasiStudent.id];
             const prestasi = studentPrestasi[index];
-            
+
             currentEditingPrestasi = index;
             document.getElementById('formPrestasiTitle').textContent = 'Edit Prestasi';
             document.getElementById('submitButtonText').textContent = 'Update Prestasi';
-            
+
             // Fill form with existing data
             document.getElementById('jenisPrestasiSelect').value = prestasi.jenis;
             document.getElementById('namaPrestasiInput').value = prestasi.nama;
@@ -1362,7 +1894,7 @@
             document.getElementById('peringkatSelect').value = prestasi.peringkat || '';
             document.getElementById('tahunPrestasiInput').value = prestasi.tahun;
             document.getElementById('keteranganTextarea').value = prestasi.keterangan || '';
-            
+
             updatePrestasiDescription();
             document.getElementById('formPrestasiModal').classList.remove('hidden');
         }
@@ -1370,7 +1902,7 @@
         function deletePrestasi(index) {
             const studentPrestasi = prestasiData[currentPrestasiStudent.id];
             const prestasi = studentPrestasi[index];
-            
+
             if (confirm(`Apakah Anda yakin ingin menghapus prestasi "${prestasi.nama}"?`)) {
                 studentPrestasi.splice(index, 1);
                 renderPrestasiList();
@@ -1395,7 +1927,7 @@
             if (jenis && PRESTASI_CATEGORIES[jenis]) {
                 const category = PRESTASI_CATEGORIES[jenis];
                 const bonusText = Object.entries(category.bonus).map(([cat, bonus]) => `${cat} -${bonus}`).join(', ');
-                
+
                 descText.textContent = category.description;
                 effectText.textContent = `Pengaruh pada RMIB: ${bonusText} poin`;
                 descContainer.classList.remove('hidden');
@@ -1408,7 +1940,7 @@
             const file = input.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     if (file.type.startsWith('image/')) {
                         document.getElementById('previewImage').src = e.target.result;
                         document.getElementById('fileName').textContent = file.name;
@@ -1432,9 +1964,9 @@
         }
 
         // Handle form submission
-        document.getElementById('prestasiForm').addEventListener('submit', function(e) {
+        document.getElementById('prestasiForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             const formData = {
                 jenis: document.getElementById('jenisPrestasiSelect').value,
                 nama: document.getElementById('namaPrestasiInput').value,
@@ -1579,9 +2111,9 @@
                         <td class="px-4 py-3 text-center font-bold text-purple-600">${finalScore}</td>
                         <td class="px-4 py-3 text-center">
                             ${bonus > 0 ?
-                                '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"><i class="fas fa-arrow-up mr-1"></i>Naik</span>' :
-                                '<span class="text-gray-400 text-xs">Tidak berubah</span>'
-                            }
+                        '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"><i class="fas fa-arrow-up mr-1"></i>Naik</span>' :
+                        '<span class="text-gray-400 text-xs">Tidak berubah</span>'
+                    }
                         </td>
                     </tr>
                 `;
@@ -1686,10 +2218,10 @@
             currentRankings = {};
             usedRankings = [];
             updateModalHeader();
-            
+
             const modalHeader = document.getElementById('modalHeader');
             modalHeader.className = `p-6 border-b border-gray-200 ${currentStudent.gender === 'L' ? 'form-male' : 'form-female'}`;
-            
+
             populateRMIBForm();
             document.getElementById('rmibModal').classList.remove('hidden');
         }
