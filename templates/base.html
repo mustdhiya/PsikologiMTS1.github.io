@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -7,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="logo.png">
+    <link rel="icon" type="image/x-icon" href="{% static 'logo.png' %}">
     <style>
         /* ✨ Enhanced Animations & Transitions */
         .fade-in {
@@ -666,7 +667,8 @@
     </div>
 
 
-    <script src="header.js"></script>
+    <script src="{% static 'header.js' %}"></script>
+
     
 </body>
 </html>
