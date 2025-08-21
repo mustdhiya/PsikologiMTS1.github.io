@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMIB Print Templates - Enhanced Visual Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <style>
+        /* ✨ Enhanced Typography */
+        body {
+            font-family: 'Inter', sans-serif;
+            font-feature-settings: 'kern' 1, 'liga' 1;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* ✨ Smooth Animations */
+        * {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* ✨ Print Optimizations */
+        @media print {
+            body { 
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+                font-size: 12pt;
+                line-height: 1.4;
+            }
+            .no-print { display: none !important; }
+            .print-page {
+                page-break-after: always;
+                margin: 0;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+            .print-page:last-child {
+                page-break-after: avoid;
+            }
+            @page {
+                size: A4;
+                margin: 15mm;
+            }
+        }
+        
+        /* ✨ Enhanced Certificate Styles */
+        .certificate-container {
+            background: linear-gradient(135deg, 
+                #667eea 0%, 
+                #764ba2 25%, 
+                #f093fb 50%, 
+                #f5576c 75%, 
+                #4facfe 100%);
+            padding: 3px;
+            border-radius: 24px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .certificate-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                rgba(255, 255, 255, 0.1) 90deg,
+                transparent 180deg,
+                rgba(255, 255, 255, 0.1) 270deg,
+                transparent 360deg
+            );
+            animation: rotate 8s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .certificate-inner {
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+            border-radius: 20px;
+            padding: 60px 50px;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .certificate-ornament {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, #ffd700, #ffed4a, #ffd700);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 10px 30px rgba(255, 215, 0, 0.3),
+                0 0 0 3px rgba(255, 255, 255, 0.8),
+                0 0 0 6px #ffd700;
+        }
+        
+        .certificate-ornament::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px dashed rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+        }
+        
+        .certificate-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-12deg);
+            font-size: 180px;
+            font-weight: 900;
+            color: rgba(0, 0, 0, 0.02);
+            z-index: 0;
+            pointer-events: none;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* ✨ Enhanced Summary Sheet Styles */
+        .summary-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            padding: 3px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .summary-inner {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 17px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .summary-inner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(50px, -50px);
+        }
+        
+        .data-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                0 1px 0 rgba(255, 255, 255, 0.4) inset;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .data-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+        }
+        
+        /* ✨ Enhanced Parent Report Styles */
+        .parent-container {
+            background: linear-gradient(135deg, #e3ffe7 0%, #d9e7ff 100%);
+            border-radius: 20px;
+            padding: 3px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .parent-inner {
+            background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+            border-radius: 17px;
+            padding: 40px;
+            position: relative;
+        }
+        
+        .parent-accent {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background: linear-gradient(180deg, #10b981, #059669, #047857);
+            border-radius: 0 3px 3px 0;
+        }
+        
+        /* ✨ Interactive Elements */
+        .interactive-card {
+            transform: translateY(0);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .interactive-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* ✨ Enhanced Table Styles */
+        .enhanced-table {
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .enhanced-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .enhanced-table thead th {
+            color: white;
+            font-weight: 600;
+            padding: 20px;
+            text-align: left;
+            border: none;
+        }
+        
+        .enhanced-table tbody tr {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .enhanced-table tbody tr:nth-child(even) {
+            background: rgba(248, 250, 252, 0.8);
+        }
+        
+        .enhanced-table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .enhanced-table tbody td {
+            padding: 16px 20px;
+            border: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* ✨ Modern Signature Box */
+        .signature-modern {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+            border: 2px dashed rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .signature-modern::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+        }
+        
+        /* ✨ Enhanced QR Code */
+        .qr-modern {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #1f2937, #374151);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .qr-modern::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                rgba(255, 255, 255, 0.1) 45deg,
+                transparent 90deg
+            );
+            animation: qrScan 3s linear infinite;
+        }
+        
+        @keyframes qrScan {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ✨ Enhanced Header Styles */
+        .control-header {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.95) 0%, 
+                rgba(255, 255, 255, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .control-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transform: translateY(0);
+        }
+        
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .control-select {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+        
+        .control-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+        
+        /* ✨ Enhanced Text Gradients */
+        .text-gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .text-gradient-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .text-gradient-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* ✨ Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        /* ✨ Shimmer Effect */
+        @keyframes shimmer {
+            0% { background-position: -200px 0; }
+            100% { background-position: calc(200px + 100%) 0; }
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            background-size: 200px 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        /* ✨ Enhanced Ranking Badges */
+        .rank-badge {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .rank-1 {
+            background: linear-gradient(135deg, #ffd700, #ffed4a);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        .rank-2 {
+            background: linear-gradient(135deg, #c0c0c0, #e5e7eb);
+            box-shadow: 0 8px 20px rgba(192, 192, 192, 0.4);
+            color: #374151;
+        }
+        
+        .rank-3 {
+            background: linear-gradient(135deg, #cd7f32, #f97316);
+            box-shadow: 0 8px 20px rgba(205, 127, 50, 0.4);
+        }
+        
+        /* ✨ Enhanced Content Cards */
+        .content-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                0 1px 0 rgba(255, 255, 255, 0.4) inset;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-white to-cyan-50 min-h-screen">
+    <!-- ✨ Enhanced Header & Controls -->
+    <div class="no-print fixed top-0 left-0 right-0 control-header z-50 p-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-6">
+                <button onclick="goBack()" class="control-button bg-gradient-to-r from-gray-600 to-gray-700">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Kembali</span>
+                </button>
+                <div>
+                    <h1 class="text-2xl font-bold text-gradient-primary font-display">RMIB Print Templates</h1>
+                    <p class="text-sm text-gray-600 font-medium">Professional Certificate & Reports System</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <select id="studentSelect" onchange="loadStudentData()" class="control-select">
+                    <option value="">Pilih Siswa...</option>
+                    <option value="ahmad">Ahmad Rizki Pratama - 8A</option>
+                    <option value="siti">Siti Nurhaliza - 8B</option>
+                    <option value="dewi">Dewi Sartika - 9A</option>
+                    <option value="rino">Rino Pratama - 8C</option>
+                </select>
+                
+                <select id="templateSelect" onchange="showTemplate()" class="control-select">
+                    <option value="certificate">Certificate Template</option>
+                    <option value="summary">Summary Sheet</option>
+                    <option value="parent">Parent Report</option>
+                </select>
+                
+                <button onclick="printTemplate()" class="control-button">
+                    <i class="fas fa-print"></i>
+                    <span>Print</span>
+                </button>
+                
+                <button onclick="downloadPDF()" class="control-button bg-gradient-to-r from-green-600 to-emerald-600">
+                    <i class="fas fa-download"></i>
+                    <span>PDF</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✨ Main Content Container -->
+    <div class="pt-24 p-6">
+        <div class="max-w-6xl mx-auto">
+            
+            <!-- ✨ ENHANCED CERTIFICATE TEMPLATE -->
+            <div id="certificateTemplate" class="template-content print-page mb-12">
+                <div class="certificate-container">
+                    <div class="certificate-inner">
+                        <!-- Enhanced Watermark -->
+                        <div class="certificate-watermark">RMIB</div>
+                        
+                        <!-- Floating Ornament -->
+                        <div class="certificate-ornament absolute -top-10 -right-10 float-animation">
+                            <i class="fas fa-star text-white text-3xl"></i>
+                        </div>
+                        
+                        <!-- Header -->
+                        <div class="text-center mb-12 relative z-10">
+                            <div class="flex justify-center mb-8">
+                                <div class="w-32 h-32 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 rounded-full flex items-center justify-center shadow-2xl">
+                                    <i class="fas fa-graduation-cap text-white text-5xl"></i>
+                                </div>
+                            </div>
+                            <h1 class="font-display text-6xl font-bold text-gradient-primary mb-4">SERTIFIKAT</h1>
+                            <h2 class="text-3xl text-gray-700 font-semibold mb-2">Tes Minat Karir RMIB</h2>
+                            <p class="text-xl text-gray-600 font-medium">Rothwell Miller Interest Blank</p>
+                            <div class="mt-6 w-40 h-1 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 mx-auto rounded-full"></div>
+                        </div>
+                        
+                        <!-- Certificate Body -->
+                        <div class="text-center mb-12 relative z-10">
+                            <p class="text-xl text-gray-700 mb-8 font-medium leading-relaxed">
+                                Dengan bangga kami berikan kepada:
+                            </p>
+                            
+                            <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-8 mb-8 border border-indigo-100">
+                                <h3 id="certStudentName" class="font-display text-5xl font-bold text-gradient-primary mb-6">
+                                    Ahmad Rizki Pratama
+                                </h3>
+                                
+                                <p class="text-lg text-gray-700 mb-8 leading-relaxed">
+                                    Telah menyelesaikan <strong class="text-indigo-600">Tes Minat Karir RMIB</strong> dengan dedikasi tinggi dan memperoleh hasil cemerlang sebagai berikut:
+                                </p>
+                                
+                                <!-- Enhanced Results Display -->
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+                                    <div class="content-card interactive-card p-8 text-center">
+                                        <div class="rank-badge rank-1 mx-auto mb-4">1</div>
+                                        <h4 class="font-bold text-gray-800 text-xl mb-2">Minat Utama</h4>
+                                        <p id="certInterest1" class="text-gradient-primary font-bold text-lg">Scientific</p>
+                                        <p class="text-gray-600 mt-2">Skor: <span id="certScore1" class="font-bold text-2xl text-blue-600">87</span></p>
+                                        <div class="mt-3 w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full" style="width: 87%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="content-card interactive-card p-8 text-center">
+                                        <div class="rank-badge rank-2 mx-auto mb-4">2</div>
+                                        <h4 class="font-bold text-gray-800 text-xl mb-2">Minat Kedua</h4>
+                                        <p id="certInterest2" class="text-gradient-success font-bold text-lg">Medical</p>
+                                        <p class="text-gray-600 mt-2">Skor: <span id="certScore2" class="font-bold text-2xl text-green-600">79</span></p>
+                                        <div class="mt-3 w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-green-500 to-emerald-600 h-2 rounded-full" style="width: 79%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="content-card interactive-card p-8 text-center">
+                                        <div class="rank-badge rank-3 mx-auto mb-4">3</div>
+                                        <h4 class="font-bold text-gray-800 text-xl mb-2">Minat Ketiga</h4>
+                                        <p id="certInterest3" class="text-gradient-warning font-bold text-lg">Computational</p>
+                                        <p class="text-gray-600 mt-2">Skor: <span id="certScore3" class="font-bold text-2xl text-orange-600">74</span></p>
+                                        <div class="mt-3 w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full" style="width: 74%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p class="text-lg text-gray-600 mb-8 font-medium">
+                                Diberikan di <strong class="text-indigo-600">MTs Negeri 1 Bogor</strong><br>
+                                Pada tanggal <strong id="certDate" class="text-indigo-600">15 Januari 2024</strong>
+                            </p>
+                        </div>
+                        
+                        <!-- Enhanced Signatures -->
+                        <div class="flex justify-between items-end mt-16 relative z-10">
+                            <div class="text-center">
+                                <div class="signature-modern mb-6 w-56">
+                                    <p class="text-sm text-gray-600 mb-2 font-medium">Tanda Tangan Siswa</p>
+                                    <div class="h-20 flex items-end justify-center">
+                                        <i class="fas fa-signature text-gray-400 text-3xl"></i>
+                                    </div>
+                                </div>
+                                <div class="border-t-2 border-gradient-to-r from-indigo-500 to-purple-500 pt-3">
+                                    <p class="font-bold text-lg" id="certStudentNameSign">Ahmad Rizki Pratama</p>
+                                    <p class="text-sm text-gray-600 font-medium">Peserta Tes</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="qr-modern mb-4 mx-auto">
+                                    <div class="text-center">
+                                        <i class="fas fa-qrcode text-2xl mb-1"></i>
+                                        <div class="text-xs">VERIFY</div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 font-medium">Kode Verifikasi Digital</p>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="signature-modern mb-6 w-56">
+                                    <p class="text-sm text-gray-600 mb-2 font-medium">Guru Bimbingan Konseling</p>
+                                    <div class="h-20 flex items-end justify-center">
+                                        <i class="fas fa-signature text-gray-400 text-3xl"></i>
+                                    </div>
+                                </div>
+                                <div class="border-t-2 border-gradient-to-r from-indigo-500 to-purple-500 pt-3">
+                                    <p class="font-bold text-lg">Bu Sari Rahayu, S.Pd</p>
+                                    <p class="text-sm text-gray-600 font-medium">Guru BK</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Certificate Number -->
+                        <div class="text-center mt-12 relative z-10">
+                            <div class="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-full">
+                                <p class="text-sm font-bold">
+                                    No. Sertifikat: <span id="certNumber">RMIB/2024/001</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ✨ ENHANCED SUMMARY SHEET TEMPLATE -->
+            <div id="summaryTemplate" class="template-content print-page mb-12 hidden">
+                <div class="summary-container">
+                    <div class="summary-inner">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between mb-12 pb-8 border-b-2 border-gradient-to-r from-indigo-200 to-purple-200">
+                            <div>
+                                <h1 class="font-display text-4xl font-bold text-gradient-primary mb-3">LEMBAR RINGKASAN</h1>
+                                <h2 class="text-2xl text-gray-700 font-semibold">Hasil Tes RMIB (Rothwell Miller Interest Blank)</h2>
+                                <p class="text-gray-600 mt-2 font-medium">MTs Negeri 1 Bogor • Sistem Pemetaan Minat Karir</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-full flex items-center justify-center float-animation shadow-2xl">
+                                    <i class="fas fa-chart-line text-white text-3xl"></i>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-3 font-medium">Generated: <span id="summaryGeneratedDate">15/01/2024</span></p>
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced Student Information -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                            <div class="data-card interactive-card">
+                                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-user text-white"></i>
+                                    </div>
+                                    Informasi Siswa
+                                </h3>
+                                <div class="space-y-4">
+                                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                        <span class="text-gray-600 font-medium">Nama:</span>
+                                        <span class="font-bold text-lg" id="summaryStudentName">Ahmad Rizki Pratama</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                        <span class="text-gray-600 font-medium">NISN:</span>
+                                        <span class="font-bold" id="summaryNISN">1234567890</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                        <span class="text-gray-600 font-medium">Kelas:</span>
+                                        <span class="font-bold" id="summaryClass">8A</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                        <span class="text-gray-600 font-medium">Jenis Kelamin:</span>
+                                        <span class="font-bold" id="summaryGender">Laki-laki</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-2">
+                                        <span class="text-gray-600 font-medium">Tanggal Tes:</span>
+                                        <span class="font-bold" id="summaryTestDate">15 Januari 2024</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="data-card interactive-card bg-gradient-to-br from-blue-50 to-indigo-100">
+                                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-trophy text-white"></i>
+                                    </div>
+                                    3 Minat Teratas
+                                </h3>
+                                <div class="space-y-6">
+                                    <div class="flex items-center space-x-4 p-4 bg-white/70 rounded-xl backdrop-blur-sm">
+                                        <div class="rank-badge rank-1">1</div>
+                                        <div class="flex-1">
+                                            <p class="font-bold text-gray-800 text-lg" id="summaryTop1">Scientific</p>
+                                            <p class="text-sm text-gray-600">Penelitian & Eksperimen</p>
+                                        </div>
+                                        <span class="font-bold text-2xl text-gradient-primary" id="summaryScore1">87</span>
+                                    </div>
+                                    
+                                    <div class="flex items-center space-x-4 p-4 bg-white/70 rounded-xl backdrop-blur-sm">
+                                        <div class="rank-badge rank-2">2</div>
+                                        <div class="flex-1">
+                                            <p class="font-bold text-gray-800 text-lg" id="summaryTop2">Medical</p>
+                                            <p class="text-sm text-gray-600">Kesehatan & Pengobatan</p>
+                                        </div>
+                                        <span class="font-bold text-2xl text-gradient-success" id="summaryScore2">79</span>
+                                    </div>
+                                    
+                                    <div class="flex items-center space-x-4 p-4 bg-white/70 rounded-xl backdrop-blur-sm">
+                                        <div class="rank-badge rank-3">3</div>
+                                        <div class="flex-1">
+                                            <p class="font-bold text-gray-800 text-lg" id="summaryTop3">Computational</p>
+                                            <p class="text-sm text-gray-600">Perhitungan & Analisis</p>
+                                        </div>
+                                        <span class="font-bold text-2xl text-gradient-warning" id="summaryScore3">74</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced Detailed Scores Table -->
+                        <div class="mb-12">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-table text-white"></i>
+                                </div>
+                                Detail Skor per Kategori
+                            </h3>
+                            <div class="overflow-hidden rounded-2xl shadow-xl">
+                                <table class="enhanced-table w-full">
+                                    <thead>
+                                        <tr>
+                                            <th>Kategori Minat</th>
+                                            <th class="text-center">Kode</th>
+                                            <th class="text-center">Skor</th>
+                                            <th class="text-center">Ranking</th>
+                                            <th>Interpretasi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="summaryScoresTable">
+                                        <!-- Scores will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                       
+                        
+                        <!-- Enhanced Footer -->
+                        <div class="border-t-2 border-gradient-to-r from-indigo-200 to-purple-200 pt-8">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-gray-600 font-medium">Disusun oleh: <strong class="text-indigo-600">Bu Sari Rahayu, S.Pd</strong></p>
+                                    <p class="text-gray-600 font-medium">Guru Bimbingan Konseling</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-gray-600 font-medium">Bogor, <span id="summaryDate">15 Januari 2024</span></p>
+                                    <div class="mt-4 signature-modern w-48 h-24">
+                                        <p class="text-xs text-gray-500">Tanda Tangan & Stempel</p>
+                                        <i class="fas fa-signature text-gray-400 text-2xl mt-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ✨ ENHANCED PARENT REPORT TEMPLATE -->
+            <div id="parentTemplate" class="template-content print-page mb-12 hidden">
+                <div class="parent-container">
+                    <div class="parent-inner">
+                        <div class="parent-accent"></div>
+                        
+                        <!-- Enhanced Header -->
+                        <div class="mb-12">
+                            <div class="flex items-center justify-between mb-8">
+                                <div>
+                                    <h1 class="font-display text-4xl font-bold text-gradient-primary mb-3">LAPORAN ORANG TUA</h1>
+                                    <h2 class="text-2xl text-gray-700 font-semibold">Hasil Tes Minat Karir RMIB</h2>
+                                    <p class="text-gray-600 font-medium">MTs Negeri 1 Bogor • Bimbingan Konseling</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-24 h-24 bg-gradient-to-br from-green-600 to-emerald-700 rounded-full flex items-center justify-center mb-3 float-animation shadow-2xl">
+                                        <i class="fas fa-users text-white text-3xl"></i>
+                                    </div>
+                                    <p class="text-sm text-gray-600 font-medium">For Parents</p>
+                                </div>
+                            </div>
+                            
+                            <div class="content-card p-8 bg-gradient-to-r from-blue-50 to-indigo-50">
+                                <h3 class="text-xl font-bold text-blue-800 mb-4">Kepada Yth. Orang Tua/Wali</h3>
+                                <p class="text-gray-700 leading-relaxed">
+                                    Berikut ini adalah hasil komprehensif tes minat karir RMIB (Rothwell Miller Interest Blank) yang telah diikuti 
+                                    oleh putra/putri Anda. Tes ini bertujuan untuk mengidentifikasi minat dan kecenderungan karir 
+                                    yang sesuai dengan kepribadian dan potensi alami siswa untuk perencanaan masa depan yang optimal.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced Student Profile -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                            <div class="data-card interactive-card bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+                                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-id-card text-white"></i>
+                                    </div>
+                                    Profil Siswa
+                                </h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <span class="text-gray-600 text-sm font-medium">Nama Lengkap:</span>
+                                        <p class="font-bold text-xl text-indigo-800" id="parentStudentName">Ahmad Rizki Pratama</p>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <span class="text-gray-600 text-sm font-medium">NISN:</span>
+                                            <p class="font-bold" id="parentNISN">1234567890</p>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600 text-sm font-medium">Kelas:</span>
+                                            <p class="font-bold" id="parentClass">8A</p>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <span class="text-gray-600 text-sm font-medium">Jenis Kelamin:</span>
+                                            <p class="font-bold" id="parentGender">Laki-laki</p>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600 text-sm font-medium">Tanggal Tes:</span>
+                                            <p class="font-bold" id="parentTestDate">15/01/2024</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="data-card interactive-card bg-gradient-to-br from-green-50 to-emerald-100 p-8">
+                                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-star text-white"></i>
+                                    </div>
+                                    Ringkasan Hasil
+                                </h3>
+                                <div class="space-y-6">
+                                    <div>
+                                        <p class="text-sm text-gray-600 font-medium">Kategori Minat Dominan:</p>
+                                        <p class="text-2xl font-bold text-gradient-success" id="parentDominantInterest">Scientific</p>
+                                        <p class="text-sm text-gray-600">Penelitian & Ilmu Pengetahuan</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600 font-medium">Rata-rata Skor:</p>
+                                        <p class="text-3xl font-bold text-gradient-primary" id="parentAverageScore">80.0</p>
+                                        <p class="text-sm text-gray-600">Kategori: <strong class="text-green-600">Baik Sekali</strong></p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600 font-medium">Tingkat Konsistensi:</p>
+                                        <div class="flex items-center space-x-2 mt-1">
+                                            <div class="flex space-x-1">
+                                                <i class="fas fa-star text-yellow-400"></i>
+                                                <i class="fas fa-star text-yellow-400"></i>
+                                                <i class="fas fa-star text-yellow-400"></i>
+                                                <i class="fas fa-star text-yellow-400"></i>
+                                                <i class="fas fa-star text-gray-300"></i>
+                                            </div>
+                                            <span class="text-sm text-gray-600 font-medium">Sangat Konsisten</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced Detailed Analysis -->
+                        <div class="mb-12">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
+                                <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-chart-line text-white"></i>
+                                </div>
+                                Analisis Mendalam Minat Karir
+                            </h3>
+                            
+                            <div class="space-y-8">
+                                <!-- Enhanced Top 3 Interests -->
+                                <div class="content-card p-8">
+                                    <h4 class="text-xl font-bold text-gray-800 mb-6">3 Minat Teratas Putra/Putri Anda:</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div class="text-center p-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl interactive-card">
+                                            <div class="rank-badge rank-1 mx-auto mb-4">1</div>
+                                            <h5 class="font-bold text-blue-800 text-xl" id="parentTop1">Scientific</h5>
+                                            <p class="text-sm text-blue-600 mb-3">Penelitian & Eksperimen</p>
+                                            <p class="text-2xl font-bold text-blue-700" id="parentScore1">87 poin</p>
+                                            <div class="mt-4 w-full bg-blue-300 rounded-full h-2">
+                                                <div class="bg-blue-600 h-2 rounded-full" style="width: 87%"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="text-center p-8 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl interactive-card">
+                                            <div class="rank-badge rank-2 mx-auto mb-4">2</div>
+                                            <h5 class="font-bold text-green-800 text-xl" id="parentTop2">Medical</h5>
+                                            <p class="text-sm text-green-600 mb-3">Kesehatan & Pengobatan</p>
+                                            <p class="text-2xl font-bold text-green-700" id="parentScore2">79 poin</p>
+                                            <div class="mt-4 w-full bg-green-300 rounded-full h-2">
+                                                <div class="bg-green-600 h-2 rounded-full" style="width: 79%"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="text-center p-8 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl interactive-card">
+                                            <div class="rank-badge rank-3 mx-auto mb-4">3</div>
+                                            <h5 class="font-bold text-purple-800 text-xl" id="parentTop3">Computational</h5>
+                                            <p class="text-sm text-purple-600 mb-3">Perhitungan & Analisis</p>
+                                            <p class="text-2xl font-bold text-purple-700" id="parentScore3">74 poin</p>
+                                            <div class="mt-4 w-full bg-purple-300 rounded-full h-2">
+                                                <div class="bg-purple-600 h-2 rounded-full" style="width: 74%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        
+                        
+                        <!-- Enhanced Contact Information -->
+                        <div class="border-t-2 border-gradient-to-r from-indigo-200 to-purple-200 pt-8">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="data-card p-6">
+                                    <h4 class="font-bold text-gray-800 mb-4 text-lg">Kontak Guru BK:</h4>
+                                    <div class="space-y-3 text-sm">
+                                        <p class="flex items-center"><i class="fas fa-user mr-3 text-blue-600"></i><strong>Bu Sari Rahayu, S.Pd</strong></p>
+                                        <p class="flex items-center"><i class="fas fa-phone mr-3 text-green-600"></i>(0251) 123-4567</p>
+                                        <p class="flex items-center"><i class="fas fa-envelope mr-3 text-red-600"></i>bk@mtsn1bogor.sch.id</p>
+                                        <p class="flex items-center"><i class="fas fa-calendar mr-3 text-purple-600"></i>Konsultasi: Senin-Jumat, 08:00-15:00</p>
+                                        <p class="flex items-center"><i class="fas fa-map-marker-alt mr-3 text-orange-600"></i>Ruang BK, Lantai 2</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-right">
+                                    <p class="text-gray-600 mb-6 font-medium">Bogor, <span id="parentReportDate">15 Januari 2024</span></p>
+                                    <div class="signature-modern w-56 h-28 ml-auto">
+                                        <p class="text-sm text-gray-600 font-medium">Guru BK</p>
+                                        <div class="mt-4">
+                                            <i class="fas fa-signature text-gray-400 text-3xl"></i>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 text-right">
+                                        <p class="font-bold text-lg">Bu Sari Rahayu, S.Pd</p>
+                                        <p class="text-sm text-gray-600 font-medium">NIP: 196505151990032007</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ✨ Enhanced Global Variables
+        let currentTemplate = 'certificate';
+        let currentStudent = null;
+        
+        // Enhanced student data with more comprehensive information
+        const studentData = {
+            ahmad: {
+                name: 'Ahmad Rizki Pratama',
+                nisn: '1234567890',
+                class: '8A',
+                gender: 'Laki-laki',
+                testDate: '15 Januari 2024',
+                interests: {
+                    top1: { name: 'Scientific', code: 'SCL', score: 87 },
+                    top2: { name: 'Medical', code: 'MED', score: 79 },
+                    top3: { name: 'Computational', code: 'COMP', score: 74 }
+                },
+                allScores: {
+                    OUT: 65, ME: 58, COMP: 74, SCL: 87, PERS: 62, AESTH: 45,
+                    LIT: 52, MUS: 38, SOS: 69, CLER: 48, PRAC: 55, MED: 79
+                },
+                average: 80.0,
+                certNumber: 'RMIB/2024/001',
+                consistency: 4.2
+            },
+            siti: {
+                name: 'Siti Nurhaliza',
+                nisn: '1234567891',
+                class: '8B',
+                gender: 'Perempuan',
+                testDate: '20 Januari 2024',
+                interests: {
+                    top1: { name: 'Aesthetic', code: 'AESTH', score: 92 },
+                    top2: { name: 'Literary', code: 'LIT', score: 87 },
+                    top3: { name: 'Musical', code: 'MUS', score: 83 }
+                },
+                allScores: {
+                    OUT: 45, ME: 38, COMP: 52, SCL: 58, PERS: 89, AESTH: 92,
+                    LIT: 87, MUS: 83, SOS: 78, CLER: 42, PRAC: 35, MED: 48
+                },
+                average: 82.1,
+                certNumber: 'RMIB/2024/002',
+                consistency: 4.5
+            },
+            dewi: {
+                name: 'Dewi Sartika',
+                nisn: '1234567893',
+                class: '9A',
+                gender: 'Perempuan',
+                testDate: '22 Januari 2024',
+                interests: {
+                    top1: { name: 'Social Service', code: 'SOS', score: 91 },
+                    top2: { name: 'Literary', code: 'LIT', score: 89 },
+                    top3: { name: 'Medical', code: 'MED', score: 82 }
+                },
+                allScores: {
+                    OUT: 38, ME: 42, COMP: 65, SCL: 72, PERS: 83, AESTH: 67,
+                    LIT: 89, MUS: 56, SOS: 91, CLER: 78, PRAC: 45, MED: 82
+                },
+                average: 85.3,
+                certNumber: 'RMIB/2024/003',
+                consistency: 4.8
+            },
+            rino: {
+                name: 'Rino Pratama',
+                nisn: '1234567894',
+                class: '8C',
+                gender: 'Laki-laki',
+                testDate: '25 Januari 2024',
+                interests: {
+                    top1: { name: 'Outdoor', code: 'OUT', score: 92 },
+                    top2: { name: 'Mechanical', code: 'ME', score: 89 },
+                    top3: { name: 'Practical', code: 'PRAC', score: 87 }
+                },
+                allScores: {
+                    OUT: 92, ME: 89, COMP: 56, SCL: 48, PERS: 42, AESTH: 35,
+                    LIT: 38, MUS: 41, SOS: 45, CLER: 52, PRAC: 87, MED: 38
+                },
+                average: 79.2,
+                certNumber: 'RMIB/2024/004',
+                consistency: 4.0
+            }
+        };
+        
+        // Enhanced category names mapping
+        const categoryNames = {
+            OUT: 'Outdoor Activities',
+            ME: 'Mechanical Engineering',
+            COMP: 'Computational Sciences',
+            SCL: 'Scientific Research',
+            PERS: 'Personal Relations',
+            AESTH: 'Aesthetic Arts',
+            LIT: 'Literary Studies',
+            MUS: 'Musical Arts',
+            SOS: 'Social Services',
+            CLER: 'Clerical Work',
+            PRAC: 'Practical Skills',
+            MED: 'Medical Sciences'
+        };
+
+        // ✨ Enhanced Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default student
+            document.getElementById('studentSelect').value = 'ahmad';
+            loadStudentData();
+            showTemplate();
+            
+            // Add smooth scroll behavior
+            document.documentElement.style.scrollBehavior = 'smooth';
+            
+            // Initialize enhanced animations
+            initializeAnimations();
+        });
+
+        // ✨ Initialize Enhanced Animations
+        function initializeAnimations() {
+            // Observe elements for scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe all content cards
+            document.querySelectorAll('.content-card, .data-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                observer.observe(card);
+            });
+        }
+
+        // ✨ Enhanced Load Student Data
+        function loadStudentData() {
+            const studentKey = document.getElementById('studentSelect').value;
+            if (!studentKey || !studentData[studentKey]) return;
+            
+            currentStudent = studentData[studentKey];
+            updateAllTemplates();
+            
+            // Add smooth transition effect
+            document.querySelectorAll('.template-content:not(.hidden)').forEach(template => {
+                template.style.opacity = '0';
+                setTimeout(() => {
+                    template.style.opacity = '1';
+                }, 100);
+            });
+        }
+
+        // ✨ Enhanced Show Template
+        function showTemplate() {
+            const templateType = document.getElementById('templateSelect').value;
+            
+            // Hide all templates with fade effect
+            document.querySelectorAll('.template-content').forEach(template => {
+                template.style.opacity = '0';
+                setTimeout(() => {
+                    template.classList.add('hidden');
+                }, 200);
+            });
+            
+            // Show selected template with fade effect
+            setTimeout(() => {
+                const selectedTemplate = document.getElementById(templateType + 'Template');
+                selectedTemplate.classList.remove('hidden');
+                setTimeout(() => {
+                    selectedTemplate.style.opacity = '1';
+                }, 50);
+            }, 250);
+            
+            currentTemplate = templateType;
+        }
+
+        // ✨ Enhanced Update All Templates
+        function updateAllTemplates() {
+            if (!currentStudent) return;
+            
+            updateCertificate();
+            updateSummarySheet();
+            updateParentReport();
+        }
+
+        // ✨ Enhanced Update Certificate Template
+        function updateCertificate() {
+            document.getElementById('certStudentName').textContent = currentStudent.name;
+            document.getElementById('certStudentNameSign').textContent = currentStudent.name;
+            document.getElementById('certDate').textContent = currentStudent.testDate;
+            document.getElementById('certNumber').textContent = currentStudent.certNumber;
+            
+            document.getElementById('certInterest1').textContent = currentStudent.interests.top1.name;
+            document.getElementById('certInterest2').textContent = currentStudent.interests.top2.name;
+            document.getElementById('certInterest3').textContent = currentStudent.interests.top3.name;
+            
+            document.getElementById('certScore1').textContent = currentStudent.interests.top1.score;
+            document.getElementById('certScore2').textContent = currentStudent.interests.top2.score;
+            document.getElementById('certScore3').textContent = currentStudent.interests.top3.score;
+        }
+
+        // ✨ Enhanced Update Summary Sheet
+        function updateSummarySheet() {
+            // Student information
+            document.getElementById('summaryStudentName').textContent = currentStudent.name;
+            document.getElementById('summaryNISN').textContent = currentStudent.nisn;
+            document.getElementById('summaryClass').textContent = currentStudent.class;
+            document.getElementById('summaryGender').textContent = currentStudent.gender;
+            document.getElementById('summaryTestDate').textContent = currentStudent.testDate;
+            document.getElementById('summaryGeneratedDate').textContent = new Date().toLocaleDateString('id-ID');
+            document.getElementById('summaryDate').textContent = currentStudent.testDate;
+            
+            // Top 3 interests
+            document.getElementById('summaryTop1').textContent = currentStudent.interests.top1.name;
+            document.getElementById('summaryTop2').textContent = currentStudent.interests.top2.name;
+            document.getElementById('summaryTop3').textContent = currentStudent.interests.top3.name;
+            
+            document.getElementById('summaryScore1').textContent = currentStudent.interests.top1.score;
+            document.getElementById('summaryScore2').textContent = currentStudent.interests.top2.score;
+            document.getElementById('summaryScore3').textContent = currentStudent.interests.top3.score;
+            
+            // Enhanced scores table
+            populateEnhancedSummaryScoresTable();
+        }
+
+        // ✨ Enhanced Populate Summary Scores Table
+        function populateEnhancedSummaryScoresTable() {
+            const tbody = document.getElementById('summaryScoresTable');
+            const scores = currentStudent.allScores;
+            
+            // Sort scores by value (descending)
+            const sortedScores = Object.entries(scores)
+                .map(([code, score]) => ({
+                    code,
+                    name: categoryNames[code],
+                    score,
+                    interpretation: getEnhancedScoreInterpretation(score)
+                }))
+                .sort((a, b) => b.score - a.score);
+            
+            tbody.innerHTML = sortedScores.map((item, index) => {
+                const isTopThree = index < 3;
+                const rankingClass = isTopThree ? 'font-bold text-green-600 text-lg' : 'text-gray-600';
+                const rowClass = isTopThree ? 'bg-gradient-to-r from-green-50 to-emerald-50' : '';
+                const rankIcon = isTopThree ? `<i class="fas fa-trophy text-yellow-500 mr-2"></i>` : '';
+                
+                return `
+                    <tr class="${rowClass} hover:bg-blue-50 transition-all duration-200">
+                        <td class="font-semibold text-gray-800">
+                            <div class="flex items-center">
+                                <i class="fas fa-circle text-blue-500 mr-3 text-xs"></i>
+                                ${item.name}
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-bold">${item.code}</span>
+                        </td>
+                        <td class="text-center ${rankingClass}">${item.score}</td>
+                        <td class="text-center">
+                            <span class="inline-flex items-center ${rankingClass}">
+                                ${rankIcon}#${index + 1}
+                            </span>
+                        </td>
+                        <td class="text-sm text-gray-700">${item.interpretation}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ✨ Enhanced Score Interpretation
+        function getEnhancedScoreInterpretation(score) {
+            if (score >= 90) return '🌟 Luar Biasa - Minat sangat dominan dan konsisten';
+            if (score >= 85) return '⭐ Sangat Tinggi - Minat sangat kuat dan stabil';
+            if (score >= 75) return '✨ Tinggi - Minat kuat dan berkembang baik';
+            if (score >= 65) return '💫 Sedang - Minat cukup baik dan berpotensi';
+            if (score >= 55) return '🔸 Rendah - Minat kurang namun masih dapat dikembangkan';
+            return '🔹 Sangat Rendah - Minat minimal, perlu eksplorasi lebih lanjut';
+        }
+
+        // ✨ Enhanced Update Parent Report
+        function updateParentReport() {
+            document.getElementById('parentStudentName').textContent = currentStudent.name;
+            document.getElementById('parentNISN').textContent = currentStudent.nisn;
+            document.getElementById('parentClass').textContent = currentStudent.class;
+            document.getElementById('parentGender').textContent = currentStudent.gender;
+            document.getElementById('parentTestDate').textContent = currentStudent.testDate;
+            document.getElementById('parentReportDate').textContent = currentStudent.testDate;
+            
+            document.getElementById('parentDominantInterest').textContent = currentStudent.interests.top1.name;
+            document.getElementById('parentAverageScore').textContent = currentStudent.average.toFixed(1);
+            
+            // Top 3 interests
+            document.getElementById('parentTop1').textContent = currentStudent.interests.top1.name;
+            document.getElementById('parentTop2').textContent = currentStudent.interests.top2.name;
+            document.getElementById('parentTop3').textContent = currentStudent.interests.top3.name;
+            
+            document.getElementById('parentScore1').textContent = currentStudent.interests.top1.score + ' poin';
+            document.getElementById('parentScore2').textContent = currentStudent.interests.top2.score + ' poin';
+            document.getElementById('parentScore3').textContent = currentStudent.interests.top3.score + ' poin';
+        }
+
+        // ✨ Enhanced Print Function
+        function printTemplate() {
+            // Add print-specific styling
+            document.body.classList.add('printing');
+            
+            // Hide no-print elements with animation
+            document.querySelectorAll('.no-print').forEach(element => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 300);
+            });
+            
+            // Print after animation completes
+            setTimeout(() => {
+                window.print();
+                
+                // Restore no-print elements
+                setTimeout(() => {
+                    document.querySelectorAll('.no-print').forEach(element => {
+                        element.style.display = '';
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    });
+                    document.body.classList.remove('printing');
+                }, 1000);
+            }, 400);
+        }
+
+        // ✨ Enhanced Download PDF Function
+        function downloadPDF() {
+            // Show loading animation
+            const button = event.target.closest('button');
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating PDF...';
+            button.disabled = true;
+            
+            // Simulate PDF generation with enhanced feedback
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-check mr-2"></i>PDF Ready!';
+                
+                // Show success notification
+                showNotification(`📄 ${currentTemplate.toUpperCase()} PDF berhasil dibuat untuk ${currentStudent?.name || 'selected student'}!`, 'success');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 2000);
+            }, 2500);
+        }
+
+        // ✨ Enhanced Notification System
+        function showNotification(message, type = 'info', duration = 4000) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-xl shadow-2xl transform translate-x-full transition-all duration-500 max-w-sm`;
+            
+            const colors = {
+                success: 'bg-gradient-to-r from-green-500 to-emerald-600 text-white',
+                error: 'bg-gradient-to-r from-red-500 to-rose-600 text-white',
+                warning: 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white',
+                info: 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
+            };
+            
+            notification.className += ` ${colors[type]}`;
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="text-lg">
+                        ${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}
+                    </div>
+                    <div>
+                        <p class="font-medium">${message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-white/80 hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Auto hide
+            setTimeout(() => {
+                notification.style.transform = 'translateX(full)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, duration);
+        }
+
+        // ✨ Enhanced Navigation
+        function goBack() {
+            // Add exit animation
+            document.querySelector('.pt-24').style.opacity = '0';
+            document.querySelector('.pt-24').style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                window.history.back();
+            }, 300);
+        }
+
+        // ✨ Enhanced Keyboard Shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + P for print
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                printTemplate();
+            }
+            
+            // Ctrl/Cmd + D for download PDF
+            if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+                e.preventDefault();
+                downloadPDF();
+            }
+            
+            // ESC to go back
+            if (e.key === 'Escape') {
+                goBack();
+            }
+        });
+
+        // ✨ Enhanced Smooth Scrolling
+        function smoothScrollTo(element) {
+            element.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+        }
+
+        // ✨ Add Interactive Elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to interactive cards
+            document.querySelectorAll('.interactive-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+            
+            // Add ripple effect to buttons
+            document.querySelectorAll('button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${x}px;
+                        top: ${y}px;
+                        background: rgba(255, 255, 255, 0.3);
+                        border-radius: 50%;
+                        transform: scale(0);
+                        animation: ripple 0.6s ease-out;
+                        pointer-events: none;
+                    `;
+                    
+                    this.style.position = 'relative';
+                    this.style.overflow = 'hidden';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+
+        // ✨ Add CSS for ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
