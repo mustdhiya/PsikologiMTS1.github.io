@@ -1,0 +1,1662 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}RMIB Test - {{ student.name }} - PRESTISIA{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ==================== RMIB SYSTEM STYLES ==================== */
+:root {
+    --primary-blue: #3b82f6;
+    --success-green: #10b981;
+    --warning-yellow: #f59e0b;
+    --danger-red: #ef4444;
+    --purple-accent: #8b5cf6;
+    --indigo-accent: #6366f1;
+    --gray-light: #f8fafc;
+    --gray-medium: #64748b;
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    --shadow-large: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Global Animations */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+.slide-in-right { animation: slideInRight 0.4s ease-out forwards; }
+.bounce-in { animation: bounceIn 0.7s ease-out forwards; }
+
+/* Layout Components */
+.rmib-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+}
+
+.rmib-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+}
+
+.main-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Student Header */
+.student-header {
+    background: white;
+    border-radius: 24px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-large);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.student-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-blue), var(--purple-accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    box-shadow: var(--shadow-medium);
+    position: relative;
+}
+
+.student-avatar::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-blue), var(--purple-accent));
+    z-index: -1;
+    opacity: 0.3;
+    animation: pulse 3s infinite;
+}
+
+/* Validation Panel */
+.validation-panel {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-medium);
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.validation-panel.valid {
+    border-color: var(--success-green);
+    background: linear-gradient(135deg, #f0fdf4, #ffffff);
+}
+
+.validation-panel.invalid {
+    border-color: var(--danger-red);
+    background: linear-gradient(135deg, #fef2f2, #ffffff);
+}
+
+.progress-ring {
+    width: 60px;
+    height: 60px;
+    transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+    transition: stroke-dasharray 0.5s ease;
+    stroke-linecap: round;
+}
+
+/* RMIB Category Cards */
+.rmib-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.category-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-soft);
+    border: 2px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-blue), var(--purple-accent));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-large);
+    border-color: var(--primary-blue);
+}
+
+.category-card:hover::before {
+    transform: scaleX(1);
+}
+
+.category-card.incomplete {
+    border-color: var(--warning-yellow);
+    background: linear-gradient(135deg, #fffbeb, #ffffff);
+}
+
+.category-card.complete {
+    border-color: var(--success-green);
+    background: linear-gradient(135deg, #f0fdf4, #ffffff);
+}
+
+.category-card.duplicate {
+    border-color: var(--danger-red);
+    background: linear-gradient(135deg, #fef2f2, #ffffff);
+    animation: shake 0.5s ease-in-out;
+}
+
+.category-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-soft);
+}
+
+/* Custom Select Styling */
+.ranking-select {
+    appearance: none;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.25rem;
+}
+
+.ranking-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+.ranking-select:disabled {
+    background-color: #f9fafb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* Prestasi Section */
+.prestasi-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: var(--shadow-medium);
+}
+
+.prestasi-card {
+    background: linear-gradient(135deg, #f8fafc, #ffffff);
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.prestasi-card:hover {
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-2px);
+}
+
+.prestasi-type-akademik { border-left: 4px solid #3b82f6; }
+.prestasi-type-olahraga { border-left: 4px solid #10b981; }
+.prestasi-type-seni { border-left: 4px solid #8b5cf6; }
+.prestasi-type-organisasi { border-left: 4px solid #f59e0b; }
+.prestasi-type-teknologi { border-left: 4px solid #6366f1; }
+
+/* Modal Styling */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-large);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal-content {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Action Buttons */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-blue), var(--indigo-accent));
+    color: white;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success-green), #059669);
+    color: white;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--warning-yellow), #d97706);
+    color: white;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger-red), #dc2626);
+    color: white;
+}
+
+.btn-secondary {
+    background: #f8fafc;
+    color: #374151;
+    border: 2px solid #e5e7eb;
+}
+
+/* Status Indicators */
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.status-pending { background: var(--warning-yellow); }
+.status-complete { background: var(--success-green); }
+.status-error { background: var(--danger-red); }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 1rem;
+    }
+    
+    .rmib-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .student-header {
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .validation-panel {
+        padding: 1rem;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+    }
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-blue), var(--purple-accent));
+    border-radius: 4px;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tooltip System */
+.tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.tooltip:hover .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-2px);
+}
+
+.tooltip-content {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-5px);
+    background: #1f2937;
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 100;
+}
+
+.tooltip-content::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #1f2937;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rmib-container">
+    <div class="main-content">
+        <!-- Student Header -->
+        <div class="student-header fade-in-up">
+            <div class="flex items-center space-x-6">
+                <div class="student-avatar">
+                    {{ student.name|first|upper }}
+                </div>
+                <div class="flex-1">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ student.name }}</h1>
+                    <div class="flex items-center space-x-6 text-gray-600">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-graduation-cap text-blue-600"></i>
+                            <span class="font-semibold">{{ student.student_class }}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-id-card text-purple-600"></i>
+                            <span>NISN: {{ student.nisn }}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-{{ student.gender|yesno:'male,female' }} text-indigo-600"></i>
+                            <span>{{ student.get_gender_display }}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-calendar text-green-600"></i>
+                            <span>{{ student.birth_date|date:"d M Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-500 mb-1">Status Tes</div>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                        <span class="status-indicator status-pending"></span>
+                        Sedang Mengerjakan
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Validation Panel -->
+        <div class="validation-panel slide-in-right" id="validationPanel">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-6">
+                    <div class="relative">
+                        <svg class="progress-ring" width="60" height="60">
+                            <circle class="progress-ring-circle" stroke="#e5e7eb" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/>
+                            <circle class="progress-ring-circle" id="progressCircle" stroke="#3b82f6" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" stroke-dasharray="0 163.4"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-lg font-bold text-gray-900" id="progressPercentage">0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4 text-sm">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600" id="rankingsUsed">0</div>
+                            <div class="text-gray-600">Rankings Used</div>
+                            <div class="text-xs text-gray-400">/12</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-purple-600" id="currentTotal">0</div>
+                            <div class="text-gray-600">Current Total</div>
+                            <div class="text-xs text-gray-400">/702</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-red-600" id="duplicateCount">0</div>
+                            <div class="text-gray-600">Duplicates</div>
+                            <div class="text-xs text-gray-400">errors</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    <div id="validationStatus" class="text-sm font-medium text-gray-600">
+                        Mulai mengisi ranking untuk setiap kategori...
+                    </div>
+                    <button type="button" id="resetAllBtn" class="btn btn-secondary text-xs">
+                        <i class="fas fa-undo mr-1"></i>Reset All
+                    </button>
+                    <button type="button" id="previewBtn" class="btn btn-primary text-xs" disabled>
+                        <i class="fas fa-eye mr-1"></i>Preview Results
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RMIB Category Grid -->
+        <div class="rmib-grid" id="rmibGrid">
+            <!-- Categories will be populated by JavaScript -->
+        </div>
+
+        <!-- Prestasi Management Section -->
+        <div class="prestasi-section bounce-in">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-trophy text-yellow-500 mr-3"></i>
+                        Prestasi & Bonus
+                    </h2>
+                    <p class="text-gray-600 mt-1">Kelola prestasi untuk mendapat bonus RMIB (pengurangan 5 poin per kategori relevan)</p>
+                </div>
+                <button type="button" id="addPrestasiBtn" class="btn btn-success">
+                    <i class="fas fa-plus mr-2"></i>Tambah Prestasi
+                </button>
+            </div>
+            
+            <div id="prestasiList" class="space-y-3">
+                <!-- Prestasi items will be populated here -->
+            </div>
+            
+            <div class="text-center py-8" id="emptyPrestasi">
+                <i class="fas fa-trophy text-gray-300 text-4xl mb-4"></i>
+                <p class="text-gray-500">Belum ada prestasi yang ditambahkan</p>
+                <p class="text-sm text-gray-400">Tambahkan prestasi untuk mendapat bonus pada kategori RMIB yang relevan</p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-between mt-8 p-6 bg-white rounded-2xl shadow-lg">
+            <div class="flex items-center space-x-4">
+                <button type="button" id="autoSaveBtn" class="btn btn-secondary">
+                    <i class="fas fa-save mr-2"></i>Auto Save: <span id="autoSaveStatus">Off</span>
+                </button>
+                <div class="text-sm text-gray-500">
+                    Terakhir disimpan: <span id="lastSaved">Belum pernah</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <button type="button" id="saveProgressBtn" class="btn btn-warning">
+                    <i class="fas fa-bookmark mr-2"></i>Save Progress
+                </button>
+                <button type="button" id="submitTestBtn" class="btn btn-success" disabled>
+                    <i class="fas fa-check-circle mr-2"></i>Submit Test
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Prestasi Modal -->
+<div class="modal-overlay" id="prestasiModal">
+    <div class="modal-content">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-gray-900" id="prestasiModalTitle">Tambah Prestasi Baru</h3>
+                <button type="button" id="closePrestasiModal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <form id="prestasiForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jenis Prestasi</label>
+                        <select name="jenis" id="prestasiJenis" class="ranking-select w-full" required>
+                            <option value="">Pilih jenis prestasi...</option>
+                            <option value="akademik">🎓 Prestasi Akademik</option>
+                            <option value="olahraga">🏃 Prestasi Olahraga</option>
+                            <option value="seni">🎨 Prestasi Seni</option>
+                            <option value="organisasi">👥 Prestasi Organisasi</option>
+                            <option value="teknologi">💻 Prestasi Teknologi</option>
+                            <option value="keagamaan">🕌 Prestasi Keagamaan</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Tingkat</label>
+                        <select name="tingkat" id="prestasiTingkat" class="ranking-select w-full" required>
+                            <option value="">Pilih tingkat...</option>
+                            <option value="sekolah">🏫 Sekolah</option>
+                            <option value="kecamatan">🏘️ Kecamatan</option>
+                            <option value="kabupaten">🏛️ Kabupaten</option>
+                            <option value="provinsi">🏙️ Provinsi</option>
+                            <option value="nasional">🇮🇩 Nasional</option>
+                            <option value="internasional">🌍 Internasional</option>
+                        </select>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Prestasi</label>
+                        <input type="text" name="nama" id="prestasisNama" class="ranking-select w-full" 
+                               placeholder="Contoh: Juara 1 Olimpiade Matematika" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Peringkat</label>
+                        <select name="peringkat" id="prestasiPeringkat" class="ranking-select w-full" required>
+                            <option value="">Pilih peringkat...</option>
+                            <option value="Juara 1">🥇 Juara 1</option>
+                            <option value="Juara 2">🥈 Juara 2</option>
+                            <option value="Juara 3">🥉 Juara 3</option>
+                            <option value="Juara Harapan">🏅 Juara Harapan</option>
+                            <option value="Finalis">🎖️ Finalis</option>
+                            <option value="Peserta Terbaik">⭐ Peserta Terbaik</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Tahun</label>
+                        <input type="number" name="tahun" id="prestasiTahun" class="ranking-select w-full" 
+                               min="2020" max="2025" value="2024" required>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Keterangan (Opsional)</label>
+                        <textarea name="keterangan" id="prestasiKeterangan" class="ranking-select w-full" rows="3"
+                                  placeholder="Deskripsi tambahan tentang prestasi ini..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
+                    <button type="button" id="cancelPrestasiBtn" class="btn btn-secondary">
+                        <i class="fas fa-times mr-2"></i>Batal
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check mr-2"></i>Simpan Prestasi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal-overlay" id="previewModal">
+    <div class="modal-content">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-gray-900">Preview Hasil RMIB</h3>
+                <button type="button" id="closePreviewModal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-6 max-h-96 overflow-y-auto custom-scrollbar">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Before Bonus -->
+                <div>
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-calculator mr-2 text-blue-600"></i>
+                        Skor Original
+                    </h4>
+                    <div id="originalScores" class="space-y-2">
+                        <!-- Original scores will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- After Bonus -->
+                <div>
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-trophy mr-2 text-green-600"></i>
+                        Skor Final (Dengan Bonus)
+                    </h4>
+                    <div id="finalScores" class="space-y-2">
+                        <!-- Final scores will be populated here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Top 3 Interests -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <h4 class="font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-star mr-2 text-yellow-500"></i>
+                    3 Minat Teratas Anda
+                </h4>
+                <div id="topInterests" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Top interests will be populated here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-6 border-t border-gray-200 bg-gray-50">
+            <div class="flex items-center justify-center">
+                <button type="button" id="closePreviewBtn" class="btn btn-primary">
+                    <i class="fas fa-check mr-2"></i>Tutup Preview
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden form for data submission -->
+<form id="rmibDataForm" method="post" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="student_id" value="{{ student.id }}">
+    <input type="hidden" name="rmib_data" id="rmibDataInput">
+    <input type="hidden" name="prestasi_data" id="prestasiDataInput">
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    'use strict';
+    
+    // ==================== RMIB CONFIGURATION ==================== 
+    const RMIB_CONFIG = {
+        TOTAL_TARGET: 702,
+        CATEGORIES: {
+            'OUT': {
+                name: 'Outdoor',
+                description: 'Pekerjaan di luar ruangan, petualangan, alam bebas',
+                icon: 'fas fa-tree',
+                color: '#10b981'
+            },
+            'ME': {
+                name: 'Mechanical',
+                description: 'Menggunakan mesin, peralatan, teknologi mekanik',
+                icon: 'fas fa-cogs',
+                color: '#6b7280'
+            },
+            'COMP': {
+                name: 'Computational',
+                description: 'Bekerja dengan angka, perhitungan, data',
+                icon: 'fas fa-calculator',
+                color: '#3b82f6'
+            },
+            'SCL': {
+                name: 'Scientific',
+                description: 'Penelitian, eksperimen, metode ilmiah',
+                icon: 'fas fa-microscope',
+                color: '#8b5cf6'
+            },
+            'PERS': {
+                name: 'Personal Contact',
+                description: 'Hubungan interpersonal, komunikasi sosial',
+                icon: 'fas fa-handshake',
+                color: '#f59e0b'
+            },
+            'AESTH': {
+                name: 'Aesthetic',
+                description: 'Seni, kreasi, keindahan, estetika',
+                icon: 'fas fa-palette',
+                color: '#ec4899'
+            },
+            'LIT': {
+                name: 'Literary',
+                description: 'Membaca, menulis, sastra, bahasa',
+                icon: 'fas fa-book-open',
+                color: '#14b8a6'
+            },
+            'MUS': {
+                name: 'Musical',
+                description: 'Musik, instrumentalia, komposisi',
+                icon: 'fas fa-music',
+                color: '#a855f7'
+            },
+            'SOS': {
+                name: 'Social Service',
+                description: 'Pelayanan masyarakat, bantuan sosial',
+                icon: 'fas fa-hands-helping',
+                color: '#059669'
+            },
+            'CLER': {
+                name: 'Clerical',
+                description: 'Tugas rutin, administrasi, detail',
+                icon: 'fas fa-clipboard-list',
+                color: '#6366f1'
+            },
+            'PRAC': {
+                name: 'Practical',
+                description: 'Keahlian praktis, aplikasi langsung',
+                icon: 'fas fa-tools',
+                color: '#dc2626'
+            },
+            'MED': {
+                name: 'Medical',
+                description: 'Pengobatan, perawatan, kesehatan',
+                icon: 'fas fa-heartbeat',
+                color: '#ef4444'
+            }
+        },
+        
+        // Scoring patterns based on gender
+        SCORING_PATTERNS: {
+            'L': { // Male
+                'OUT': [9,1,8,2,7,3,6,4,5,4,6,3],
+                'ME': [8,2,9,1,6,4,7,3,5,5,4,6],
+                'COMP': [7,3,6,4,9,1,8,2,5,6,3,7],
+                'SCL': [6,4,7,3,8,2,9,1,5,7,2,8],
+                'PERS': [5,5,5,5,5,5,5,5,5,5,5,5],
+                'AESTH': [4,6,3,7,2,8,1,9,5,8,1,9],
+                'LIT': [3,7,4,6,1,9,2,8,5,9,0,10],
+                'MUS': [2,8,1,9,0,10,3,7,5,10,4,6],
+                'SOS': [1,9,2,8,3,7,4,6,5,6,7,4],
+                'CLER': [0,10,5,5,4,6,5,5,5,4,8,2],
+                'PRAC': [10,0,7,3,5,5,6,4,5,3,9,1],
+                'MED': [5,5,0,10,1,9,0,10,5,2,5,8]
+            },
+            'P': { // Female  
+                'OUT': [6,4,5,5,4,6,3,7,5,7,2,8],
+                'ME': [5,5,4,6,3,7,2,8,5,8,1,9],
+                'COMP': [4,6,3,7,2,8,1,9,5,9,0,10],
+                'SCL': [3,7,2,8,1,9,0,10,5,10,4,6],
+                'PERS': [7,3,8,2,9,1,6,4,5,4,6,3],
+                'AESTH': [8,2,9,1,7,3,8,2,5,3,7,3],
+                'LIT': [9,1,7,3,8,2,9,1,5,2,8,2],
+                'MUS': [6,4,6,4,5,5,7,3,5,5,5,5],
+                'SOS': [10,0,8,2,6,4,5,5,5,1,9,1],
+                'CLER': [2,8,1,9,0,10,4,6,5,6,3,7],
+                'PRAC': [1,9,0,10,5,5,2,8,5,8,4,6],
+                'MED': [0,10,5,5,3,7,1,9,5,9,1,9]
+            }
+        },
+        
+        PRESTASI_BONUS: {
+            'akademik': ['SCL', 'LIT'],
+            'olahraga': ['OUT', 'PRAC'],
+            'seni': ['AESTH', 'MUS'],
+            'organisasi': ['PERS', 'SOS'],
+            'teknologi': ['ME', 'COMP'],
+            'keagamaan': ['SOS', 'LIT']
+        }
+    };
+    
+    // ==================== GLOBAL STATE ==================== 
+    let currentRankings = {};
+    let usedRankings = new Set();
+    let prestasiData = [];
+    let autoSaveEnabled = false;
+    let autoSaveInterval = null;
+    let currentEditingPrestasi = null;
+    
+    // ==================== INITIALIZATION ==================== 
+    function initializeRMIBSystem() {
+        console.log('🧠 Initializing RMIB System...');
+        
+        renderCategoryGrid();
+        setupEventListeners();
+        loadExistingData();
+        updateValidationStatus();
+        
+        console.log('✅ RMIB System initialized successfully');
+    }
+    
+    // ==================== CATEGORY GRID RENDERING ==================== 
+    function renderCategoryGrid() {
+        const grid = document.getElementById('rmibGrid');
+        grid.innerHTML = '';
+        
+        Object.entries(RMIB_CONFIG.CATEGORIES).forEach(([code, config], index) => {
+            const card = createCategoryCard(code, config, index);
+            grid.appendChild(card);
+        });
+    }
+    
+    function createCategoryCard(code, config, index) {
+        const card = document.createElement('div');
+        card.className = 'category-card incomplete fade-in-up';
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.dataset.category = code;
+        
+        card.innerHTML = `
+            <div class="category-icon" style="background: ${config.color}">
+                <i class="${config.icon}"></i>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-bold text-gray-900 text-lg mb-1">${config.name}</h3>
+                <p class="text-gray-600 text-sm mb-3">${config.description}</p>
+                <div class="flex items-center justify-between">
+                    <label class="block text-sm font-semibold text-gray-700">Ranking (1-12)</label>
+                    <div class="tooltip">
+                        <i class="fas fa-question-circle text-gray-400 cursor-help"></i>
+                        <div class="tooltip-content">
+                            1 = Paling diminati<br>12 = Paling tidak diminati
+                        </div>
+                    </div>
+                </div>
+                <select class="ranking-select w-full mt-2" data-category="${code}">
+                    <option value="">Pilih ranking...</option>
+                    ${generateRankingOptions()}
+                </select>
+            </div>
+            <div class="category-status absolute top-4 right-4">
+                <i class="fas fa-clock text-yellow-500" title="Belum diisi"></i>
+            </div>
+        `;
+        
+        return card;
+    }
+    
+    function generateRankingOptions() {
+        return Array.from({length: 12}, (_, i) => {
+            const rank = i + 1;
+            return `<option value="${rank}">${rank}</option>`;
+        }).join('');
+    }
+    
+    // ==================== EVENT LISTENERS ==================== 
+    function setupEventListeners() {
+        // Ranking selection changes
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('ranking-select') && e.target.dataset.category) {
+                handleRankingChange(e.target.dataset.category, e.target.value);
+            }
+        });
+        
+        // Action buttons
+        document.getElementById('resetAllBtn').addEventListener('click', resetAllRankings);
+        document.getElementById('previewBtn').addEventListener('click', showPreviewModal);
+        document.getElementById('saveProgressBtn').addEventListener('click', saveProgress);
+        document.getElementById('submitTestBtn').addEventListener('click', submitTest);
+        document.getElementById('autoSaveBtn').addEventListener('click', toggleAutoSave);
+        
+        // Prestasi management
+        document.getElementById('addPrestasiBtn').addEventListener('click', showPrestasiModal);
+        document.getElementById('closePrestasiModal').addEventListener('click', hidePrestasiModal);
+        document.getElementById('cancelPrestasiBtn').addEventListener('click', hidePrestasiModal);
+        document.getElementById('prestasiForm').addEventListener('submit', handlePrestasiSubmit);
+        
+        // Preview modal
+        document.getElementById('closePreviewModal').addEventListener('click', hidePreviewModal);
+        document.getElementById('closePreviewBtn').addEventListener('click', hidePreviewModal);
+        
+        // Modal overlay clicks
+        document.getElementById('prestasiModal').addEventListener('click', function(e) {
+            if (e.target === this) hidePrestasiModal();
+        });
+        document.getElementById('previewModal').addEventListener('click', function(e) {
+            if (e.target === this) hidePreviewModal();
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', handleKeyboardShortcuts);
+    }
+    
+    // ==================== RANKING MANAGEMENT ==================== 
+    function handleRankingChange(category, value) {
+        console.log(`📊 Ranking changed: ${category} = ${value}`);
+        
+        const numValue = parseInt(value);
+        const previousValue = currentRankings[category];
+        
+        // Remove previous ranking from used set
+        if (previousValue) {
+            usedRankings.delete(previousValue);
+        }
+        
+        if (numValue && numValue >= 1 && numValue <= 12) {
+            // Add new ranking
+            currentRankings[category] = numValue;
+            usedRankings.add(numValue);
+        } else {
+            // Remove ranking
+            delete currentRankings[category];
+        }
+        
+        // Update UI
+        updateCategoryCardStatus(category);
+        updateAllRankingDropdowns();
+        updateValidationStatus();
+        
+        // Auto-save if enabled
+        if (autoSaveEnabled) {
+            debouncedAutoSave();
+        }
+    }
+    
+    function updateCategoryCardStatus(category) {
+        const card = document.querySelector(`[data-category="${category}"]`);
+        const statusIcon = card.querySelector('.category-status i');
+        const ranking = currentRankings[category];
+        
+        if (ranking) {
+            // Check for duplicates
+            const duplicates = Object.values(currentRankings).filter(r => r === ranking).length > 1;
+            
+            if (duplicates) {
+                card.className = 'category-card duplicate';
+                statusIcon.className = 'fas fa-exclamation-triangle text-red-500';
+                statusIcon.title = 'Ranking duplikat!';
+            } else {
+                card.className = 'category-card complete';
+                statusIcon.className = 'fas fa-check-circle text-green-500';
+                statusIcon.title = 'Sudah diisi';
+            }
+        } else {
+            card.className = 'category-card incomplete';
+            statusIcon.className = 'fas fa-clock text-yellow-500';
+            statusIcon.title = 'Belum diisi';
+        }
+    }
+    
+    function updateAllRankingDropdowns() {
+        document.querySelectorAll('.ranking-select[data-category]').forEach(select => {
+            const category = select.dataset.category;
+            const currentValue = currentRankings[category] || '';
+            
+            // Update all options
+            Array.from(select.options).forEach(option => {
+                if (option.value === '') return;
+                
+                const rank = parseInt(option.value);
+                const isUsed = usedRankings.has(rank) && rank !== currentValue;
+                
+                option.disabled = isUsed;
+                option.style.color = isUsed ? '#9ca3af' : '';
+            });
+            
+            // Set current value
+            select.value = currentValue;
+        });
+        
+        // Update all card statuses
+        Object.keys(RMIB_CONFIG.CATEGORIES).forEach(updateCategoryCardStatus);
+    }
+    
+    // ==================== VALIDATION SYSTEM ==================== 
+    function updateValidationStatus() {
+        const rankingsCount = Object.keys(currentRankings).length;
+        const duplicates = findDuplicateRankings();
+        const currentTotal = calculateCurrentTotal();
+        const isValid = rankingsCount === 12 && duplicates.length === 0 && currentTotal === RMIB_CONFIG.TOTAL_TARGET;
+        
+        // Update counters
+        document.getElementById('rankingsUsed').textContent = rankingsCount;
+        document.getElementById('currentTotal').textContent = currentTotal;
+        document.getElementById('duplicateCount').textContent = duplicates.length;
+        
+        // Update progress circle
+        const progress = (rankingsCount / 12) * 100;
+        const circumference = 163.4;
+        const strokeDasharray = (progress / 100) * circumference;
+        document.getElementById('progressCircle').style.strokeDasharray = `${strokeDasharray} ${circumference}`;
+        document.getElementById('progressPercentage').textContent = `${Math.round(progress)}%`;
+        
+        // Update validation panel
+        const panel = document.getElementById('validationPanel');
+        const status = document.getElementById('validationStatus');
+        
+        if (isValid) {
+            panel.className = 'validation-panel valid';
+            status.textContent = '✅ Semua kategori telah diisi dengan benar!';
+            status.className = 'text-sm font-medium text-green-600';
+            
+            // Enable preview and submit buttons
+            document.getElementById('previewBtn').disabled = false;
+            document.getElementById('submitTestBtn').disabled = false;
+        } else {
+            panel.className = 'validation-panel invalid';
+            
+            if (duplicates.length > 0) {
+                status.textContent = `❌ Ada ${duplicates.length} ranking duplikat!`;
+                status.className = 'text-sm font-medium text-red-600';
+            } else if (rankingsCount < 12) {
+                const remaining = 12 - rankingsCount;
+                status.textContent = `⏳ Masih perlu mengisi ${remaining} kategori lagi`;
+                status.className = 'text-sm font-medium text-yellow-600';
+            } else {
+                status.textContent = `❌ Total skor ${currentTotal}, target: ${RMIB_CONFIG.TOTAL_TARGET}`;
+                status.className = 'text-sm font-medium text-red-600';
+            }
+            
+            // Disable preview and submit buttons
+            document.getElementById('previewBtn').disabled = true;
+            document.getElementById('submitTestBtn').disabled = true;
+        }
+    }
+    
+    function findDuplicateRankings() {
+        const rankings = Object.values(currentRankings);
+        return rankings.filter((rank, index) => rankings.indexOf(rank) !== index);
+    }
+    
+    function calculateCurrentTotal() {
+        const gender = '{{ student.gender }}';
+        const pattern = RMIB_CONFIG.SCORING_PATTERNS[gender];
+        let total = 0;
+        
+        Object.entries(currentRankings).forEach(([category, ranking]) => {
+            if (pattern[category] && ranking >= 1 && ranking <= 12) {
+                total += pattern[category][ranking - 1];
+            }
+        });
+        
+        return total;
+    }
+    
+    // ==================== SCORE CALCULATION ==================== 
+    function calculateRMIBScores(rankings, includePrestasi = false) {
+        const gender = '{{ student.gender }}';
+        const pattern = RMIB_CONFIG.SCORING_PATTERNS[gender];
+        const scores = {};
+        
+        // Calculate original scores
+        Object.entries(RMIB_CONFIG.CATEGORIES).forEach(([code, config]) => {
+            if (rankings[code] && pattern[code]) {
+                scores[code] = {
+                    name: config.name,
+                    original: pattern[code][rankings[code] - 1],
+                    final: pattern[code][rankings[code] - 1]
+                };
+            }
+        });
+        
+        // Apply prestasi bonuses if requested
+        if (includePrestasi && prestasiData.length > 0) {
+            prestasiData.forEach(prestasi => {
+                const bonusCategories = RMIB_CONFIG.PRESTASI_BONUS[prestasi.jenis] || [];
+                bonusCategories.forEach(category => {
+                    if (scores[category]) {
+                        scores[category].final = Math.max(0, scores[category].final - 5);
+                    }
+                });
+            });
+        }
+        
+        return scores;
+    }
+    
+    // ==================== PRESTASI MANAGEMENT ==================== 
+    function showPrestasiModal(prestasi = null) {
+        currentEditingPrestasi = prestasi;
+        const modal = document.getElementById('prestasiModal');
+        const title = document.getElementById('prestasiModalTitle');
+        const form = document.getElementById('prestasiForm');
+        
+        if (prestasi) {
+            title.textContent = 'Edit Prestasi';
+            fillPrestasiForm(prestasi);
+        } else {
+            title.textContent = 'Tambah Prestasi Baru';
+            form.reset();
+        }
+        
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function hidePrestasiModal() {
+        document.getElementById('prestasiModal').classList.remove('show');
+        document.body.style.overflow = '';
+        currentEditingPrestasi = null;
+    }
+    
+    function handlePrestasiSubmit(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const prestasi = {
+            id: currentEditingPrestasi ? currentEditingPrestasi.id : Date.now(),
+            jenis: formData.get('jenis'),
+            nama: formData.get('nama'),
+            tingkat: formData.get('tingkat'),
+            peringkat: formData.get('peringkat'),
+            tahun: parseInt(formData.get('tahun')),
+            keterangan: formData.get('keterangan') || ''
+        };
+        
+        if (currentEditingPrestasi) {
+            // Update existing
+            const index = prestasiData.findIndex(p => p.id === currentEditingPrestasi.id);
+            prestasiData[index] = prestasi;
+        } else {
+            // Add new
+            prestasiData.push(prestasi);
+        }
+        
+        renderPrestasiList();
+        hidePrestasiModal();
+        
+        // Show success message
+        showNotification('Prestasi berhasil disimpan!', 'success');
+        
+        if (autoSaveEnabled) {
+            debouncedAutoSave();
+        }
+    }
+    
+    function fillPrestasiForm(prestasi) {
+        document.getElementById('prestasiJenis').value = prestasi.jenis;
+        document.getElementById('prestasisNama').value = prestasi.nama;
+        document.getElementById('prestasiTingkat').value = prestasi.tingkat;
+        document.getElementById('prestasiPeringkat').value = prestasi.peringkat;
+        document.getElementById('prestasiTahun').value = prestasi.tahun;
+        document.getElementById('prestasiKeterangan').value = prestasi.keterangan;
+    }
+    
+    function renderPrestasiList() {
+        const container = document.getElementById('prestasiList');
+        const emptyState = document.getElementById('emptyPrestasi');
+        
+        if (prestasiData.length === 0) {
+            container.innerHTML = '';
+            emptyState.style.display = 'block';
+            return;
+        }
+        
+        emptyState.style.display = 'none';
+        container.innerHTML = prestasiData.map(prestasi => createPrestasiCard(prestasi)).join('');
+    }
+    
+    function createPrestasiCard(prestasi) {
+        const bonusCategories = RMIB_CONFIG.PRESTASI_BONUS[prestasi.jenis] || [];
+        const bonusText = bonusCategories.map(cat => RMIB_CONFIG.CATEGORIES[cat].name).join(', ');
+        
+        return `
+            <div class="prestasi-card prestasi-type-${prestasi.jenis}">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getPrestasiTypeClass(prestasi.jenis)}">
+                                ${getPrestasiTypeIcon(prestasi.jenis)} ${prestasi.jenis}
+                            </span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTingkatClass(prestasi.tingkat)}">
+                                ${prestasi.tingkat}
+                            </span>
+                            <span class="text-xs text-gray-500">${prestasi.tahun}</span>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-1">${prestasi.nama}</h4>
+                        <p class="text-sm text-gray-600 mb-2">${prestasi.peringkat}</p>
+                        ${prestasi.keterangan ? `<p class="text-xs text-gray-500">${prestasi.keterangan}</p>` : ''}
+                        <div class="mt-2 text-xs text-green-600">
+                            💡 Bonus: -5 poin untuk ${bonusText}
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button type="button" onclick="editPrestasi(${prestasi.id})" class="text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" onclick="deletePrestasi(${prestasi.id})" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    function getPrestasiTypeClass(type) {
+        const classes = {
+            'akademik': 'bg-blue-100 text-blue-800',
+            'olahraga': 'bg-green-100 text-green-800',
+            'seni': 'bg-purple-100 text-purple-800',
+            'organisasi': 'bg-yellow-100 text-yellow-800',
+            'teknologi': 'bg-indigo-100 text-indigo-800',
+            'keagamaan': 'bg-teal-100 text-teal-800'
+        };
+        return classes[type] || 'bg-gray-100 text-gray-800';
+    }
+    
+    function getPrestasiTypeIcon(type) {
+        const icons = {
+            'akademik': '🎓',
+            'olahraga': '🏃',
+            'seni': '🎨',
+            'organisasi': '👥',
+            'teknologi': '💻',
+            'keagamaan': '🕌'
+        };
+        return icons[type] || '🏆';
+    }
+    
+    function getTingkatClass(tingkat) {
+        const classes = {
+            'sekolah': 'bg-blue-100 text-blue-700',
+            'kecamatan': 'bg-green-100 text-green-700',
+            'kabupaten': 'bg-yellow-100 text-yellow-700',
+            'provinsi': 'bg-orange-100 text-orange-700',
+            'nasional': 'bg-red-100 text-red-700',
+            'internasional': 'bg-purple-100 text-purple-700'
+        };
+        return classes[tingkat] || 'bg-gray-100 text-gray-700';
+    }
+    
+    // Global functions for prestasi management
+    window.editPrestasi = function(id) {
+        const prestasi = prestasiData.find(p => p.id === id);
+        if (prestasi) showPrestasiModal(prestasi);
+    };
+    
+    window.deletePrestasi = function(id) {
+        if (confirm('Apakah Anda yakin ingin menghapus prestasi ini?')) {
+            prestasiData = prestasiData.filter(p => p.id !== id);
+            renderPrestasiList();
+            showNotification('Prestasi berhasil dihapus!', 'success');
+            
+            if (autoSaveEnabled) {
+                debouncedAutoSave();
+            }
+        }
+    };
+    
+    // ==================== PREVIEW MODAL ==================== 
+    function showPreviewModal() {
+        const originalScores = calculateRMIBScores(currentRankings, false);
+        const finalScores = calculateRMIBScores(currentRankings, true);
+        
+        renderScoreComparison(originalScores, finalScores);
+        renderTopInterests(finalScores);
+        
+        document.getElementById('previewModal').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function hidePreviewModal() {
+        document.getElementById('previewModal').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    
+    function renderScoreComparison(originalScores, finalScores) {
+        const originalContainer = document.getElementById('originalScores');
+        const finalContainer = document.getElementById('finalScores');
+        
+        const originalHTML = Object.entries(originalScores).map(([code, data]) => `
+            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+                <span class="font-medium text-gray-700">${data.name}</span>
+                <span class="font-bold text-blue-600">${data.original}</span>
+            </div>
+        `).join('');
+        
+        const finalHTML = Object.entries(finalScores).map(([code, data]) => {
+            const hasBonus = data.original !== data.final;
+            return `
+                <div class="flex items-center justify-between py-2 px-3 ${hasBonus ? 'bg-green-50' : 'bg-gray-50'} rounded-lg">
+                    <span class="font-medium text-gray-700">${data.name}</span>
+                    <div class="text-right">
+                        <span class="font-bold ${hasBonus ? 'text-green-600' : 'text-blue-600'}">${data.final}</span>
+                        ${hasBonus ? '<div class="text-xs text-green-600">(-5 bonus)</div>' : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        originalContainer.innerHTML = originalHTML;
+        finalContainer.innerHTML = finalHTML;
+    }
+    
+    function renderTopInterests(scores) {
+        const sortedScores = Object.entries(scores)
+            .sort(([,a], [,b]) => a.final - b.final)  // Lower scores = higher interest
+            .slice(0, 3);
+        
+        const container = document.getElementById('topInterests');
+        container.innerHTML = sortedScores.map(([code, data], index) => {
+            const medal = ['🥇', '🥈', '🥉'][index];
+            return `
+                <div class="text-center p-4 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl border-2 border-yellow-200">
+                    <div class="text-2xl mb-2">${medal}</div>
+                    <h5 class="font-bold text-gray-900 mb-1">${data.name}</h5>
+                    <div class="text-sm text-gray-600">${RMIB_CONFIG.CATEGORIES[code].description}</div>
+                    <div class="mt-2 text-lg font-bold text-yellow-600">Skor: ${data.final}</div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // ==================== DATA MANAGEMENT ==================== 
+    function resetAllRankings() {
+        if (confirm('Apakah Anda yakin ingin mereset semua ranking? Tindakan ini tidak dapat dibatalkan.')) {
+            currentRankings = {};
+            usedRankings.clear();
+            updateAllRankingDropdowns();
+            updateValidationStatus();
+            showNotification('Semua ranking berhasil direset!', 'warning');
+        }
+    }
+    
+    function saveProgress() {
+        const data = {
+            student_id: {{ student.id }},
+            rankings: currentRankings,
+            prestasi: prestasiData,
+            timestamp: new Date().toISOString()
+        };
+        
+        // Simulate saving (replace with actual AJAX call)
+        console.log('💾 Saving progress:', data);
+        
+        // Update last saved time
+        document.getElementById('lastSaved').textContent = new Date().toLocaleTimeString();
+        showNotification('Progress berhasil disimpan!', 'success');
+        
+        // TODO: Implement actual saving to backend
+    }
+    
+    function submitTest() {
+        if (!validateSubmission()) return;
+        
+        const confirmation = confirm(
+            'Apakah Anda yakin ingin menyelesaikan tes RMIB ini?\n\n' +
+            'Setelah disubmit, Anda tidak dapat mengubah jawaban lagi.'
+        );
+        
+        if (!confirmation) return;
+        
+        const finalScores = calculateRMIBScores(currentRankings, true);
+        const topThreeInterests = Object.entries(finalScores)
+            .sort(([,a], [,b]) => a.final - b.final)
+            .slice(0, 3)
+            .map(([code, data]) => ({
+                code: code,
+                name: data.name,
+                score: data.final
+            }));
+        
+        const submissionData = {
+            student_id: {{ student.id }},
+            rankings: currentRankings,
+            original_scores: calculateRMIBScores(currentRankings, false),
+            final_scores: finalScores,
+            top_interests: topThreeInterests,
+            prestasi: prestasiData,
+            submitted_at: new Date().toISOString()
+        };
+        
+        // Populate hidden form
+        document.getElementById('rmibDataInput').value = JSON.stringify(submissionData);
+        document.getElementById('prestasiDataInput').value = JSON.stringify(prestasiData);
+        
+        // Show loading state
+        const submitBtn = document.getElementById('submitTestBtn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Mengirim...';
+        submitBtn.disabled = true;
+        
+        // Submit form
+        setTimeout(() => {
+            document.getElementById('rmibDataForm').submit();
+        }, 1000);
+        
+        console.log('📤 Submitting RMIB test:', submissionData);
+    }
+    
+    function validateSubmission() {
+        const rankingsCount = Object.keys(currentRankings).length;
+        const duplicates = findDuplicateRankings();
+        const currentTotal = calculateCurrentTotal();
+        
+        if (rankingsCount !== 12) {
+            showNotification('Harap lengkapi semua 12 kategori RMIB!', 'error');
+            return false;
+        }
+        
+        if (duplicates.length > 0) {
+            showNotification('Ada ranking duplikat yang perlu diperbaiki!', 'error');
+            return false;
+        }
+        
+        if (currentTotal !== RMIB_CONFIG.TOTAL_TARGET) {
+            showNotification(`Total skor ${currentTotal}, harus ${RMIB_CONFIG.TOTAL_TARGET}!`, 'error');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // ==================== AUTO SAVE ==================== 
+    function toggleAutoSave() {
+        autoSaveEnabled = !autoSaveEnabled;
+        const statusSpan = document.getElementById('autoSaveStatus');
+        const btn = document.getElementById('autoSaveBtn');
+        
+        if (autoSaveEnabled) {
+            statusSpan.textContent = 'On';
+            btn.classList.remove('btn-secondary');
+            btn.classList.add('btn-success');
+            startAutoSaveInterval();
+            showNotification('Auto save diaktifkan', 'success');
+        } else {
+            statusSpan.textContent = 'Off';
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-secondary');
+            stopAutoSaveInterval();
+            showNotification('Auto save dinonaktifkan', 'info');
+        }
+    }
+    
+    function startAutoSaveInterval() {
+        if (autoSaveInterval) clearInterval(autoSaveInterval);
+        autoSaveInterval = setInterval(saveProgress, 60000); // Save every minute
+    }
+    
+    function stopAutoSaveInterval() {
+        if (autoSaveInterval) {
+            clearInterval(autoSaveInterval);
+            autoSaveInterval = null;
+        }
+    }
+    
+    // Debounced auto save for immediate changes
+    let autoSaveTimeout;
+    function debouncedAutoSave() {
+        if (!autoSaveEnabled) return;
+        
+        clearTimeout(autoSaveTimeout);
+        autoSaveTimeout = setTimeout(() => {
+            console.log('🔄 Auto saving...');
+            saveProgress();
+        }, 3000);
+    }
+    
+    // ==================== UTILITIES ==================== 
+    function loadExistingData() {
+        // TODO: Load existing RMIB data from backend
+        // This would populate currentRankings and prestasiData
+        renderPrestasiList();
+    }
+    
+    function handleKeyboardShortcuts(e) {
+        if (e.ctrlKey) {
+            switch (e.key) {
+                case 's':
+                    e.preventDefault();
+                    saveProgress();
+                    break;
+                case 'r':
+                    e.preventDefault();
+                    resetAllRankings();
+                    break;
+                case 'p':
+                    e.preventDefault();
+                    if (!document.getElementById('previewBtn').disabled) {
+                        showPreviewModal();
+                    }
+                    break;
+            }
+        }
+        
+        if (e.key === 'Escape') {
+            if (document.getElementById('prestasiModal').classList.contains('show')) {
+                hidePrestasiModal();
+            }
+            if (document.getElementById('previewModal').classList.contains('show')) {
+                hidePreviewModal();
+            }
+        }
+    }
+    
+        function showNotification(message, type = 'info', duration = 4000) {
+        const notification = document.createElement('div');
+        const colors = {
+            success: 'bg-green-500 text-white',
+            error: 'bg-red-500 text-white',
+            warning: 'bg-yellow-500 text-white',
+            info: 'bg-blue-500 text-white'
+        };
+        
+        const icons = {
+            success: 'fas fa-check-circle',
+            error: 'fas fa-exclamation-circle',
+            warning: 'fas fa-exclamation-triangle',
+            info: 'fas fa-info-circle'
+        };
+        
+        notification.className = `fixed top-4 right-4 ${colors[type]} px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
+        notification.innerHTML = `
+            <div class="flex items-center space-x-2">
+                <i class="${icons[type]}"></i>
+                <span class="font-medium">${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Slide in
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Auto remove
+        if (duration > 0) {
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, duration);
+        }
+    }
+    
+    // ==================== INITIALIZATION CALL ==================== 
+    initializeRMIBSystem();
+    
+    console.log('🚀 RMIB System fully loaded and ready!');
+});
+</script>
+{% endblock %}

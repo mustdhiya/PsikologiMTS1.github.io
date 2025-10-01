@@ -1,0 +1,386 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hapus Siswa - {{ student.name }} - PRESTISIA{% endblock %}
+
+{% block extra_css %}
+<style>
+.danger-zone {
+    background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+    border: 2px solid #f87171;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.danger-zone::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(248, 113, 113, 0.1), transparent);
+    animation: dangerPulse 3s infinite;
+}
+
+@keyframes dangerPulse {
+    0%, 100% { left: -100%; }
+    50% { left: 100%; }
+}
+
+.warning-card {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 1px solid #fbbf24;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-checkbox {
+    transform: scale(1.2);
+    margin-right: 0.75rem;
+}
+
+.delete-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+@media (max-width: 640px) {
+    .delete-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-red-50 via-white to-pink-50">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b border-gray-100">
+        <div class="max-w-4xl mx-auto px-4 py-6">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-red-600 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-exclamation-triangle text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-red-900">
+                        Konfirmasi Penghapusan
+                    </h1>
+                    <p class="text-gray-600">Tindakan ini tidak dapat dibatalkan setelah dikonfirmasi</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Danger Zone -->
+        <div class="danger-zone p-8 mb-8">
+            <div class="flex items-start space-x-4">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-user-times text-red-600 text-2xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-2xl font-bold text-red-900 mb-2">
+                        Hapus Siswa: {{ student.name }}
+                    </h2>
+                    <p class="text-red-800 text-lg mb-4">
+                        Anda akan menghapus siswa <strong>{{ student.name }}</strong> dengan NISN <strong>{{ student.nisn }}</strong> dari sistem.
+                    </p>
+                    <div class="bg-red-100 border border-red-300 rounded-lg p-4">
+                        <h3 class="font-semibold text-red-900 mb-2 flex items-center">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            Peringatan Penting!
+                        </h3>
+                        <ul class="text-red-800 text-sm space-y-1 list-disc list-inside">
+                            <li>Semua data siswa akan dihapus secara permanen</li>
+                            <li>Akun login siswa akan dihapus (jika ada)</li>
+                            <li>Riwayat prestasi akan ikut terhapus</li>
+                            <li>Hasil tes RMIB akan hilang</li>
+                            <li>Data tidak dapat dipulihkan setelah dihapus</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Information -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-user-circle mr-3 text-blue-600"></i>
+                Informasi Siswa yang Akan Dihapus
+            </h3>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            {{ student.name|first|upper }}
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">{{ student.name }}</h4>
+                            <p class="text-sm text-gray-600">NISN: {{ student.nisn }}</p>
+                            <p class="text-sm text-gray-600">{{ student.get_gender_display }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h4 class="font-semibold text-gray-900 mb-2">Informasi Akademik</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>Kelas:</span>
+                            <span class="font-medium">{{ student.student_class }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Tahun Masuk:</span>
+                            <span class="font-medium">{{ student.entry_year }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Status Tes:</span>
+                            <span class="font-medium">{{ student.get_test_status_display }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h4 class="font-semibold text-gray-900 mb-2">Data Terkait</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>Akun Login:</span>
+                            <span class="font-medium {% if has_user_account %}text-green-600{% else %}text-gray-500{% endif %}">
+                                {% if has_user_account %}
+                                    <i class="fas fa-check-circle mr-1"></i>Ada
+                                {% else %}
+                                    <i class="fas fa-times-circle mr-1"></i>Tidak Ada
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Data Prestasi:</span>
+                            <span class="font-medium {% if has_prestasi %}text-yellow-600{% else %}text-gray-500{% endif %}">
+                                {% if has_prestasi %}
+                                    <i class="fas fa-trophy mr-1"></i>{{ prestasi_count }} prestasi
+                                {% else %}
+                                    <i class="fas fa-times-circle mr-1"></i>Tidak Ada
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Hasil Tes RMIB:</span>
+                            <span class="font-medium {% if has_test_results %}text-blue-600{% else %}text-gray-500{% endif %}">
+                                {% if has_test_results %}
+                                    <i class="fas fa-chart-bar mr-1"></i>Ada
+                                {% else %}
+                                    <i class="fas fa-times-circle mr-1"></i>Belum Ada
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h4 class="font-semibold text-gray-900 mb-2">Dampak Penghapusan</h4>
+                    <div class="space-y-2 text-sm text-red-600">
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-times mt-0.5 flex-shrink-0"></i>
+                            <span>Siswa tidak dapat login lagi</span>
+                        </div>
+                        {% if has_prestasi %}
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-times mt-0.5 flex-shrink-0"></i>
+                            <span>{{ prestasi_count }} prestasi akan terhapus</span>
+                        </div>
+                        {% endif %}
+                        {% if has_test_results %}
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-times mt-0.5 flex-shrink-0"></i>
+                            <span>Hasil tes RMIB akan hilang</span>
+                        </div>
+                        {% endif %}
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-times mt-0.5 flex-shrink-0"></i>
+                            <span>Data tidak dapat dipulihkan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alternative Actions -->
+        <div class="warning-card mb-6">
+            <h3 class="font-semibold text-yellow-900 mb-3 flex items-center">
+                <i class="fas fa-lightbulb mr-2"></i>
+                Alternatif Lain yang Bisa Dipertimbangkan
+            </h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                    <h4 class="font-medium text-yellow-900 mb-2">Edit Data Siswa</h4>
+                    <p class="text-yellow-800 text-sm mb-3">Perbaiki atau update informasi siswa tanpa menghapus</p>
+                    <a href="{% url 'students:update' student.pk %}" 
+                       class="inline-flex items-center px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 text-sm">
+                        <i class="fas fa-edit mr-2"></i>Edit Data
+                    </a>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h4 class="font-medium text-blue-900 mb-2">Export Data</h4>
+                    <p class="text-blue-800 text-sm mb-3">Backup data siswa sebelum menghapus</p>
+                    <a href="{% url 'students:export_csv' %}?student_id={{ student.pk }}" 
+                       class="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                        <i class="fas fa-download mr-2"></i>Export CSV
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Form -->
+        <form method="post" id="deleteForm" class="bg-white rounded-2xl shadow-lg p-6">
+            {% csrf_token %}
+            
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-check-square mr-3 text-red-600"></i>
+                Konfirmasi Penghapusan
+            </h3>
+            
+            <div class="space-y-4">
+                <div class="flex items-start">
+                    <input type="checkbox" 
+                           id="confirmDelete" 
+                           name="confirm_delete" 
+                           class="confirm-checkbox text-red-600 focus:ring-red-500" 
+                           required>
+                    <label for="confirmDelete" class="text-gray-900">
+                        Saya memahami bahwa tindakan ini akan <strong>menghapus secara permanen</strong> 
+                        semua data siswa <strong>{{ student.name }}</strong> dan tidak dapat dibatalkan.
+                    </label>
+                </div>
+                
+                <div class="flex items-start">
+                    <input type="checkbox" 
+                           id="confirmConsequences" 
+                           name="confirm_consequences" 
+                           class="confirm-checkbox text-red-600 focus:ring-red-500" 
+                           required>
+                    <label for="confirmConsequences" class="text-gray-900">
+                        Saya telah mempertimbangkan dampak penghapusan dan yakin bahwa ini adalah keputusan yang tepat.
+                    </label>
+                </div>
+                
+                <div class="flex items-start">
+                    <input type="checkbox" 
+                           id="confirmBackup" 
+                           name="confirm_backup" 
+                           class="confirm-checkbox text-red-600 focus:ring-red-500" 
+                           required>
+                    <label for="confirmBackup" class="text-gray-900">
+                        Saya telah membuat backup data jika diperlukan atau tidak memerlukan backup.
+                    </label>
+                </div>
+            </div>
+            
+            <div class="delete-actions">
+                <a href="{% url 'students:detail' student.pk %}" 
+                   class="px-6 py-3 bg-gray-500 text-white font-semibold rounded-xl hover:bg-gray-600 transition-all duration-200 flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Batal
+                </a>
+                <a href="{% url 'students:list' %}" 
+                   class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 flex items-center">
+                    <i class="fas fa-list mr-2"></i>
+                    Ke Daftar Siswa
+                </a>
+                <button type="submit" 
+                        id="deleteButton"
+                        disabled
+                        class="px-6 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed transition-all duration-200 flex items-center">
+                    <i class="fas fa-trash-alt mr-2"></i>
+                    Hapus Siswa
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    'use strict';
+    
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const deleteButton = document.getElementById('deleteButton');
+    const deleteForm = document.getElementById('deleteForm');
+    
+    // Check all checkboxes to enable delete button
+    function checkAllConfirmed() {
+        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+        deleteButton.disabled = !allChecked;
+        
+        if (allChecked) {
+            deleteButton.classList.remove('bg-red-300', 'cursor-not-allowed');
+            deleteButton.classList.add('bg-red-600', 'hover:bg-red-700');
+        } else {
+            deleteButton.classList.add('bg-red-300', 'cursor-not-allowed');
+            deleteButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+        }
+    }
+    
+    // Add event listeners to checkboxes
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', checkAllConfirmed);
+    });
+    
+    // Confirm deletion on form submit
+    deleteForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!deleteButton.disabled) {
+            const studentName = '{{ student.name|escapejs }}';
+            
+            if (confirm(`KONFIRMASI AKHIR: Apakah Anda benar-benar yakin ingin menghapus siswa "${studentName}"?\n\nKetik "HAPUS" untuk melanjutkan.`)) {
+                const confirmation = prompt('Ketik "HAPUS" untuk mengonfirmasi penghapusan:');
+                
+                if (confirmation === 'HAPUS') {
+                    // Show loading state
+                    deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menghapus...';
+                    deleteButton.disabled = true;
+                    
+                    // Submit form
+                    this.submit();
+                } else {
+                    alert('Konfirmasi tidak sesuai. Penghapusan dibatalkan.');
+                }
+            }
+        }
+    });
+    
+    // Keyboard shortcut - Escape to cancel
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            window.location.href = '{% url "students:detail" student.pk %}';
+        }
+    });
+    
+    // Initial check
+    checkAllConfirmed();
+});
+</script>
+{% endblock %}

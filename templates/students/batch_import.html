@@ -1,0 +1,1067 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Batch Import Siswa - PRESTISIA{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ==================== ENHANCED UPLOAD STYLING ==================== */
+.upload-area {
+    border: 3px dashed #e5e7eb;
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    position: relative;
+    overflow: hidden;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-area::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.upload-area:hover::before {
+    left: 100%;
+}
+
+.upload-area.dragover {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    transform: scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1);
+}
+
+.upload-area:hover {
+    border-color: #6b7280;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    transform: translateY(-2px);
+}
+
+.upload-area.file-selected {
+    border-color: #10b981;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+}
+
+/* ==================== PROGRESS BAR ==================== */
+.progress-container {
+    display: none;
+    margin-top: 1.5rem;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+/* ==================== RESULT CARDS ==================== */
+.result-card {
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.result-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.result-success {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border: 1px solid #a7f3d0;
+}
+
+.result-success::before {
+    background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.result-error {
+    background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+    border: 1px solid #fca5a5;
+}
+
+.result-error::before {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.result-warning {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 1px solid #fde68a;
+}
+
+.result-warning::before {
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+/* ==================== VALIDATION STYLING ==================== */
+.validation-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    margin: 0.25rem 0;
+    border-radius: 8px;
+    font-size: 0.875rem;
+}
+
+.validation-success {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.validation-error {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* ==================== FILE PREVIEW ==================== */
+.preview-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.preview-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.preview-table th,
+.preview-table td {
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    text-align: left;
+    font-size: 0.75rem;
+}
+
+.preview-table th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+/* ==================== RESPONSIVE ENHANCEMENTS ==================== */
+@media (max-width: 768px) {
+    .upload-area {
+        padding: 2rem 1rem;
+        min-height: 250px;
+    }
+    
+    .upload-area.dragover {
+        transform: scale(1.01);
+    }
+    
+    .preview-table th,
+    .preview-table td {
+        padding: 0.25rem;
+        font-size: 0.625rem;
+    }
+}
+
+/* ==================== LOADING SPINNER ==================== */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ==================== TABLE ENHANCEMENTS ==================== */
+.example-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.example-table th {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+.example-table tr:hover {
+    background-color: #f8fafc;
+}
+
+/* ==================== TOAST NOTIFICATIONS ==================== */
+.toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    max-width: 400px;
+}
+
+.toast {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5rem;
+    padding: 1rem;
+    border-left: 4px solid;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast-success {
+    border-left-color: #10b981;
+}
+
+.toast-error {
+    border-left-color: #ef4444;
+}
+
+.toast-warning {
+    border-left-color: #f59e0b;
+}
+
+.toast-info {
+    border-left-color: #3b82f6;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    
+    <!-- Enhanced Header -->
+    <header class="bg-white/80 backdrop-blur-md shadow-lg border-b border-gray-100 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-upload text-white text-xl" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                            Batch Import Siswa
+                        </h1>
+                        <p class="text-gray-600 text-sm md:text-base">Upload file CSV untuk menambahkan multiple siswa sekaligus</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    <a href="{% url 'students:list' %}" 
+                       class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg transition-all focus:ring-2 focus:ring-gray-500">
+                        <i class="fas fa-list mr-2"></i>
+                        <span>Daftar Siswa</span>
+                    </a>
+                    <button id="downloadTemplateBtn"
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-download mr-2"></i>
+                        <span>Download Template</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        
+        <!-- Messages Display -->
+        {% if messages %}
+        <div class="mb-6 space-y-3">
+            {% for message in messages %}
+            <div class="result-card {% if message.tags == 'success' %}result-success{% elif message.tags == 'error' %}result-error{% else %}result-warning{% endif %} flex items-center space-x-3">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle text-green-600{% elif message.tags == 'error' %}fa-exclamation-circle text-red-600{% else %}fa-exclamation-triangle text-yellow-600{% endif %} text-xl"></i>
+                <div class="flex-1">
+                    <p class="font-medium">{{ message }}</p>
+                </div>
+                <button onclick="this.parentElement.style.display='none'" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Upload Section -->
+        <section class="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8 mb-8">
+            <header class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                    <i class="fas fa-cloud-upload-alt mr-3 text-blue-600" aria-hidden="true"></i>
+                    Upload File CSV
+                </h2>
+                <p class="text-gray-600 mt-2">Pilih file CSV yang berisi data siswa untuk diimport ke dalam sistem</p>
+            </header>
+
+            <!-- Format Requirements -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 mb-6">
+                <h3 class="font-semibold text-blue-900 mb-3 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Format File CSV yang Diperlukan
+                </h3>
+                <div class="space-y-3">
+                    <div class="bg-blue-100 rounded-lg p-3">
+                        <p class="text-blue-800 text-sm font-medium mb-2">Header kolom (baris pertama):</p>
+                        <code class="bg-blue-200 px-3 py-1 rounded text-blue-900 text-sm block">
+                            nama,nisn,kelas,jenis_kelamin,tanggal_lahir
+                        </code>
+                    </div>
+                    <div class="space-y-2 text-sm text-blue-700">
+                        <p><strong>Contoh isi file:</strong></p>
+                        <div class="bg-blue-50 p-3 rounded-lg font-mono text-xs overflow-x-auto">
+                            <div>nama,nisn,kelas,jenis_kelamin,tanggal_lahir</div>
+                            <div>Ahmad Fauzan,1234567890,8A,L,15/03/2010</div>
+                            <div>Siti Nurhaliza,0987654321,8A,P,22/07/2010</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Detailed Format Guidelines -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-6">
+                    <h4 class="font-semibold text-amber-900 mb-3 flex items-center">
+                        <i class="fas fa-list-check mr-2"></i>
+                        Format Field yang Diperlukan
+                    </h4>
+                    <div class="space-y-2 text-sm text-amber-800">
+                        <div class="flex justify-between">
+                            <span class="font-medium">nama:</span>
+                            <span>Nama lengkap (minimal 2 kata)</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">nisn:</span>
+                            <span>10 digit angka</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">kelas:</span>
+                            <span>Format: 7A, 8B, 9C</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">jenis_kelamin:</span>
+                            <span>L atau P</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">tanggal_lahir:</span>
+                            <span>DD/MM/YYYY</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-green-50 border border-green-200 rounded-xl p-6">
+                    <h4 class="font-semibold text-green-900 mb-3 flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Validasi Otomatis
+                    </h4>
+                    <div class="space-y-2 text-sm text-green-800">
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check text-green-600 mt-0.5"></i>
+                            <span>Deteksi duplikat NISN</span>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check text-green-600 mt-0.5"></i>
+                            <span>Validasi format tanggal</span>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check text-green-600 mt-0.5"></i>
+                            <span>Pembuatan akun otomatis</span>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-check text-green-600 mt-0.5"></i>
+                            <span>Laporan error detail</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Area -->
+            <form id="uploadForm" method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content" id="uploadContent">
+                        <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-cloud-upload-alt text-green-600 text-3xl"></i>
+                        </div>
+                        <h4 class="text-xl font-semibold text-gray-900 mb-2">
+                            Seret & Lepas File CSV
+                        </h4>
+                        <p class="text-gray-600 mb-4">
+                            atau <button type="button" id="selectFileBtn" class="text-blue-600 hover:text-blue-700 font-medium underline">pilih file dari komputer</button>
+                        </p>
+                        <div class="text-xs text-gray-500 space-y-1">
+                            <p>Maksimal ukuran file: 5MB</p>
+                            <p>Maksimal record: 1000 siswa</p>
+                            <p>Format yang didukung: CSV (.csv)</p>
+                        </div>
+                    </div>
+                    
+                    <!-- File Selected State -->
+                    <div class="file-selected-content hidden" id="fileSelectedContent">
+                        <div class="flex items-center justify-center space-x-4">
+                            <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-file-csv text-green-600 text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-gray-900" id="selectedFileName">File Terpilih</h4>
+                                <div class="text-sm text-gray-500 space-y-1">
+                                    <p>Ukuran: <span id="selectedFileSize">-</span></p>
+                                    <p>Dimodifikasi: <span id="selectedFileDate">-</span></p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button type="button" id="previewBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    Preview
+                                </button>
+                                <button type="button" id="removeFileBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all">
+                                    <i class="fas fa-times mr-1"></i>
+                                    Ganti File
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <input type="file" id="csvFileInput" name="csv_file" accept=".csv" class="hidden" required>
+                </div>
+                
+                <!-- Progress Container -->
+                <div class="progress-container" id="progressContainer">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Progress Upload</span>
+                        <span class="text-sm text-gray-500" id="progressText">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+                
+                <!-- File Preview -->
+                <div class="hidden" id="previewContainer">
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="border-b border-gray-200 p-4 bg-gray-50">
+                            <h4 class="font-semibold text-gray-900 flex items-center">
+                                <i class="fas fa-eye mr-2 text-blue-600"></i>
+                                Preview Data (5 baris pertama)
+                            </h4>
+                        </div>
+                        <div class="preview-container">
+                            <table class="preview-table" id="previewTable">
+                                <thead>
+                                    <tr>
+                                        <th>Nama</th>
+                                        <th>NISN</th>
+                                        <th>Kelas</th>
+                                        <th>Jenis Kelamin</th>
+                                        <th>Tanggal Lahir</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="previewTableBody">
+                                    <!-- Preview data will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Buttons -->
+                <div class="flex items-center justify-between">
+                    <button type="button" id="resetBtn" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all flex items-center space-x-2">
+                        <i class="fas fa-redo"></i>
+                        <span>Reset</span>
+                    </button>
+                    
+                    <button type="submit" id="uploadBtn" class="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all flex items-center space-x-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fas fa-upload"></i>
+                        <span>Upload & Proses</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+        
+        <!-- Example Table -->
+        <section class="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
+            <header class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                    <i class="fas fa-table mr-3 text-purple-600" aria-hidden="true"></i>
+                    Contoh Format Data
+                </h2>
+                <p class="text-gray-600 mt-2">Pastikan file CSV Anda mengikuti format seperti contoh di bawah</p>
+            </header>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full example-table rounded-xl overflow-hidden">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-purple-100 to-blue-100 border-b border-purple-200">
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-purple-900">nama</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-purple-900">nisn</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-purple-900">kelas</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-purple-900">jenis_kelamin</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-purple-900">tanggal_lahir</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-100 hover:bg-purple-50 transition-colors">
+                            <td class="px-6 py-4 text-sm text-gray-900">Putri Yuliana</td>
+                            <td class="px-6 py-4 text-sm text-gray-900 font-mono">1234567890</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">8C</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">P</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">11/05/2008</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-purple-50 transition-colors">
+                            <td class="px-6 py-4 text-sm text-gray-900">Toni Leksono</td>
+                            <td class="px-6 py-4 text-sm text-gray-900 font-mono">1234567891</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">9A</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">L</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">02/03/2008</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-purple-50 transition-colors">
+                            <td class="px-6 py-4 text-sm text-gray-900">Rina Lestari</td>
+                            <td class="px-6 py-4 text-sm text-gray-900 font-mono">1234567892</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">7C</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">P</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">04/11/2012</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-purple-50 transition-colors">
+                            <td class="px-6 py-4 text-sm text-gray-900">Toni Jatmiko</td>
+                            <td class="px-6 py-4 text-sm text-gray-900 font-mono">1234567893</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">8A</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">L</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">11/07/2008</td>
+                        </tr>
+                        <tr class="hover:bg-purple-50 transition-colors">
+                            <td class="px-6 py-4 text-sm text-gray-900">Ayu Puspitasari</td>
+                            <td class="px-6 py-4 text-sm text-gray-900 font-mono">1234567894</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">9A</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">P</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">21/04/2010</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Important Notes -->
+            <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-6 mt-6">
+                <h4 class="font-semibold text-yellow-900 mb-4 flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Catatan Penting & Aturan Validasi:
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <h5 class="font-medium text-yellow-800">Format Data:</h5>
+                        <ul class="space-y-1 text-yellow-800 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-check mr-2 mt-1 text-xs text-yellow-600"></i>
+                                <span>Nama: Minimal 2 kata, maksimal 200 karakter</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check mr-2 mt-1 text-xs text-yellow-600"></i>
+                                <span>NISN: Tepat 10 digit angka, unik</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check mr-2 mt-1 text-xs text-yellow-600"></i>
+                                <span>Kelas: Format [angka][huruf] (7A, 8B, 9C)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check mr-2 mt-1 text-xs text-yellow-600"></i>
+                                <span>Gender: L (Laki-laki) atau P (Perempuan)</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="space-y-2">
+                        <h5 class="font-medium text-yellow-800">Validasi Sistem:</h5>
+                        <ul class="space-y-1 text-yellow-800 text-sm">
+                            <li class="flex items-start">
+                                <i class="fas fa-shield-alt mr-2 mt-1 text-xs text-yellow-600"></i>
+                                <span>Duplikasi NISN akan ditolak</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-calendar-check mr-2 mt-1 text-xs text-yellow-600"></i>
+                                <span>Tanggal lahir harus valid (DD/MM/YYYY)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-user-shield mr-2 mt-1 text-xs text-yellow-600"></i>
+                                <span>Akun login otomatis dibuat</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-key mr-2 mt-1 text-xs text-yellow-600"></i>
+                                <span>Password auto-generate untuk setiap siswa</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Results Display -->
+        <div id="resultsContainer" class="hidden"></div>
+        
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+    
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    'use strict';
+    
+    // Elements
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadArea = document.getElementById('uploadArea');
+    const uploadContent = document.getElementById('uploadContent');
+    const fileSelectedContent = document.getElementById('fileSelectedContent');
+    const csvFileInput = document.getElementById('csvFileInput');
+    const selectFileBtn = document.getElementById('selectFileBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const previewBtn = document.getElementById('previewBtn');
+    const removeFileBtn = document.getElementById('removeFileBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewTableBody = document.getElementById('previewTableBody');
+    const downloadTemplateBtn = document.getElementById('downloadTemplateBtn');
+    const toastContainer = document.getElementById('toastContainer');
+    const resultsContainer = document.getElementById('resultsContainer');
+    
+    let selectedFile = null;
+    let isUploading = false;
+    
+    // Toast notification system
+    function showToast(message, type = 'info', duration = 5000) {
+        const toast = document.createElement('div');
+        const colors = {
+            success: 'toast-success',
+            error: 'toast-error',
+            warning: 'toast-warning',
+            info: 'toast-info'
+        };
+        
+        const icons = {
+            success: 'fas fa-check-circle text-green-600',
+            error: 'fas fa-exclamation-circle text-red-600',
+            warning: 'fas fa-exclamation-triangle text-yellow-600',
+            info: 'fas fa-info-circle text-blue-600'
+        };
+        
+        toast.className = `toast ${colors[type]}`;
+        toast.innerHTML = `
+            <div class="flex items-start space-x-3">
+                <i class="${icons[type]} mt-0.5" aria-hidden="true"></i>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 leading-relaxed">${message}</p>
+                </div>
+                <button onclick="this.closest('.toast').remove()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        // Show toast
+        setTimeout(() => toast.classList.add('show'), 100);
+        
+        // Auto remove
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 300);
+        }, duration);
+    }
+    
+    // File handling functions
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function formatDate(date) {
+        return date.toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+    
+    function validateFile(file) {
+        const errors = [];
+        
+        if (!file) {
+            errors.push('Pilih file CSV terlebih dahulu');
+            return errors;
+        }
+        
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+            errors.push('File harus berformat CSV (.csv)');
+        }
+        
+        if (file.size > 5 * 1024 * 1024) {
+            errors.push(`Ukuran file terlalu besar (${formatFileSize(file.size)}). Maksimal 5MB`);
+        }
+        
+        if (file.size === 0) {
+            errors.push('File kosong. Pilih file yang berisi data');
+        }
+        
+        return errors;
+    }
+    
+    function handleFileSelect(file) {
+        const errors = validateFile(file);
+        
+        if (errors.length > 0) {
+            errors.forEach(error => showToast(error, 'error'));
+            return false;
+        }
+        
+        selectedFile = file;
+        
+        // Update UI
+        document.getElementById('selectedFileName').textContent = file.name;
+        document.getElementById('selectedFileSize').textContent = formatFileSize(file.size);
+        document.getElementById('selectedFileDate').textContent = formatDate(new Date(file.lastModified));
+        
+        // Show file selected state
+        uploadContent.classList.add('hidden');
+        fileSelectedContent.classList.remove('hidden');
+        uploadArea.classList.add('file-selected');
+        uploadBtn.disabled = false;
+        
+        showToast('File berhasil dipilih. Klik "Preview" untuk melihat data atau "Upload & Proses" untuk memulai import.', 'success');
+        
+        return true;
+    }
+    
+    function resetUpload() {
+        selectedFile = null;
+        csvFileInput.value = '';
+        
+        // Reset UI
+        uploadContent.classList.remove('hidden');
+        fileSelectedContent.classList.add('hidden');
+        uploadArea.classList.remove('file-selected', 'dragover');
+        uploadBtn.disabled = true;
+        previewContainer.classList.add('hidden');
+        progressContainer.style.display = 'none';
+        resultsContainer.classList.add('hidden');
+        resultsContainer.innerHTML = '';
+        
+        // Reset progress
+        progressFill.style.width = '0%';
+        progressText.textContent = '0%';
+    }
+    
+    // Event listeners
+    selectFileBtn.addEventListener('click', () => csvFileInput.click());
+    
+    csvFileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+    
+    removeFileBtn.addEventListener('click', resetUpload);
+    resetBtn.addEventListener('click', resetUpload);
+    
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const files = Array.from(e.dataTransfer.files);
+        const csvFile = files.find(file => file.name.toLowerCase().endsWith('.csv'));
+        
+        if (csvFile) {
+            handleFileSelect(csvFile);
+            // Create FileList for form submission
+            const dt = new DataTransfer();
+            dt.items.add(csvFile);
+            csvFileInput.files = dt.files;
+        } else {
+            showToast('File harus berformat CSV', 'error');
+        }
+    });
+    
+    // Preview functionality
+    previewBtn.addEventListener('click', async () => {
+        if (!selectedFile) return;
+        
+        try {
+            const text = await selectedFile.text();
+            const lines = text.trim().split('\n');
+            
+            if (lines.length < 2) {
+                showToast('File tidak memiliki data yang valid', 'error');
+                return;
+            }
+            
+            // Clear previous preview
+            previewTableBody.innerHTML = '';
+            
+            // Parse CSV (simple parsing for preview)
+            const delimiter = text.includes(';') ? ';' : ',';
+            const dataLines = lines.slice(1, 6); // Skip header, take first 5 rows
+            
+            dataLines.forEach((line, index) => {
+                if (line.trim()) {
+                    const cols = line.split(delimiter).map(col => col.trim().replace(/"/g, ''));
+                    
+                    const row = document.createElement('tr');
+                    
+                    for (let i = 0; i < 5; i++) {
+                        const cell = document.createElement('td');
+                        cell.textContent = cols[i] || '-';
+                        row.appendChild(cell);
+                    }
+                    
+                    previewTableBody.appendChild(row);
+                }
+            });
+            
+            previewContainer.classList.remove('hidden');
+            showToast('Preview data berhasil dimuat', 'success');
+            
+        } catch (error) {
+            console.error('Preview error:', error);
+            showToast('Gagal memuat preview data', 'error');
+        }
+    });
+    
+    // Download template
+    downloadTemplateBtn.addEventListener('click', () => {
+        const csvContent = 'nama,nisn,kelas,jenis_kelamin,tanggal_lahir\nAhmad Fauzan,1234567890,8A,L,15/03/2010\nSiti Nurhaliza,0987654321,8A,P,22/07/2010';
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'template_import_siswa.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+        showToast('Template CSV berhasil didownload', 'success');
+    });
+    
+    // Form submission
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!selectedFile || isUploading) return;
+        
+        const errors = validateFile(selectedFile);
+        if (errors.length > 0) {
+            errors.forEach(error => showToast(error, 'error'));
+            return;
+        }
+        
+        isUploading = true;
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<div class="loading-spinner mr-2"></div><span>Memproses...</span>';
+        
+        // Show progress
+        progressContainer.style.display = 'block';
+        
+        // Simulate progress
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 10;
+            if (progress > 90) {
+                clearInterval(progressInterval);
+            } else {
+                progressFill.style.width = progress + '%';
+                progressText.textContent = Math.round(progress) + '%';
+            }
+        }, 200);
+        
+        try {
+            const formData = new FormData(uploadForm);
+            
+            const response = await fetch(uploadForm.action || window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            });
+            
+            clearInterval(progressInterval);
+            progressFill.style.width = '100%';
+            progressText.textContent = '100%';
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showToast(result.message, 'success', 8000);
+                
+                // Display detailed results
+                if (result.results) {
+                    displayResults(result.results);
+                }
+                
+                setTimeout(() => {
+                    if (result.redirect_url) {
+                        window.location.href = result.redirect_url;
+                    }
+                }, 3000);
+                
+            } else {
+                showToast(result.message, 'error', 10000);
+                
+                // Display errors
+                if (result.errors && result.errors.length > 0) {
+                    displayErrors(result.errors);
+                }
+            }
+            
+        } catch (error) {
+            clearInterval(progressInterval);
+            console.error('Upload error:', error);
+            showToast('Terjadi kesalahan saat upload. Silakan coba lagi.', 'error');
+        } finally {
+            isUploading = false;
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = '<i class="fas fa-upload"></i><span>Upload & Proses</span>';
+        }
+    });
+    
+    function displayResults(results) {
+        if (!results) return;
+        
+        const html = `
+            <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8 mb-8">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Hasil Import</h3>
+                        <p class="text-gray-600">Proses import telah selesai</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
+                        <div class="text-2xl font-bold text-blue-600">${results.total_processed || 0}</div>
+                        <div class="text-sm text-blue-700">Total Diproses</div>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-xl border border-green-200">
+                        <div class="text-2xl font-bold text-green-600">${results.successful || 0}</div>
+                        <div class="text-sm text-green-700">Berhasil</div>
+                    </div>
+                    <div class="text-center p-4 bg-red-50 rounded-xl border border-red-200">
+                        <div class="text-2xl font-bold text-red-600">${results.errors || 0}</div>
+                        <div class="text-sm text-red-700">Error</div>
+                    </div>
+                    <div class="text-center p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                        <div class="text-2xl font-bold text-yellow-600">${results.duplicates || 0}</div>
+                        <div class="text-sm text-yellow-700">Duplikat</div>
+                    </div>
+                </div>
+                
+                ${results.error_details && results.error_details.length > 0 ? `
+                <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                    <h4 class="font-semibold text-red-800 mb-2">Detail Error:</h4>
+                    <div class="space-y-1 text-sm text-red-700 max-h-40 overflow-y-auto">
+                        ${results.error_details.map(error => `<div>• ${error}</div>`).join('')}
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+        `;
+        
+        resultsContainer.innerHTML = html;
+        resultsContainer.classList.remove('hidden');
+    }
+    
+    function displayErrors(errors) {
+        const html = `
+            <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8 mb-8">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Error Details</h3>
+                        <p class="text-gray-600">Perbaiki error berikut dan coba lagi</p>
+                    </div>
+                </div>
+                
+                <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                    <div class="space-y-2 text-sm text-red-700 max-h-60 overflow-y-auto">
+                        ${errors.map(error => `<div class="flex items-start space-x-2"><i class="fas fa-exclamation-triangle mt-0.5 flex-shrink-0"></i><span>${error}</span></div>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        resultsContainer.innerHTML = html;
+        resultsContainer.classList.remove('hidden');
+    }
+    
+    // Initialize
+    resetUpload();
+});
+</script>
+{% endblock %}

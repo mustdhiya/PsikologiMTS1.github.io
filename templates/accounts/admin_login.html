@@ -1,0 +1,828 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Login - PRESTISIA</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="icon" type="image/x-icon" href="{% static 'img/logo.png' %}">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Professional Admin Theme */
+        .admin-gradient-bg {
+            background: linear-gradient(135deg, #0c1426 0%, #1e293b 30%, #334155 70%, #475569 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .admin-gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .glass-effect-admin {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+        }
+        
+        .admin-card {
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+        }
+        
+        /* Enhanced Animations */
+        .fade-in-admin {
+            animation: fadeInAdmin 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .slide-up-admin {
+            animation: slideUpAdmin 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .scale-in-admin {
+            animation: scaleInAdmin 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .glow-in {
+            animation: glowIn 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes fadeInAdmin {
+            from { 
+                opacity: 0; 
+                transform: translateY(50px) scale(0.9);
+                filter: blur(5px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+        
+        @keyframes slideUpAdmin {
+            from { 
+                opacity: 0; 
+                transform: translateY(80px) rotateX(10deg);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) rotateX(0deg);
+            }
+        }
+        
+        @keyframes scaleInAdmin {
+            from { 
+                opacity: 0; 
+                transform: scale(0.7) rotate(-5deg);
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1) rotate(0deg);
+            }
+        }
+        
+        @keyframes glowIn {
+            from {
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            }
+            to {
+                box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+            }
+        }
+        
+        /* Form Enhancements */
+        .admin-input-group {
+            position: relative;
+        }
+        
+        .admin-input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            z-index: 10;
+            font-size: 16px;
+        }
+        
+        .admin-input-field {
+            padding: 14px 16px 14px 48px;
+            background: rgba(248, 250, 252, 0.9);
+            border: 2px solid #e2e8f0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .admin-input-field:focus {
+            background: white;
+            border-color: #3b82f6;
+            box-shadow: 
+                0 0 0 4px rgba(59, 130, 246, 0.1),
+                0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .admin-input-field:focus + .admin-input-icon {
+            color: #3b82f6;
+        }
+        
+        .admin-btn {
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 50%, #1e3a8a 100%);
+            box-shadow: 
+                0 15px 35px rgba(30, 64, 175, 0.4),
+                0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+        
+        .admin-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .admin-btn:hover::before {
+            left: 100%;
+        }
+        
+        .admin-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(30, 64, 175, 0.5),
+                0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .admin-btn:active {
+            transform: translateY(-1px) scale(1.01);
+        }
+        
+        /* Floating Background Elements */
+        .floating-admin {
+            animation: floatAdmin 12s ease-in-out infinite;
+        }
+        
+        .floating-admin:nth-child(2) {
+            animation-delay: 4s;
+            animation-duration: 15s;
+        }
+        
+        .floating-admin:nth-child(3) {
+            animation-delay: 8s;
+            animation-duration: 18s;
+        }
+        
+        .floating-admin:nth-child(4) {
+            animation-delay: 12s;
+            animation-duration: 20s;
+        }
+        
+        @keyframes floatAdmin {
+            0%, 100% { 
+                transform: translate(0, 0) rotate(0deg) scale(1); 
+                opacity: 0.1;
+            }
+            25% { 
+                transform: translate(20px, -30px) rotate(2deg) scale(1.1); 
+                opacity: 0.2;
+            }
+            50% { 
+                transform: translate(-10px, -40px) rotate(-1deg) scale(0.9); 
+                opacity: 0.15;
+            }
+            75% { 
+                transform: translate(-20px, -20px) rotate(1deg) scale(1.05); 
+                opacity: 0.1;
+            }
+        }
+        
+        /* Loading Animation */
+        .loading-admin {
+            position: relative;
+            pointer-events: none;
+        }
+        
+        .loading-admin::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            margin: auto;
+            border: 3px solid transparent;
+            border-top-color: #ffffff;
+            border-right-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: spinAdmin 1.2s linear infinite;
+        }
+        
+        @keyframes spinAdmin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Security Badge */
+        .security-badge {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+            box-shadow: 
+                0 6px 20px rgba(220, 38, 38, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            animation: securityPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes securityPulse {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.8; 
+                transform: scale(1.05);
+            }
+        }
+        
+        /* Enhanced Status Indicators */
+        .status-indicator {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .status-indicator::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: statusShimmer 2s infinite;
+        }
+        
+        @keyframes statusShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        /* Dark Theme Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 4px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(148, 163, 184, 0.6), rgba(100, 116, 139, 0.8));
+            border-radius: 4px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, rgba(148, 163, 184, 0.8), rgba(100, 116, 139, 1));
+        }
+        
+        /* Error Animation */
+        .shake-error {
+            animation: shakeError 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+        }
+        
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+        
+        /* Success Flash */
+        .success-flash {
+            animation: successFlash 2s ease-in-out;
+        }
+        
+        @keyframes successFlash {
+            0%, 100% { background: rgba(255, 255, 255, 0.97); }
+            50% { background: rgba(34, 197, 94, 0.1); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-login-container {
+                padding: 1rem;
+                max-width: 90vw;
+            }
+            
+            .admin-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .admin-btn {
+                padding: 16px 24px;
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .admin-card {
+                padding: 1.5rem 1rem;
+            }
+            
+            .floating-admin {
+                display: none;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .admin-gradient-bg {
+                background: white;
+            }
+            
+            .floating-admin,
+            .glass-effect-admin {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="admin-gradient-bg min-h-screen flex items-center justify-center p-4 custom-scrollbar">
+    
+    <!-- Enhanced Floating Background Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <!-- Geometric Shapes -->
+        <div class="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-blue-500 to-indigo-600 opacity-10 rounded-3xl floating-admin transform rotate-12"></div>
+        <div class="absolute top-40 right-32 w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 opacity-15 rounded-full floating-admin"></div>
+        <div class="absolute bottom-32 left-40 w-24 h-24 bg-gradient-to-br from-indigo-500 to-blue-600 opacity-10 rounded-2xl floating-admin transform -rotate-12"></div>
+        <div class="absolute bottom-20 right-20 w-16 h-16 bg-gradient-to-br from-blue-600 to-cyan-500 opacity-20 rounded-xl floating-admin"></div>
+        
+        <!-- Additional Abstract Elements -->
+        <div class="absolute top-1/3 left-1/4 w-40 h-2 bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-10 floating-admin"></div>
+        <div class="absolute bottom-1/3 right-1/4 w-28 h-2 bg-gradient-to-r from-transparent via-indigo-400 to-transparent opacity-15 floating-admin"></div>
+    </div>
+    
+    <!-- Admin Login Container -->
+    <div class="admin-login-container w-full max-w-md fade-in-admin">
+        
+        <!-- Main Login Card -->
+        <div class="admin-card rounded-3xl shadow-2xl p-8 slide-up-admin relative">
+            
+            <!-- Security Overlay Pattern -->
+            <div class="absolute inset-0 opacity-5 pointer-events-none">
+                <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, #000 0px, #000 2px, transparent 2px, transparent 10px);"></div>
+            </div>
+            
+            <!-- Header with Enhanced Logo -->
+            <div class="text-center mb-8 relative z-10">
+                <div class="w-24 h-24 bg-gradient-to-br from-blue-100 via-indigo-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-2xl scale-in-admin border-4 border-white glow-in relative overflow-hidden">
+                    <!-- Logo Background Effect -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-indigo-500/20 rounded-3xl"></div>
+                    <img src="{% static 'img/logo.png' %}" alt="Logo PRESTISIA" class="w-14 h-14 object-contain relative z-10">
+                </div>
+                
+                <h1 class="text-3xl font-bold font-display text-gray-900 mb-2 relative">
+                    <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                        Administrator
+                    </span>
+                </h1>
+                <h2 class="text-xl font-semibold text-blue-600 mb-1">PRESTISIA</h2>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Portal Administrasi Sistem<br>
+                    <span class="text-xs text-gray-500">MTs Muhammadiyah 1 Samarinda</span>
+                </p>
+                
+                <!-- Enhanced Security Badge -->
+                <div class="inline-flex items-center px-4 py-2 rounded-full text-xs font-bold text-white security-badge mt-4 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+                    <i class="fas fa-shield-alt mr-2 relative z-10"></i>
+                    <span class="relative z-10">AKSES TERBATAS</span>
+                </div>
+            </div>
+            
+            <!-- Enhanced Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mb-6 p-4 rounded-xl relative overflow-hidden
+                        {% if message.tags == 'error' %}bg-red-50 text-red-800 border-2 border-red-200 shake-error
+                        {% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-800 border-2 border-yellow-200
+                        {% else %}bg-blue-50 text-blue-800 border-2 border-blue-200{% endif %} 
+                        shadow-lg backdrop-blur-sm">
+                        
+                        <!-- Message Background Effect -->
+                        <div class="absolute inset-0 
+                            {% if message.tags == 'error' %}bg-gradient-to-r from-red-100/50 to-red-50/30
+                            {% elif message.tags == 'warning' %}bg-gradient-to-r from-yellow-100/50 to-yellow-50/30
+                            {% else %}bg-gradient-to-r from-blue-100/50 to-blue-50/30{% endif %}"></div>
+                        
+                        <div class="flex items-center relative z-10">
+                            <i class="fas 
+                                {% if message.tags == 'error' %}fa-exclamation-triangle text-red-600
+                                {% elif message.tags == 'warning' %}fa-exclamation-circle text-yellow-600
+                                {% else %}fa-info-circle text-blue-600{% endif %} 
+                                mr-3 text-lg"></i>
+                            <span class="font-semibold">{{ message }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Non-field errors -->
+            {% if form.non_field_errors %}
+                <div class="mb-6 p-4 rounded-xl bg-red-50 text-red-800 border-2 border-red-200 shadow-lg backdrop-blur-sm shake-error relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-red-100/50 to-red-50/30"></div>
+                    <div class="flex items-center relative z-10">
+                        <i class="fas fa-exclamation-triangle text-red-600 mr-3 text-lg"></i>
+                        <span class="font-semibold">{{ form.non_field_errors.0 }}</span>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Enhanced Login Form -->
+            <form method="post" id="adminLoginForm" class="space-y-8 relative z-10">
+                {% csrf_token %}
+                
+                <!-- Username Field -->
+                <div class="admin-input-group">
+                    <label for="{{ form.username.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-3">
+                        <i class="fas fa-user-shield mr-2 text-blue-600"></i>
+                        Username Administrator
+                    </label>
+                    <div class="relative">
+                        <div class="admin-input-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <input type="text" name="username" id="{{ form.username.id_for_label }}" 
+                               class="admin-input-field w-full rounded-xl font-semibold focus:outline-none"
+                               placeholder="Masukkan username admin"
+                               value="{{ form.username.value|default:'' }}"
+                               autocomplete="username"
+                               required>
+                    </div>
+                    {% if form.username.errors %}
+                        <p class="mt-3 text-sm text-red-600 flex items-center font-medium">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            {{ form.username.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+                
+                <!-- Password Field -->
+                <div class="admin-input-group">
+                    <label for="{{ form.password.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-3">
+                        <i class="fas fa-key mr-2 text-blue-600"></i>
+                        Password Administrator
+                    </label>
+                    <div class="relative">
+                        <div class="admin-input-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <input type="password" name="password" id="{{ form.password.id_for_label }}" 
+                               class="admin-input-field w-full rounded-xl font-semibold focus:outline-none"
+                               placeholder="Masukkan password admin"
+                               autocomplete="current-password"
+                               required>
+                        <button type="button" id="toggleAdminPassword" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                            <i class="fas fa-eye" id="adminEyeIcon"></i>
+                        </button>
+                    </div>
+                    {% if form.password.errors %}
+                        <p class="mt-3 text-sm text-red-600 flex items-center font-medium">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            {{ form.password.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+                
+                <!-- Enhanced Submit Button -->
+                <button type="submit" id="adminLoginBtn" class="admin-btn w-full text-white py-4 px-6 rounded-xl font-bold text-lg transition-all transform focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 relative overflow-hidden">
+                    <span id="adminLoginBtnText" class="relative z-10">
+                        <i class="fas fa-sign-in-alt mr-3"></i>
+                        Masuk sebagai Administrator
+                    </span>
+                </button>
+            </form>
+            
+            <!-- Enhanced Navigation Links -->
+            <div class="mt-8 space-y-4 relative z-10">
+                <!-- Back to Student Login -->
+                <div class="text-center">
+                    <a href="{% url 'accounts:login' %}" class="inline-flex items-center text-gray-600 hover:text-blue-600 font-semibold transition-all hover:scale-105">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Kembali ke Login Siswa
+                    </a>
+                </div>
+                
+                <!-- Django Admin Link -->
+                <div class="text-center">
+                    <a href="/admin/" class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-all text-sm hover:scale-105">
+                        <i class="fas fa-cogs mr-2"></i>
+                        Django Admin Panel
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Enhanced Security Warning -->
+            <div class="mt-8 p-5 bg-gradient-to-r from-amber-50 via-orange-50 to-red-50 border-2 border-amber-200 rounded-xl relative overflow-hidden shadow-inner">
+                <div class="absolute inset-0 bg-gradient-to-r from-amber-100/30 to-orange-100/30"></div>
+                <div class="flex items-start space-x-4 relative z-10">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-shield-alt text-amber-600 text-xl mt-1"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-amber-800 text-sm mb-1">
+                            🔒 Zona Keamanan Tinggi
+                        </h4>
+                        <p class="text-xs text-amber-700 leading-relaxed">
+                            Halaman ini hanya untuk administrator sistem PRESTISIA. 
+                            Semua aktivitas login direkam dan dimonitor oleh sistem keamanan.
+                        </p>
+                        <div class="mt-2 flex items-center text-xs text-amber-600">
+                            <i class="fas fa-eye mr-1"></i>
+                            <span>Status: Dipantau</span>
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-clock mr-1"></i>
+                            <span>Logged: Real-time</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Enhanced System Info -->
+            <div class="mt-6 text-center text-xs text-gray-500 relative z-10">
+                <div class="space-y-2">
+                    <p class="flex items-center justify-center">
+                        <i class="fas fa-server mr-2 text-blue-500"></i>
+                        <span class="font-semibold">PRESTISIA Admin Panel v2.0</span>
+                    </p>
+                    <p class="flex items-center justify-center">
+                        <i class="fas fa-calendar mr-2 text-indigo-500"></i>
+                        <span>MTs Muhammadiyah 1 Samarinda</span>
+                    </p>
+                    <p class="flex items-center justify-center text-green-600">
+                        <i class="fas fa-circle mr-2 text-green-500 animate-pulse"></i>
+                        <span>Sistem Online</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Enhanced Security Info Card -->
+        <div class="glass-effect-admin rounded-2xl p-6 mt-6 text-white text-center slide-up-admin relative overflow-hidden" style="animation-delay: 0.3s;">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0);background-size: 20px 20px;"></div>
+            </div>
+            
+            <div class="flex items-center justify-center space-x-6 text-sm relative z-10">
+                <div class="flex items-center status-indicator">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2 shadow-lg"></div>
+                    <span class="font-medium">Sistem Aktif</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-lock mr-2 text-blue-300"></i>
+                    <span class="font-medium">SSL Secured</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-eye mr-2 text-yellow-300"></i>
+                    <span class="font-medium">Monitored</span>
+                </div>
+            </div>
+            
+            <div class="mt-3 text-xs text-gray-300">
+                <span>🔐 Keamanan tingkat enterprise</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Enhanced Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminLoginForm = document.getElementById('adminLoginForm');
+            const adminLoginBtn = document.getElementById('adminLoginBtn');
+            const adminLoginBtnText = document.getElementById('adminLoginBtnText');
+            const toggleAdminPassword = document.getElementById('toggleAdminPassword');
+            const adminPasswordField = document.querySelector('input[name="password"]');
+            const adminUsernameField = document.querySelector('input[name="username"]');
+            const adminEyeIcon = document.getElementById('adminEyeIcon');
+            
+            // Enhanced password visibility toggle
+            if (toggleAdminPassword && adminPasswordField) {
+                toggleAdminPassword.addEventListener('click', function() {
+                    const type = adminPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                    adminPasswordField.setAttribute('type', type);
+                    
+                    // Enhanced icon transition
+                    if (type === 'text') {
+                        adminEyeIcon.classList.remove('fa-eye');
+                        adminEyeIcon.classList.add('fa-eye-slash');
+                        toggleAdminPassword.style.color = '#3b82f6';
+                    } else {
+                        adminEyeIcon.classList.remove('fa-eye-slash');
+                        adminEyeIcon.classList.add('fa-eye');
+                        toggleAdminPassword.style.color = '#6b7280';
+                    }
+                    
+                    // Add a subtle scale animation
+                    toggleAdminPassword.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        toggleAdminPassword.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            }
+            
+            // Enhanced form submission with security checks
+            adminLoginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Add shake effect for empty fields
+                const requiredFields = [adminUsernameField, adminPasswordField];
+                let hasEmptyFields = false;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.classList.add('shake-error');
+                        field.style.borderColor = '#ef4444';
+                        hasEmptyFields = true;
+                        
+                        setTimeout(() => {
+                            field.classList.remove('shake-error');
+                        }, 500);
+                    }
+                });
+                
+                if (hasEmptyFields) {
+                    return;
+                }
+                
+                // Show enhanced loading state
+                adminLoginBtn.classList.add('loading-admin');
+                adminLoginBtn.disabled = true;
+                adminLoginBtn.style.background = 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
+                adminLoginBtnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Memverifikasi Kredensial...';
+                
+                // Add security check animations
+                const card = document.querySelector('.admin-card');
+                card.style.border = '2px solid #3b82f6';
+                card.style.boxShadow = '0 0 30px rgba(59, 130, 246, 0.3)';
+                
+                // Simulate enhanced security validation
+                setTimeout(() => {
+                    adminLoginBtnText.innerHTML = '<i class="fas fa-shield-alt mr-3"></i>Validasi Keamanan...';
+                }, 800);
+                
+                setTimeout(() => {
+                    adminLoginBtnText.innerHTML = '<i class="fas fa-key mr-3"></i>Mengakses Sistem...';
+                }, 1600);
+                
+                setTimeout(() => {
+                    // Submit form
+                    adminLoginForm.submit();
+                }, 2400);
+            });
+            
+            // Auto-focus with enhanced animation
+            if (adminUsernameField) {
+                adminUsernameField.focus();
+                adminUsernameField.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    adminUsernameField.style.transform = 'scale(1)';
+                }, 200);
+            }
+            
+            // Enhanced form validation with real-time feedback
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach((input, index) => {
+                // Focus animations
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 0 0 4px rgba(59, 130, 246, 0.1)';
+                    
+                    // Find and animate the icon
+                    const icon = this.parentElement.querySelector('.admin-input-icon');
+                    if (icon) {
+                        icon.style.color = '#3b82f6';
+                        icon.style.transform = 'translateY(-50%) scale(1.1)';
+                    }
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                    
+                    const icon = this.parentElement.querySelector('.admin-input-icon');
+                    if (icon) {
+                        icon.style.transform = 'translateY(-50%) scale(1)';
+                        icon.style.color = this.value.trim() !== '' ? '#10b981' : '#6b7280';
+                    }
+                    
+                    // Enhanced validation feedback
+                    if (this.value.trim() === '') {
+                        this.style.borderColor = '#ef4444';
+                        this.style.background = 'rgba(254, 242, 242, 0.9)';
+                    } else {
+                        this.style.borderColor = '#10b981';
+                        this.style.background = 'rgba(240, 253, 244, 0.9)';
+                    }
+                });
+                
+                input.addEventListener('input', function() {
+                    // Reset to default state while typing
+                    this.style.borderColor = '#e2e8f0';
+                    this.style.background = 'rgba(248, 250, 252, 0.9)';
+                });
+            });
+            
+            // Enhanced security logging
+            console.log('%c🛡️ PRESTISIA ADMIN ACCESS MONITOR', 'color: #dc2626; font-weight: bold; font-size: 16px; background: #fee2e2; padding: 8px; border-radius: 4px;');
+            console.log('%c📊 Access Attempt Logged', 'color: #059669; font-weight: bold;');
+            console.log('%c⏰ Timestamp:', 'color: #0369a1; font-weight: bold;', new Date().toISOString());
+            console.log('%c🌐 Location: Admin Login Page', 'color: #7c3aed; font-weight: bold;');
+            
+            // Enhanced developer tools detection
+            let devtools = {open: false, orientation: null};
+            const threshold = 160;
+            
+            setInterval(function() {
+                const isOpen = (window.outerHeight - window.innerHeight > threshold) || 
+                              (window.outerWidth - window.innerWidth > threshold);
+                
+                if (isOpen && !devtools.open) {
+                    devtools.open = true;
+                    console.log('%c⚠️ SECURITY ALERT: Developer Tools Detected', 'color: #dc2626; font-weight: bold; font-size: 14px; background: #fee2e2; padding: 4px;');
+                    console.log('%c🔍 All admin activities are monitored and logged', 'color: #f59e0b;');
+                } else if (!isOpen && devtools.open) {
+                    devtools.open = false;
+                }
+            }, 500);
+            
+            // Prevent right-click with enhanced security message
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                
+                // Show temporary security notice
+                const notice = document.createElement('div');
+                notice.innerHTML = '🔒 Menu konteks dinonaktifkan untuk keamanan';
+                notice.style.cssText = `
+                    position: fixed; top: 20px; right: 20px; z-index: 9999;
+                    background: linear-gradient(135deg, #dc2626, #b91c1c);
+                    color: white; padding: 12px 16px; border-radius: 8px;
+                    font-size: 12px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    animation: slideInRight 0.3s ease-out;
+                `;
+                
+                document.body.appendChild(notice);
+                
+                setTimeout(() => {
+                    notice.style.animation = 'slideOutRight 0.3s ease-in forwards';
+                    setTimeout(() => notice.remove(), 300);
+                }, 2000);
+            });
+            
+            // Add subtle breathing animation to the logo
+            const logo = document.querySelector('.glow-in');
+            if (logo) {
+                setInterval(() => {
+                    logo.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        logo.style.transform = 'scale(1)';
+                    }, 1000);
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

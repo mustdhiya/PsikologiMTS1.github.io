@@ -1,0 +1,603 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Siswa - PRESTISIA</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="icon" type="image/x-icon" href="{% static 'img/logo.png' %}">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Smooth Animations */
+        * {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Custom Gradients */
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        /* Enhanced Animations */
+        .fade-in { animation: fadeIn 1s ease-out; }
+        .slide-in-left { animation: slideInLeft 0.8s ease-out; }
+        .slide-in-right { animation: slideInRight 0.8s ease-out; }
+        .scale-in { animation: scaleIn 0.6s ease-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Form Enhancements */
+        .input-group { position: relative; }
+        
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            z-index: 10;
+        }
+        
+        .input-field { padding-left: 3rem; }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-gradient:hover::before { left: 100%; }
+        
+        /* Loading Animation */
+        .loading { position: relative; pointer-events: none; }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Floating Elements */
+        .floating { animation: float 6s ease-in-out infinite; }
+        .floating:nth-child(2) { animation-delay: 2s; }
+        .floating:nth-child(3) { animation-delay: 4s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        /* NISN Input Enhancements */
+        .nisn-input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+        }
+        
+        .nisn-valid { border-color: #10b981 !important; }
+        .nisn-invalid { border-color: #ef4444 !important; }
+        .nisn-partial { border-color: #f59e0b !important; }
+        
+        /* Help Section Styling */
+        .help-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        /* Admin Login Link */
+        .admin-link {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .admin-link:hover {
+            background: rgba(0, 0, 0, 0.7);
+            transform: translateY(-2px);
+        }
+        
+        /* Responsive Improvements */
+        @media (max-width: 768px) {
+            .login-container { padding: 1rem; }
+            .login-form { padding: 2rem 1.5rem; }
+            .admin-link { bottom: 10px; right: 10px; }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    
+    <!-- Floating Background Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-72 h-72 bg-white opacity-10 rounded-full floating"></div>
+        <div class="absolute top-3/4 right-1/4 w-96 h-96 bg-white opacity-5 rounded-full floating"></div>
+        <div class="absolute bottom-1/4 left-1/2 w-64 h-64 bg-white opacity-10 rounded-full floating"></div>
+    </div>
+    
+    <!-- Login Container -->
+    <div class="login-container w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        
+        <!-- Left Side - Branding & Information -->
+        <div class="text-white space-y-8 slide-in-left">
+            <div class="space-y-6">
+                <!-- Logo and Brand -->
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-white bg-opacity-90 rounded-2xl flex items-center justify-center shadow-2xl">
+                        <img src="{% static 'img/logo.png' %}" alt="Logo PRESTISIA" class="w-12 h-12 object-contain">
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold font-display">PRESTISIA</h1>
+                        <p class="text-blue-200 text-lg">Sistem Pemetaan Minat & Bakat</p>
+                    </div>
+                </div>
+                
+                <!-- Welcome Text -->
+                <div class="space-y-4">
+                    <h2 class="text-3xl md:text-4xl font-bold leading-tight">
+                        Portal Siswa<br>
+                        <span class="text-yellow-300">MTs Muhammadiyah 1 Samarinda</span>
+                    </h2>
+                    <p class="text-blue-100 text-lg leading-relaxed">
+                        Akses sistem tes RMIB untuk mengetahui minat dan bakat Anda. 
+                        Gunakan NISN sebagai username dan password yang telah diberikan oleh guru.
+                    </p>
+                </div>
+                
+                <!-- Student Features -->
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="glass-effect p-4 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-user-graduate text-2xl text-yellow-300"></i>
+                            <div>
+                                <h4 class="font-semibold">Akses Khusus Siswa</h4>
+                                <p class="text-sm text-blue-100">Login dengan NISN dan password dari guru</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-effect p-4 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-clipboard-list text-2xl text-yellow-300"></i>
+                            <div>
+                                <h4 class="font-semibold">Tes RMIB Interaktif</h4>
+                                <p class="text-sm text-blue-100">12 kategori minat dengan analisis mendalam</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-effect p-4 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-certificate text-2xl text-yellow-300"></i>
+                            <div>
+                                <h4 class="font-semibold">Hasil & Sertifikat</h4>
+                                <p class="text-sm text-blue-100">Laporan lengkap potensi minat dan bakat</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-effect p-4 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-users text-2xl text-yellow-300"></i>
+                            <div>
+                                <h4 class="font-semibold">Akses Orang Tua</h4>
+                                <p class="text-sm text-blue-100">Orang tua bisa login dengan akun yang sama</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Side - Login Form -->
+        <div class="slide-in-right">
+            <div class="bg-white rounded-3xl shadow-2xl p-8 login-form scale-in">
+                
+                <!-- Form Header -->
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Login Siswa</h3>
+                    <p class="text-gray-600">Masukkan NISN dan password dari guru</p>
+                </div>
+                
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-4 p-4 rounded-xl {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% elif message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                            <div class="flex items-center">
+                                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %} mr-2"></i>
+                                {{ message }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <!-- Non-field errors (form-wide errors) -->
+                {% if form.non_field_errors %}
+                    <div class="mb-4 p-4 rounded-xl bg-red-50 text-red-800 border border-red-200">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <!-- Login Form -->
+                <form method="post" id="loginForm" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <!-- NISN Field -->
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-id-card mr-1"></i>
+                            NISN (Nomor Induk Siswa Nasional)
+                        </label>
+                        <div class="relative">
+                            <div class="input-icon">
+                                <i class="fas fa-hashtag"></i>
+                            </div>
+                            {{ form.nisn }}
+                        </div>
+                        {% if form.nisn.errors %}
+                            <p class="mt-1 text-sm text-red-600">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                {{ form.nisn.errors.0 }}
+                            </p>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Masukkan 10 digit NISN Anda
+                        </p>
+                    </div>
+                    
+                    <!-- Password Field -->
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-key mr-1"></i>
+                            Password
+                        </label>
+                        <div class="relative">
+                            <div class="input-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            {{ form.password }}
+                            <button type="button" id="togglePassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        {% if form.password.errors %}
+                            <p class="mt-1 text-sm text-red-600">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                {{ form.password.errors.0 }}
+                            </p>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Gunakan password yang diberikan guru
+                        </p>
+                    </div>
+                    
+                    <!-- Remember Me -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            {{ form.remember_me }}
+                            <label for="{{ form.remember_me.id_for_label }}" class="ml-2 text-sm text-gray-700 cursor-pointer">
+                                Ingat saya di perangkat ini
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Login Button -->
+                    <button type="submit" id="loginBtn" class="w-full btn-gradient text-white py-3 px-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50">
+                        <span id="loginBtnText">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            Masuk ke Sistem
+                        </span>
+                    </button>
+                </form>
+                
+                <!-- Help Section -->
+                <div class="mt-8 help-card p-4 rounded-xl">
+                    <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-question-circle text-blue-600 mr-2"></i>
+                        Butuh Bantuan?
+                    </h4>
+                    
+                    <div class="space-y-3 text-sm text-gray-600">
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-user-times text-red-500 mt-0.5 flex-shrink-0"></i>
+                            <div>
+                                <p class="font-medium">Lupa Password?</p>
+                                <p>Hubungi guru BK atau wali kelas untuk reset password</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-id-card-alt text-blue-500 mt-0.5 flex-shrink-0"></i>
+                            <div>
+                                <p class="font-medium">Tidak tahu NISN?</p>
+                                <p>Tanyakan kepada guru atau periksa kartu pelajar</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-lock text-orange-500 mt-0.5 flex-shrink-0"></i>
+                            <div>
+                                <p class="font-medium">Akun Terkunci?</p>
+                                <p>Tunggu 30 menit atau hubungi admin sekolah</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <p class="text-sm text-gray-600 mb-2">
+                            <i class="fas fa-phone mr-1"></i>
+                            <strong>Kontak Darurat:</strong>
+                        </p>
+                        <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-1 sm:space-y-0 text-sm">
+                            <span class="flex items-center text-gray-600">
+                                <i class="fas fa-envelope mr-1"></i>
+                                admin@mts1samarinda.id
+                            </span>
+                            <span class="flex items-center text-gray-600">
+                                <i class="fas fa-phone mr-1"></i>
+                                (0541) 123-4567
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Student Info -->
+                <div class="mt-6 p-3 bg-blue-50 rounded-lg">
+                    <p class="text-xs text-blue-700 text-center">
+                        <i class="fas fa-shield-alt mr-1"></i>
+                        Sistem ini khusus untuk siswa MTs Muhammadiyah 1 Samarinda.
+                        Akun dibuat otomatis oleh pihak sekolah.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Login Link -->
+    <a href="{% url 'accounts:admin_login' %}" class="admin-link">
+        <i class="fas fa-user-shield mr-1"></i>
+        Login Admin
+    </a>
+    
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginBtnText = document.getElementById('loginBtnText');
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordField = document.querySelector('input[name="password"]');
+            const nisnField = document.querySelector('input[name="nisn"]');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            // NISN input formatting and validation
+            if (nisnField) {
+                nisnField.addEventListener('input', function() {
+                    // Remove non-digits
+                    this.value = this.value.replace(/\D/g, '');
+                    
+                    // Limit to 10 digits
+                    if (this.value.length > 10) {
+                        this.value = this.value.slice(0, 10);
+                    }
+                    
+                    // Visual feedback for NISN length
+                    this.classList.remove('nisn-valid', 'nisn-invalid', 'nisn-partial');
+                    
+                    if (this.value.length === 10) {
+                        this.classList.add('nisn-valid');
+                    } else if (this.value.length > 0) {
+                        this.classList.add('nisn-partial');
+                    }
+                });
+                
+                // Auto-focus on NISN field
+                nisnField.focus();
+                
+                // Add placeholder with format hint
+                nisnField.setAttribute('placeholder', 'Contoh: 0123456789');
+            }
+            
+            // Password visibility toggle
+            if (togglePassword && passwordField) {
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordField.setAttribute('type', type);
+                    
+                    if (type === 'text') {
+                        eyeIcon.classList.remove('fa-eye');
+                        eyeIcon.classList.add('fa-eye-slash');
+                    } else {
+                        eyeIcon.classList.remove('fa-eye-slash');
+                        eyeIcon.classList.add('fa-eye');
+                    }
+                });
+            }
+            
+            // Enhanced form submission with loading state
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate NISN length before submitting
+                if (nisnField && nisnField.value.length !== 10) {
+                    alert('NISN harus terdiri dari 10 digit!');
+                    nisnField.focus();
+                    return;
+                }
+                
+                // Show loading state
+                loginBtn.classList.add('loading');
+                loginBtn.disabled = true;
+                loginBtnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memverifikasi...';
+                
+                // Submit via AJAX for better user experience
+                const formData = new FormData(loginForm);
+                
+                fetch(loginForm.action || window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loginBtnText.innerHTML = '<i class="fas fa-check mr-2"></i>Login Berhasil!';
+                        
+                        // Show success message
+                        const successDiv = document.createElement('div');
+                        successDiv.className = 'mb-4 p-4 rounded-xl bg-green-50 text-green-800 border border-green-200';
+                        successDiv.innerHTML = '<div class="flex items-center"><i class="fas fa-check-circle mr-2"></i>Login berhasil! Mengalihkan ke dashboard...</div>';
+                        loginForm.parentNode.insertBefore(successDiv, loginForm);
+                        
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url;
+                        }, 1500);
+                    } else {
+                        // Reset button state
+                        loginBtn.classList.remove('loading');
+                        loginBtn.disabled = false;
+                        loginBtnText.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Masuk ke Sistem';
+                        
+                        // Handle form errors
+                        if (data.errors) {
+                            // Show form errors
+                            for (const [field, errors] of Object.entries(data.errors)) {
+                                console.error(`${field}: ${errors.join(', ')}`);
+                            }
+                            
+                            // Show generic error message
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'mb-4 p-4 rounded-xl bg-red-50 text-red-800 border border-red-200';
+                            errorDiv.innerHTML = '<div class="flex items-center"><i class="fas fa-exclamation-circle mr-2"></i>Login gagal. Periksa NISN dan password Anda.</div>';
+                            
+                            // Remove existing error messages
+                            const existingErrors = loginForm.parentNode.querySelectorAll('.bg-red-50');
+                            existingErrors.forEach(error => error.remove());
+                            
+                            loginForm.parentNode.insertBefore(errorDiv, loginForm);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Login error:', error);
+                    
+                    // Reset button state
+                    loginBtn.classList.remove('loading');
+                    loginBtn.disabled = false;
+                    loginBtnText.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Masuk ke Sistem';
+                    
+                    // Fallback: submit form normally
+                    loginForm.submit();
+                });
+            });
+            
+            // Enhanced form validation with real-time feedback
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    this.classList.remove('border-red-300', 'border-green-300', 'border-yellow-300');
+                    
+                    if (this.name === 'nisn') {
+                        if (this.value.length === 10 && this.value.match(/^\d{10}$/)) {
+                            this.classList.add('border-green-300');
+                        } else if (this.value.length > 0) {
+                            this.classList.add('border-yellow-300');
+                        } else {
+                            this.classList.add('border-red-300');
+                        }
+                    } else if (this.name === 'password') {
+                        if (this.value.trim() === '') {
+                            this.classList.add('border-red-300');
+                        } else {
+                            this.classList.add('border-green-300');
+                        }
+                    }
+                });
+                
+                input.addEventListener('input', function() {
+                    // Remove error styling while typing
+                    this.classList.remove('border-red-300');
+                    this.classList.add('border-gray-300');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

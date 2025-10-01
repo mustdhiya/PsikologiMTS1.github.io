@@ -1,0 +1,584 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if object %}Edit{% else %}Tambah{% endif %} Siswa - RMIB Career Mapping{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Enhanced Form Styling */
+.form-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding-top: 2rem;
+}
+
+.form-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    color: #1a202c;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+}
+
+.form-input:not(:placeholder-shown) + .form-label,
+.form-input:focus + .form-label {
+    transform: translateY(-2.5rem) translateX(-0.5rem) scale(0.85);
+    color: #667eea;
+    font-weight: 600;
+}
+
+.form-label {
+    position: absolute;
+    left: 3rem;
+    top: 1rem;
+    color: #64748b;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    background: transparent;
+}
+
+.form-icon {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+
+.form-input:focus ~ .form-icon {
+    color: #667eea;
+}
+
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    color: #cbd5e0;
+    font-weight: 600;
+}
+
+.step.active {
+    color: #667eea;
+}
+
+.step-circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 2px solid #cbd5e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.step.active .step-circle {
+    border-color: #667eea;
+    background: #667eea;
+    color: white;
+}
+
+.animate-slide-in {
+    animation: slideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Custom date input styling */
+.form-input[type="date"] {
+    color: #4a5568;
+}
+
+.form-input[type="date"]::-webkit-calendar-picker-indicator {
+    color: #667eea;
+    cursor: pointer;
+}
+
+/* Error state */
+.form-input.error {
+    border-color: #f56565;
+    background-color: #fed7d7;
+}
+
+.error-message {
+    color: #f56565;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Success animation */
+@keyframes successPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.success-animation {
+    animation: successPulse 0.6s ease-in-out;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="max-w-4xl mx-auto px-4">
+        <!-- Header Section -->
+        <div class="text-center mb-8 animate-slide-in">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
+                <i class="fas fa-{% if object %}user-edit{% else %}user-plus{% endif %} text-2xl text-purple-600"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-white mb-2">
+                {% if object %}Edit Data Siswa{% else %}Tambah Siswa Baru{% endif %}
+            </h1>
+            <p class="text-purple-100 text-lg">
+                {% if object %}
+                    Update informasi siswa {{ object.name }}
+                {% else %}
+                    Lengkapi data siswa untuk sistem RMIB Career Mapping
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-steps animate-slide-in">
+            <div class="step active">
+                <div class="step-circle">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="mr-8">Data Pribadi</span>
+            </div>
+            <div class="step">
+                <div class="step-circle">2</div>
+                <span class="mr-8">Data Akademik</span>
+            </div>
+            <div class="step">
+                <div class="step-circle">
+                    <i class="fas fa-check"></i>
+                </div>
+                <span>Selesai</span>
+            </div>
+        </div>
+
+        <!-- Main Form Card -->
+        <div class="form-card animate-slide-in">
+            <!-- Form Header -->
+            <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-6">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-clipboard-list mr-3"></i>
+                    Form Data Siswa
+                </h2>
+                <p class="text-purple-100 mt-1">Pastikan semua data yang dimasukkan sudah benar</p>
+            </div>
+
+            <!-- Form Content -->
+            <div class="p-8">
+                <form method="post" id="studentForm" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Personal Information Section -->
+                    <div class="mb-8">
+                        <div class="flex items-center mb-6">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-user text-purple-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800">Informasi Pribadi</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Nama Lengkap -->
+                            <div class="form-group">
+                                <i class="form-icon fas fa-user"></i>
+                                <input type="text" name="name" value="{{ form.name.value|default:'' }}" 
+                                       class="form-input" placeholder=" " required>
+                                <label class="form-label">Nama Lengkap</label>
+                                {% if form.name.errors %}
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ form.name.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- NISN -->
+                            <div class="form-group">
+                                <i class="form-icon fas fa-id-card"></i>
+                                <input type="text" name="nisn" value="{{ form.nisn.value|default:'' }}" 
+                                       class="form-input" placeholder=" " maxlength="10" required>
+                                <label class="form-label">NISN (10 Digit)</label>
+                                {% if form.nisn.errors %}
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ form.nisn.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Jenis Kelamin -->
+                            <div class="form-group">
+                                <i class="form-icon fas fa-venus-mars"></i>
+                                <select name="gender" class="form-input form-select" required>
+                                    <option value="" disabled {% if not form.gender.value %}selected{% endif %}> </option>
+                                    <option value="L" {% if form.gender.value == 'L' %}selected{% endif %}>Laki-laki</option>
+                                    <option value="P" {% if form.gender.value == 'P' %}selected{% endif %}>Perempuan</option>
+                                </select>
+                                <label class="form-label">Jenis Kelamin</label>
+                                {% if form.gender.errors %}
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ form.gender.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Tanggal Lahir -->
+                            <div class="form-group">
+                                <i class="form-icon fas fa-birthday-cake"></i>
+                                <input type="date" name="birth_date" value="{{ form.birth_date.value|default:'' }}" 
+                                       class="form-input" required>
+                                <label class="form-label">Tanggal Lahir</label>
+                                {% if form.birth_date.errors %}
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ form.birth_date.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Tempat Lahir -->
+                            <div class="form-group">
+                                <i class="form-icon fas fa-map-marker-alt"></i>
+                                <input type="text" name="birth_place" value="{{ form.birth_place.value|default:'' }}" 
+                                       class="form-input" placeholder=" ">
+                                <label class="form-label">Tempat Lahir</label>
+                                {% if form.birth_place.errors %}
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ form.birth_place.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Kelas -->
+                            <div class="form-group">
+                                <i class="form-icon fas fa-graduation-cap"></i>
+                                <input type="text" name="student_class" value="{{ form.student_class.value|default:'' }}" 
+                                       class="form-input" placeholder=" " required>
+                                <label class="form-label">Kelas (contoh: 8A, 7B)</label>
+                                {% if form.student_class.errors %}
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ form.student_class.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information Section -->
+                    <div class="mb-8">
+                        <div class="flex items-center mb-6">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-address-book text-blue-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800">Informasi Kontak</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Tahun Masuk -->
+                            <div class="form-group">
+                                <i class="form-icon fas fa-calendar"></i>
+                                <input type="number" name="entry_year" value="{{ form.entry_year.value|default:'2025' }}" 
+                                       class="form-input" placeholder=" " min="2020" max="2030">
+                                <label class="form-label">Tahun Masuk</label>
+                                {% if form.entry_year.errors %}
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ form.entry_year.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- No HP Siswa -->
+                            <div class="form-group">
+                                <i class="form-icon fas fa-phone"></i>
+                                <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}" 
+                                       class="form-input" placeholder=" ">
+                                <label class="form-label">No. HP Siswa</label>
+                                {% if form.phone.errors %}
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ form.phone.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- No HP Orang Tua -->
+                            <div class="form-group lg:col-span-2">
+                                <i class="form-icon fas fa-phone-alt"></i>
+                                <input type="tel" name="parent_phone" value="{{ form.parent_phone.value|default:'' }}" 
+                                       class="form-input" placeholder=" ">
+                                <label class="form-label">No. HP Orang Tua</label>
+                                {% if form.parent_phone.errors %}
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ form.parent_phone.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Alamat -->
+                            <div class="form-group lg:col-span-2">
+                                <i class="form-icon fas fa-home" style="top: 1.2rem;"></i>
+                                <textarea name="address" rows="4" class="form-input" style="padding-top: 1.2rem; resize: vertical;" placeholder=" ">{{ form.address.value|default:'' }}</textarea>
+                                <label class="form-label" style="top: 1.2rem;">Alamat Lengkap</label>
+                                {% if form.address.errors %}
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ form.address.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200">
+                        <a href="{% url 'students:list' %}" 
+                           class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-all duration-200 hover-lift">
+                            <i class="fas fa-times mr-2"></i>
+                            Batal
+                        </a>
+                        
+                        <button type="submit" 
+                                class="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                            <i class="fas fa-save mr-2"></i>
+                            {% if object %}Update Data{% else %}Simpan Data{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Helper Information -->
+        <div class="mt-8 bg-white bg-opacity-90 rounded-xl p-6 animate-slide-in">
+            <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-info-circle text-blue-600 text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-2">Tips Pengisian Form:</h4>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2 text-xs"></i>
+                            NISN harus terdiri dari 10 digit angka
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2 text-xs"></i>
+                            Format kelas: [nomor][huruf] (contoh: 7A, 8B, 9C)
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2 text-xs"></i>
+                            Pastikan semua data yang wajib sudah diisi dengan benar
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('studentForm');
+    const inputs = form.querySelectorAll('.form-input');
+    
+    // Enhanced form validation
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        input.addEventListener('input', function() {
+            if (this.classList.contains('error')) {
+                validateField(this);
+            }
+        });
+    });
+    
+    // NISN validation
+    const nisnInput = document.querySelector('input[name="nisn"]');
+    if (nisnInput) {
+        nisnInput.addEventListener('input', function(e) {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Limit to 10 characters
+            if (this.value.length > 10) {
+                this.value = this.value.slice(0, 10);
+            }
+        });
+    }
+    
+    // Phone number formatting
+    const phoneInputs = document.querySelectorAll('input[type="tel"]');
+    phoneInputs.forEach(input => {
+        input.addEventListener('input', function(e) {
+            // Allow numbers, spaces, hyphens, and plus
+            this.value = this.value.replace(/[^0-9\s\-\+]/g, '');
+        });
+    });
+    
+    // Form submission with loading state
+    form.addEventListener('submit', function(e) {
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        
+        // Show loading state
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
+        submitBtn.disabled = true;
+        
+        // Add success animation class
+        form.classList.add('success-animation');
+        
+        // If validation fails, restore button
+        setTimeout(() => {
+            if (form.querySelector('.error')) {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                form.classList.remove('success-animation');
+            }
+        }, 1000);
+    });
+    
+    function validateField(field) {
+        const value = field.value.trim();
+        let isValid = true;
+        let errorMessage = '';
+        
+        // Remove existing error state
+        field.classList.remove('error');
+        const existingError = field.parentNode.querySelector('.error-message');
+        if (existingError && !existingError.dataset.server) {
+            existingError.remove();
+        }
+        
+        // Required field validation
+        if (field.hasAttribute('required') && !value) {
+            isValid = false;
+            errorMessage = 'Field ini wajib diisi';
+        }
+        
+        // NISN specific validation
+        if (field.name === 'nisn' && value) {
+            if (value.length !== 10) {
+                isValid = false;
+                errorMessage = 'NISN harus terdiri dari 10 digit';
+            } else if (!/^[0-9]+$/.test(value)) {
+                isValid = false;
+                errorMessage = 'NISN hanya boleh berisi angka';
+            }
+        }
+        
+        // Email validation (if any)
+        if (field.type === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            isValid = false;
+            errorMessage = 'Format email tidak valid';
+        }
+        
+        // Apply error state
+        if (!isValid) {
+            field.classList.add('error');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i>${errorMessage}`;
+            field.parentNode.appendChild(errorDiv);
+        }
+        
+        return isValid;
+    }
+    
+    // Auto-grow textarea
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(textarea => {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    });
+    
+    // Smooth scroll for form sections
+    const steps = document.querySelectorAll('.step');
+    steps.forEach((step, index) => {
+        step.addEventListener('click', function() {
+            const sections = ['personal', 'contact', 'finish'];
+            const section = document.querySelector(`[data-section="${sections[index]}"]`);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
