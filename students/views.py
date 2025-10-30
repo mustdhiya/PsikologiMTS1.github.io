@@ -746,12 +746,12 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
         errors = []
         expected_columns_count = len(header_cols)
         
-        for i, row in enumerate(sample_rows[:3], 1)
+        for i, row in enumerate(sample_rows[:3], 1):
             if not row.strip():
                 continue
             
             cols = row.split(delimiter)
-            actual_cols_count = len([col for col in cols if col.strip()]
+            actual_cols_count = len([col for col in cols if col.strip()])
             
             if actual_cols_count != expected_columns_count:
                 errors.append(
@@ -1109,92 +1109,664 @@ def download_csv_template(request):
     
     return response
 
-@require_http_methods(["POST"])
-@csrf_protect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.http import require_http_methods
+from django.utils import timezone
+from django.db import transaction
+from .models import Student, RMIBResult, Prestasi
+import json
+from datetime import datetime
+
+# ==================== RMIB TEST VIEWS ====================
+
 @login_required
-def submit_rmib_test(request, student_pk):
-    """Submit completed RMIB test"""
-    from django.utils import timezone
-    import json
-    import logging
-    
-    logger = logging.getLogger(__name__)
+def rmib_test_interface(request, student_pk):
+    """Display RMIB test interface"""
     student = get_object_or_404(Student, pk=student_pk)
     
-    if not request.user.is_staff and request.user != student.user:
-        messages.error(request, 'Anda tidak memiliki akses untuk tes ini')
-        return redirect('students:list')
+    # Check if student can take test
+    if not student.can_take_test():
+        messages.warning(request, 'Siswa ini sudah menyelesaikan tes RMIB.')
+        return redirect('students:detail', pk=student_pk)
     
-    try:
-        rmib_data = json.loads(request.POST.get('rmib_data', '{}'))
-        prestasi_data = json.loads(request.POST.get('prestasi_data', '[]'))
-        
-        logger.info(f"Received RMIB data for student {student.id}: {rmib_data}")
-        
-        # Validate data
-        if not validate_rmib_submission(rmib_data):
-            messages.error(request, 'Data RMIB tidak valid')
-            return redirect('students:rmib_test', student_pk=student.pk)
-        
-        # Save RMIB results
-        rmib_result = save_rmib_results(student, rmib_data)
-        
-        # Update student status
-        student.test_status = 'completed'
+    # Check if there's existing progress
+    has_progress = hasattr(student, 'rmib_result') and student.rmib_result.rankings
+    
+    # RMIB Categories and Questions
+    rmib_categories = {
+        'outdoor': {
+            'name': 'Outdoor (Alam Terbuka)',
+            'description': 'Aktivitas yang berhubungan dengan alam dan lingkungan luar',
+            'icon': 'fas fa-tree',
+            'color': 'green'
+        },
+        'mechanical': {
+            'name': 'Mechanical (Mekanik)',
+            'description': 'Pekerjaan dengan mesin, alat, dan teknologi',
+            'icon': 'fas fa-cog',
+            'color': 'blue'
+        },
+        'computational': {
+            'name': 'Computational (Komputasi)',
+            'description': 'Bekerja dengan angka, data, dan analisis',
+            'icon': 'fas fa-calculator',
+            'color': 'purple'
+        },
+        'scientific': {
+            'name': 'Scientific (Sains)',
+            'description': 'Penelitian, eksperimen, dan penemuan ilmiah',
+            'icon': 'fas fa-flask',
+            'color': 'indigo'
+        },
+        'personal_contact': {
+            'name': 'Personal Contact (Hubungan Personal)',
+            'description': 'Berinteraksi dan membantu orang lain',
+            'icon': 'fas fa-handshake',
+            'color': 'pink'
+        },
+        'aesthetic': {
+            'name': 'Aesthetic (Estetika)',
+            'description': 'Seni, desain, dan keindahan',
+            'icon': 'fas fa-palette',
+            'color': 'orange'
+        },
+        'literary': {
+            'name': 'Literary (Sastra)',
+            'description': 'Menulis, membaca, dan komunikasi verbal',
+            'icon': 'fas fa-book',
+            'color': 'teal'
+        },
+        'musical': {
+            'name': 'Musical (Musik)',
+            'description': 'Musik, suara, dan harmoni',
+            'icon': 'fas fa-music',
+            'color': 'red'
+        },
+        'social_service': {
+            'name': 'Social Service (Pelayanan Sosial)',
+            'description': 'Membantu masyarakat dan kesejahteraan sosial',
+            'icon': 'fas fa-hands-helping',
+            'color': 'amber'
+        },
+        'clerical': {
+            'name': 'Clerical (Administratif)',
+            'description': 'Administrasi, organisasi, dan tata kelola',
+            'icon': 'fas fa-file-alt',
+            'color': 'gray'
+        },
+        'practical': {
+            'name': 'Practical (Praktis)',
+            'description': 'Pekerjaan praktis dan aplikatif sehari-hari',
+            'icon': 'fas fa-tools',
+            'color': 'yellow'
+        },
+        'medical': {
+            'name': 'Medical (Medis)',
+            'description': 'Kesehatan dan perawatan medis',
+            'icon': 'fas fa-heartbeat',
+            'color': 'red'
+        }
+    }
+    
+    # Sample questions for each category (12 questions each)
+    rmib_questions = {
+        'outdoor': [
+            'Bekerja sebagai petani atau peternak',
+            'Menjadi pemandu wisata alam',
+            'Bekerja di kebun binatang',
+            'Menjadi nelayan atau bekerja di laut',
+            'Berkemah dan hiking di gunung',
+            'Bekerja sebagai landscaper (tata taman)',
+            'Menjadi fotografer alam',
+            'Bekerja di konservasi satwa liar',
+            'Menjadi ranger hutan',
+            'Bekerja di pertanian organik',
+            'Menjadi guide diving atau selam',
+            'Bekerja di peternakan kuda'
+        ],
+        'mechanical': [
+            'Memperbaiki kendaraan bermotor',
+            'Merakit komputer dan perangkat elektronik',
+            'Bekerja sebagai teknisi AC/kulkas',
+            'Merancang dan membuat robot',
+            'Bekerja di bengkel las',
+            'Menjadi montir pesawat terbang',
+            'Bekerja dengan mesin pabrik',
+            'Memasang instalasi listrik',
+            'Memperbaiki peralatan rumah tangga',
+            'Bekerja sebagai operator alat berat',
+            'Membuat dan memperbaiki jam tangan',
+            'Bekerja di industri otomotif'
+        ],
+        'computational': [
+            'Menganalisis data statistik',
+            'Membuat laporan keuangan',
+            'Bekerja sebagai akuntan',
+            'Mengoperasikan sistem database',
+            'Melakukan audit keuangan',
+            'Membuat spreadsheet dan analisis data',
+            'Bekerja di bidang aktuaria',
+            'Menghitung dan merencanakan anggaran',
+            'Menganalisis tren pasar saham',
+            'Bekerja sebagai kasir bank',
+            'Membuat model prediksi angka',
+            'Bekerja di bidang perpajakan'
+        ],
+        'scientific': [
+            'Melakukan eksperimen di laboratorium',
+            'Meneliti fenomena alam',
+            'Bekerja sebagai ahli kimia',
+            'Mengembangkan vaksin dan obat-obatan',
+            'Meneliti gen dan DNA',
+            'Bekerja di observatorium astronomi',
+            'Melakukan penelitian biologi laut',
+            'Bekerja sebagai ahli geologi',
+            'Meneliti perubahan iklim',
+            'Bekerja di pusat penelitian nuklir',
+            'Mengembangkan teknologi baru',
+            'Bekerja sebagai ahli fisika'
+        ],
+        'personal_contact': [
+            'Menjadi sales atau penjual',
+            'Bekerja sebagai customer service',
+            'Menjadi tour guide',
+            'Bekerja di bidang public relations',
+            'Menjadi receptionist hotel',
+            'Bekerja sebagai flight attendant',
+            'Menjadi event organizer',
+            'Bekerja di bidang marketing',
+            'Menjadi brand ambassador',
+            'Bekerja sebagai relationship manager',
+            'Menjadi MC atau pembawa acara',
+            'Bekerja di bidang hospitality'
+        ],
+        'aesthetic': [
+            'Melukis atau menggambar',
+            'Mendesain interior ruangan',
+            'Membuat karya seni patung',
+            'Mendesain fashion dan pakaian',
+            'Bekerja sebagai fotografer profesional',
+            'Membuat animasi dan grafis',
+            'Mendesain website dan UI/UX',
+            'Bekerja sebagai makeup artist',
+            'Membuat keramik dan pottery',
+            'Mendesain logo dan branding',
+            'Bekerja di bidang arsitektur',
+            'Membuat ilustrasi digital'
+        ],
+        'literary': [
+            'Menulis novel atau cerita',
+            'Menjadi jurnalis atau reporter',
+            'Bekerja sebagai editor naskah',
+            'Menulis skenario film',
+            'Menjadi content writer',
+            'Bekerja sebagai copywriter iklan',
+            'Menulis artikel blog',
+            'Menjadi penulis buku anak',
+            'Bekerja sebagai poet (penyair)',
+            'Menulis review buku atau film',
+            'Menjadi penulis teknis',
+            'Bekerja sebagai ghostwriter'
+        ],
+        'musical': [
+            'Bermain alat musik',
+            'Menjadi penyanyi atau vokalis',
+            'Mengarang lagu dan musik',
+            'Bekerja sebagai music producer',
+            'Menjadi DJ atau sound engineer',
+            'Mengajar musik dan vokal',
+            'Bekerja di orchestra atau band',
+            'Menjadi music director',
+            'Bekerja sebagai sound designer',
+            'Membuat jingle iklan',
+            'Menjadi kritikus musik',
+            'Bekerja di studio rekaman'
+        ],
+        'social_service': [
+            'Menjadi guru atau pengajar',
+            'Bekerja sebagai konselor',
+            'Menjadi pekerja sosial',
+            'Bekerja di panti asuhan',
+            'Menjadi psikolog',
+            'Bekerja di NGO/LSM',
+            'Menjadi mediator konflik',
+            'Bekerja di lembaga rehabilitasi',
+            'Menjadi terapis',
+            'Bekerja di komunitas sosial',
+            'Menjadi aktivis sosial',
+            'Bekerja di lembaga kesejahteraan'
+        ],
+        'clerical': [
+            'Mengelola dokumen dan arsip',
+            'Bekerja sebagai sekretaris',
+            'Membuat jadwal dan agenda',
+            'Bekerja sebagai administrasi kantor',
+            'Mengelola surat menyurat',
+            'Bekerja sebagai data entry',
+            'Mengatur filing system',
+            'Bekerja sebagai office manager',
+            'Mengelola inventory kantor',
+            'Bekerja sebagai receptionist',
+            'Membuat laporan administratif',
+            'Bekerja di bidang HRD'
+        ],
+        'practical': [
+            'Memasak dan membuat kue',
+            'Menjahit dan membuat pakaian',
+            'Bekerja di bidang tata boga',
+            'Membuat kerajinan tangan',
+            'Bekerja sebagai chef',
+            'Membuka usaha catering',
+            'Bekerja di industri tekstil',
+            'Membuat furniture',
+            'Bekerja sebagai baker',
+            'Membuka usaha laundry',
+            'Bekerja di industri garmen',
+            'Membuat produk handmade'
+        ],
+        'medical': [
+            'Menjadi dokter',
+            'Bekerja sebagai perawat',
+            'Menjadi apoteker',
+            'Bekerja sebagai bidan',
+            'Menjadi dokter gigi',
+            'Bekerja sebagai radiografer',
+            'Menjadi ahli gizi',
+            'Bekerja di laboratorium medis',
+            'Menjadi fisioterapis',
+            'Bekerja sebagai paramedis',
+            'Menjadi dokter hewan',
+            'Bekerja di bidang kesehatan masyarakat'
+        ]
+    }
+    
+    # Convert to JSON for template
+    import json
+    rmib_categories_json = json.dumps(rmib_categories)
+    rmib_questions_json = json.dumps(rmib_questions)
+    
+    context = {
+        'student': student,
+        'rmib_categories': rmib_categories,
+        'rmib_questions': rmib_questions,
+        'rmib_categories_json': rmib_categories_json,
+        'rmib_questions_json': rmib_questions_json,
+        'has_progress': has_progress,
+        'total_questions': sum(len(q) for q in rmib_questions.values()),
+        'total_categories': len(rmib_categories)
+    }
+    
+    return render(request, 'students/rmib_test.html', context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def start_rmib_test(request, student_pk):
+    """Start RMIB test and update student status"""
+    student = get_object_or_404(Student, pk=student_pk)
+    
+    if student.test_status == 'pending':
+        student.test_status = 'in_progress'
         student.test_date = timezone.now()
         student.save()
+    
+    return JsonResponse({
+        'success': True,
+        'message': 'Tes RMIB dimulai',
+        'test_date': student.test_date.isoformat() if student.test_date else None
+    })
+
+
+@login_required
+@require_http_methods(["POST"])
+def save_rmib_progress(request, student_pk):
+    """Save RMIB test progress (autosave)"""
+    try:
+        student = get_object_or_404(Student, pk=student_pk)
+        data = json.loads(request.body)
         
-        session_key = f'rmib_progress_{student.id}'
-        if session_key in request.session:
-            del request.session[session_key]
+        rankings = data.get('rankings', {})
         
-        messages.success(request, f'Tes RMIB {student.name} berhasil diselesaikan!')
-        return redirect('students:detail', pk=student.pk)
+        # Get or create RMIB result
+        rmib_result, created = RMIBResult.objects.get_or_create(
+            student=student,
+            defaults={
+                'submitted_at': timezone.now(),
+                'rankings': rankings
+            }
+        )
+        
+        # Update rankings if not created
+        if not created:
+            rmib_result.rankings = rankings
+            rmib_result.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Progress berhasil disimpan',
+            'saved_at': timezone.now().isoformat()
+        })
         
     except Exception as e:
-        logger.error(f"RMIB submission error: {str(e)}")
-        messages.error(request, f'Terjadi kesalahan: {str(e)}')
-        return redirect('students:rmib_test', student_pk=student.pk)
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        }, status=400)
 
-def validate_rmib_submission(data):
-    """Validate RMIB submission data"""
-    rankings = data.get('rankings', {})
-    
-    if len(rankings) != 12:
-        return False
-    
-    values = list(rankings.values())
-    if len(set(values)) != 12:
-        return False
-    
-    if not all(1 <= v <= 12 for v in values):
-        return False
-    
-    return True
 
-def save_rmib_results(student, data):
-    """Save RMIB results to database"""
-    from django.utils import timezone
-    from .models import RMIBResult
+@login_required
+@require_http_methods(["POST"])
+@transaction.atomic
+def submit_rmib_test(request, student_pk):
+    """Submit final RMIB test results"""
+    import logging
+    logger = logging.getLogger(__name__)
     
-    result, created = RMIBResult.objects.get_or_create(
-        student=student,
-        defaults={
-            'rankings': data.get('rankings', {}),
-            'original_scores': data.get('original_scores', {}),
-            'final_scores': data.get('final_scores', {}),
-            'top_interests': data.get('top_interests', []),
-            'submitted_at': timezone.now()
+    try:
+        student = get_object_or_404(Student, pk=student_pk)
+        logger.info(f"=== START SUBMIT RMIB for Student ID: {student_pk} ===")
+        logger.info(f"Current student status: {student.test_status}")
+        
+        data = json.loads(request.body)
+        rankings = data.get('rankings', {})
+        
+        logger.info(f"Received rankings data: {len(rankings)} categories")
+        
+        # Validate rankings
+        if not rankings or len(rankings) != 12:
+            logger.error(f"Invalid rankings count: {len(rankings)}")
+            return JsonResponse({
+                'success': False,
+                'message': f'Data ranking tidak lengkap. Harus ada 12 kategori, diterima: {len(rankings)}'
+            }, status=400)
+        
+        # Validate each category has 12 questions
+        for category, category_rankings in rankings.items():
+            logger.info(f"Validating category {category}: {len(category_rankings)} items")
+            
+            if len(category_rankings) != 12:
+                logger.error(f"Category {category} incomplete: {len(category_rankings)} items")
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Kategori {category} tidak lengkap. Harus ada 12 pertanyaan, ada {len(category_rankings)}.'
+                }, status=400)
+            
+            # Validate rankings are 1-12 without duplicates
+            values = [int(v) for v in category_rankings.values()]
+            sorted_values = sorted(values)
+            expected_values = list(range(1, 13))
+            
+            if sorted_values != expected_values:
+                logger.error(f"Invalid ranking values in {category}: {sorted_values}")
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Kategori {category} memiliki ranking tidak valid. Harus 1-12 tanpa duplikat.'
+                }, status=400)
+        
+        logger.info("All validations passed")
+        
+        # Calculate original scores
+        original_scores = {}
+        for category, category_rankings in rankings.items():
+            total_rank = sum(int(v) for v in category_rankings.values())
+            original_scores[category] = {
+                'total': total_rank,
+                'average': round(total_rank / 12, 2),
+                'items': len(category_rankings)
+            }
+        
+        logger.info(f"Calculated original scores for {len(original_scores)} categories")
+        
+        # Apply prestasi bonus
+        final_scores = {k: v.copy() for k, v in original_scores.items()}
+        prestasi_list = student.prestasi.all()
+        
+        logger.info(f"Found {prestasi_list.count()} prestasi records")
+        
+        prestasi_category_map = {
+            'akademik': 'scientific',
+            'olahraga': 'outdoor',
+            'seni': 'aesthetic',
+            'organisasi': 'social_service',
+            'teknologi': 'mechanical',
+            'keagamaan': 'social_service'
         }
-    )
+        
+        # Apply bonuses
+        for prestasi in prestasi_list:
+            mapped_category = prestasi_category_map.get(prestasi.jenis)
+            if mapped_category and mapped_category in final_scores:
+                bonus = prestasi.bonus_score if prestasi.bonus_score else 0
+                final_scores[mapped_category]['total'] -= bonus
+                final_scores[mapped_category]['bonus'] = final_scores[mapped_category].get('bonus', 0) + bonus
+                final_scores[mapped_category]['average'] = round(final_scores[mapped_category]['total'] / 12, 2)
+                logger.info(f"Applied bonus {bonus} to {mapped_category}")
+        
+        # Sort categories by total score
+        sorted_categories = sorted(final_scores.items(), key=lambda x: x[1]['total'])
+        
+        # Get top 3 interests
+        top_interests = []
+        category_display_names = {
+            'outdoor': 'Outdoor (Alam Terbuka)',
+            'mechanical': 'Mechanical (Mekanik)',
+            'computational': 'Computational (Komputasi)',
+            'scientific': 'Scientific (Sains)',
+            'personal_contact': 'Personal Contact (Hubungan Personal)',
+            'aesthetic': 'Aesthetic (Estetika)',
+            'literary': 'Literary (Sastra)',
+            'musical': 'Musical (Musik)',
+            'social_service': 'Social Service (Pelayanan Sosial)',
+            'clerical': 'Clerical (Administratif)',
+            'practical': 'Practical (Praktis)',
+            'medical': 'Medical (Medis)'
+        }
+        
+        for i, (category, score_data) in enumerate(sorted_categories[:3]):
+            top_interests.append({
+                'rank': i + 1,
+                'category': category,
+                'name': category_display_names.get(category, category.replace('_', ' ').title()),
+                'score': score_data['total'],
+                'average': score_data['average'],
+                'bonus': score_data.get('bonus', 0)
+            })
+        
+        logger.info(f"Top 3 interests: {[i['name'] for i in top_interests]}")
+        
+        # Create or update RMIB result
+        rmib_result, created = RMIBResult.objects.update_or_create(
+            student=student,
+            defaults={
+                'rankings': rankings,
+                'original_scores': original_scores,
+                'final_scores': final_scores,
+                'top_interests': top_interests,
+                'submitted_at': timezone.now(),
+                'primary_interest': top_interests[0]['category'] if top_interests else '',
+                'secondary_interest': top_interests[1]['category'] if len(top_interests) > 1 else '',
+                'tertiary_interest': top_interests[2]['category'] if len(top_interests) > 2 else ''
+            }
+        )
+        
+        logger.info(f"RMIB Result {'created' if created else 'updated'}: ID {rmib_result.id}")
+        
+        # ============ CRITICAL: Update student test status ============
+        logger.info(f"Updating student status from '{student.test_status}' to 'completed'")
+        
+        student.test_status = 'completed'
+        student.test_date = timezone.now()
+        student.save(update_fields=['test_status', 'test_date'])  # Explicitly specify fields
+        
+        # Verify the save worked
+        student.refresh_from_db()
+        logger.info(f"Student status after save: {student.test_status}")
+        
+        if student.test_status != 'completed':
+            logger.error("CRITICAL: Student status not updated!")
+            raise Exception("Failed to update student status")
+        
+        logger.info("=== SUBMIT RMIB COMPLETED SUCCESSFULLY ===")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Tes RMIB berhasil diselesaikan!',
+            'result_id': rmib_result.id,
+            'top_interests': top_interests,
+            'student_status': student.test_status,  # Include for verification
+            'redirect_url': f'/students/{student_pk}/rmib/result/'
+        })
+        
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'message': 'Format data tidak valid'
+        }, status=400)
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        logger.error(f"Submit RMIB error: {str(e)}\n{error_trace}")
+        return JsonResponse({
+            'success': False,
+            'message': f'Terjadi kesalahan: {str(e)}'
+        }, status=500)
+
+@login_required
+@require_http_methods(["GET"])
+def load_rmib_progress(request, student_pk):
+    """Load saved RMIB progress"""
+    try:
+        student = get_object_or_404(Student, pk=student_pk)
+        
+        if hasattr(student, 'rmib_result') and student.rmib_result.rankings:
+            return JsonResponse({
+                'success': True,
+                'has_progress': True,
+                'rankings': student.rmib_result.rankings,
+                'saved_at': student.rmib_result.updated_at.isoformat()
+            })
+        else:
+            return JsonResponse({
+                'success': True,
+                'has_progress': False,
+                'rankings': {}
+            })
+            
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        }, status=400)
+
+
+@login_required
+def rmib_result_view(request, student_pk):
+    """Display RMIB test results"""
+    student = get_object_or_404(Student, pk=student_pk)
     
-    if not created:
-        # Update existing result
-        result.rankings = data.get('rankings', {})
-        result.original_scores = data.get('original_scores', {})
-        result.final_scores = data.get('final_scores', {})
-        result.top_interests = data.get('top_interests', [])
-        result.submitted_at = timezone.now()
-        result.save()
+    if not hasattr(student, 'rmib_result'):
+        messages.warning(request, 'Siswa belum menyelesaikan tes RMIB.')
+        return redirect('students:detail', pk=student_pk)
     
-    return result
+    rmib_result = student.rmib_result
+    
+    # Category display names mapping
+    category_display_names = {
+        'outdoor': 'Outdoor (Alam Terbuka)',
+        'mechanical': 'Mechanical (Mekanik)',
+        'computational': 'Computational (Komputasi)',
+        'scientific': 'Scientific (Sains)',
+        'personal_contact': 'Personal Contact (Hubungan Personal)',
+        'aesthetic': 'Aesthetic (Estetika)',
+        'literary': 'Literary (Sastra)',
+        'musical': 'Musical (Musik)',
+        'social_service': 'Social Service (Pelayanan Sosial)',
+        'clerical': 'Clerical (Administratif)',
+        'practical': 'Practical (Praktis)',
+        'medical': 'Medical (Medis)'
+    }
+    
+    # Career recommendations based on interests
+    career_recommendations = {
+        'outdoor': ['Petani', 'Peternak', 'Pemandu Wisata Alam', 'Ranger Taman Nasional', 'Ahli Konservasi Lingkungan'],
+        'mechanical': ['Teknisi Mesin', 'Montir', 'Engineer Mekanik', 'Operator Alat Berat', 'Teknisi Pesawat'],
+        'computational': ['Akuntan', 'Analis Data', 'Aktuaris', 'Auditor Keuangan', 'Statistician'],
+        'scientific': ['Peneliti', 'Ilmuwan', 'Ahli Kimia', 'Ahli Biologi', 'Fisikawan', 'Farmasis'],
+        'personal_contact': ['Sales Executive', 'Customer Service', 'Public Relations', 'Event Organizer', 'Diplomat'],
+        'aesthetic': ['Desainer Grafis', 'Pelukis', 'Fotografer', 'Arsitek', 'Makeup Artist', 'Fashion Designer'],
+        'literary': ['Penulis', 'Jurnalis', 'Editor', 'Content Writer', 'Copywriter', 'Novelis'],
+        'musical': ['Musisi', 'Penyanyi', 'Komposer', 'Music Producer', 'DJ', 'Conductor Orchestra'],
+        'social_service': ['Guru', 'Konselor', 'Psikolog', 'Pekerja Sosial', 'Terapis', 'Relawan Kemanusiaan'],
+        'clerical': ['Sekretaris', 'Administrator', 'Office Manager', 'HRD Staff', 'Data Entry Specialist'],
+        'practical': ['Chef', 'Baker', 'Penjahit', 'Pengrajin', 'Tukang Kayu', 'Teknisi Elektronik'],
+        'medical': ['Dokter', 'Perawat', 'Apoteker', 'Bidan', 'Ahli Gizi', 'Radiografer']
+    }
+    
+    # Study recommendations
+    study_recommendations = {
+        'outdoor': ['Pertanian', 'Kehutanan', 'Peternakan', 'Biologi', 'Geografi', 'Ilmu Lingkungan'],
+        'mechanical': ['Teknik Mesin', 'Teknik Elektro', 'Teknik Otomotif', 'Teknik Industri', 'Teknik Penerbangan'],
+        'computational': ['Akuntansi', 'Matematika', 'Statistika', 'Ekonomi', 'Aktuaria', 'Manajemen Keuangan'],
+        'scientific': ['Kimia', 'Fisika', 'Biologi', 'Farmasi', 'Kedokteran', 'Teknik Kimia'],
+        'personal_contact': ['Marketing', 'Komunikasi', 'Hubungan Masyarakat', 'Pariwisata', 'Hubungan Internasional'],
+        'aesthetic': ['Desain Grafis', 'Seni Rupa', 'Arsitektur', 'Desain Interior', 'Fashion Design', 'Fotografi'],
+        'literary': ['Sastra', 'Jurnalistik', 'Bahasa dan Sastra', 'Komunikasi', 'Ilmu Perpustakaan', 'Penyiaran'],
+        'musical': ['Seni Musik', 'Pendidikan Musik', 'Produksi Musik', 'Seni Pertunjukan', 'Etnomusikologi'],
+        'social_service': ['Psikologi', 'Pendidikan', 'Sosiologi', 'Pekerjaan Sosial', 'Bimbingan Konseling', 'Kesejahteraan Sosial'],
+        'clerical': ['Administrasi Perkantoran', 'Sekretaris', 'Manajemen', 'Administrasi Bisnis', 'Manajemen Perkantoran'],
+        'practical': ['Tata Boga', 'Tata Busana', 'Kerajinan', 'Perhotelan', 'Kuliner', 'Teknologi Pangan'],
+        'medical': ['Kedokteran', 'Keperawatan', 'Farmasi', 'Kebidanan', 'Kesehatan Masyarakat', 'Gizi']
+    }
+    
+    # Get recommendations for top 3 interests
+    career_recs = []
+    study_recs = []
+    
+    for interest in rmib_result.top_interests[:3]:
+        category = interest['category']
+        career_recs.extend(career_recommendations.get(category, [])[:3])
+        study_recs.extend(study_recommendations.get(category, [])[:3])
+    
+    # Remove duplicates while preserving order
+    career_recs = list(dict.fromkeys(career_recs))[:10]
+    study_recs = list(dict.fromkeys(study_recs))[:10]
+    
+    # Prepare all_scores with display names
+    all_scores_with_names = []
+    for category, score_data in sorted(rmib_result.final_scores.items(), key=lambda x: x[1]['total']):
+        all_scores_with_names.append({
+            'category_key': category,
+            'category_name': category_display_names.get(category, category.replace('_', ' ').title()),
+            'score_data': score_data
+        })
+    
+    context = {
+        'student': student,
+        'rmib_result': rmib_result,
+        'percentages': rmib_result.calculate_interest_percentage(),
+        'career_recommendations': career_recs,
+        'study_recommendations': study_recs,
+        'prestasi_list': student.prestasi.all(),
+        'all_scores': all_scores_with_names  # ← DIUBAH STRUKTURNYA
+    }
+    
+    return render(request, 'students/rmib_result.html', context)
+
+
+@login_required
+def export_rmib_pdf(request, student_pk):
+    """Export RMIB result to PDF - placeholder for now"""
+    student = get_object_or_404(Student, pk=student_pk)
+    
+    if not hasattr(student, 'rmib_result'):
+        messages.error(request, 'Tidak ada hasil RMIB untuk diekspor.')
+        return redirect('students:detail', pk=student_pk)
+    
+    # For now, redirect to result page
+    # TODO: Implement PDF generation with WeasyPrint or ReportLab
+    messages.info(request, 'Fitur export PDF akan segera tersedia.')
+    return redirect('students:rmib_result', student_pk=student_pk)

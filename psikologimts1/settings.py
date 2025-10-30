@@ -1,18 +1,36 @@
 """
-Django settings for psikologimts1 project.
+Django settings for psikologimts1 project - PRODUCTION VERSION
 """
 import os
 from pathlib import Path
 
+# Build paths inside the project
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1a$i4%tv3i6$xf0(dby40p(e6aqh(as%vcck1-l2&s1m&3*kze'
+# Gunakan environment variable untuk production
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-1a$i4%tv3i6$xf0(dby40p(e6aqh(as%vcck1-l2&s1m&3*kze'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# WAJIB False untuk production
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS: Ganti dengan domain Anda
+# Contoh: ['yourdomain.com', 'www.yourdomain.com', 'komering.iixcp.rumahweb.net']
+ALLOWED_HOSTS = os.environ.get(
+    'ALLOWED_HOSTS',
+    'yourdomain.com,www.yourdomain.com'
+).split(',')
+
+# CSRF Trusted Origins untuk cPanel
+CSRF_TRUSTED_ORIGINS = [
+    'https://yourdomain.com',
+    'https://www.yourdomain.com',
+    'https://komering.iixcp.rumahweb.net'
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -58,11 +76,11 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',  # ← Added
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.static',  # ← Added for static files
+                'django.template.context_processors.static',
             ],
         },
     },
@@ -71,10 +89,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'psikologimts1.wsgi.application'
 
 # Database
+# Untuk production, pertimbangkan menggunakan MySQL
+# Jika tetap menggunakan SQLite, pastikan path sudah benar
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': os.environ.get('DB_NAME', os.path.join(BASE_DIR, 'db.sqlite3')),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', ''),
+        'PORT': os.environ.get('DB_PORT', ''),
         'OPTIONS': {
             'timeout': 30,
             'init_command': (
@@ -82,14 +106,14 @@ DATABASES = {
                 'PRAGMA synchronous=NORMAL;' 
                 'PRAGMA temp_store=MEMORY;'
             ),
-        }
+        } if os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3') == 'django.db.backends.sqlite3' else {}
     }
 }
-AUTHENTICATION_BACKENDS = [
-    'accounts.backends.StudentNISNBackend',  # Custom NISN backend
-    'django.contrib.auth.backends.ModelBackend',  # Default backend for admin
-]
 
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.StudentNISNBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -113,17 +137,16 @@ TIME_ZONE = 'Asia/Jakarta'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = '/static/'  # ← Must start with /
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'public_html', 'static')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # ← Remove trailing slash
+    os.path.join(BASE_DIR, 'static'),
 ]
 
-# Comment out for development - causes issues with debug mode
-# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-
-MEDIA_URL = '/media/'  # ← Must start with /
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # ← Remove trailing slash
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'public_html', 'media')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -137,6 +160,55 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_SECURE = not DEBUG  # True di production
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
 
-# Email backend untuk development
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# CSRF Settings
+CSRF_COOKIE_SECURE = not DEBUG  # True di production
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Security Settings untuk Production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_BROWSER_XSS_FILTER = True
+    X_FRAME_OPTIONS = 'DENY'
+    
+# Email Configuration untuk Production
+# Sesuaikan dengan SMTP server cPanel Anda
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@yourdomain.com')
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'django_errors.log'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}

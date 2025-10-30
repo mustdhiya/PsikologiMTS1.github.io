@@ -1,0 +1,521 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hasil Tes RMIB - {{ student.name }} - PRESTISIA{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes confetti {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(1000px) rotate(720deg); opacity: 0; }
+}
+
+.animate-fadeInUp {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-slideInRight {
+    animation: slideInRight 0.5s ease-out forwards;
+}
+
+.animate-scaleIn {
+    animation: scaleIn 0.4s ease-out forwards;
+}
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+
+/* ==================== CARD DESIGN ==================== */
+.result-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.result-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* ==================== GRADIENT BACKGROUNDS ==================== */
+.gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.gradient-gold {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.gradient-silver {
+    background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+}
+
+.gradient-bronze {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+}
+
+/* ==================== BADGE DESIGN ==================== */
+.rank-badge {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: bold;
+    color: white;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.rank-badge::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    background: inherit;
+    z-index: -1;
+    filter: blur(10px);
+    opacity: 0.5;
+}
+
+/* ==================== PROGRESS BAR ==================== */
+.progress-bar-container {
+    height: 30px;
+    background: #e5e7eb;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar-fill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* ==================== CHART STYLE ==================== */
+.score-item {
+    padding: 16px;
+    background: white;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.score-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== RECOMMENDATION CARD ==================== */
+.recommendation-item {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.recommendation-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+}
+
+.recommendation-item:hover {
+    border-color: #667eea;
+    transform: translateX(8px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .rank-badge {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
+    
+    .progress-bar-container {
+        height: 24px;
+    }
+    
+    .progress-bar-fill {
+        font-size: 12px;
+    }
+}
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .result-card {
+        box-shadow: none;
+        border: 1px solid #e5e7eb;
+        page-break-inside: avoid;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ==================== HEADER SECTION ==================== -->
+<header class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-2xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="text-center animate-fadeInUp">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-lg rounded-full shadow-lg mb-4">
+                <i class="fas fa-trophy text-4xl"></i>
+            </div>
+            <h1 class="text-4xl lg:text-5xl font-bold mb-2">Hasil Tes RMIB</h1>
+            <p class="text-lg text-indigo-100 mb-4">Rothwell Miller Interest Blank Test</p>
+            <div class="inline-flex items-center space-x-4 bg-white/10 backdrop-blur-lg rounded-full px-6 py-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-user-circle text-2xl"></i>
+                    <span class="font-semibold text-lg">{{ student.name }}</span>
+                </div>
+                <div class="h-6 w-px bg-white/30"></div>
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-id-card"></i>
+                    <span>{{ student.nisn }}</span>
+                </div>
+                <div class="h-6 w-px bg-white/30"></div>
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Kelas {{ student.student_class }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ==================== SUCCESS MESSAGE ==================== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-10">
+    <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl shadow-2xl p-6 text-center animate-scaleIn">
+        <i class="fas fa-check-circle text-5xl mb-3"></i>
+        <h2 class="text-2xl font-bold mb-2">Selamat! Tes Berhasil Diselesaikan</h2>
+        <p class="text-green-50">Anda telah menyelesaikan tes RMIB dengan baik. Berikut adalah hasil analisis minat dan bakat Anda.</p>
+    </div>
+</section>
+
+<!-- ==================== TOP 3 INTERESTS SECTION ==================== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+    <div class="result-card p-8 animate-fadeInUp delay-100">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-3xl font-bold text-gray-900 flex items-center">
+                <i class="fas fa-star text-yellow-500 mr-3"></i>
+                Top 3 Minat Dominan Anda
+            </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for interest in rmib_result.top_interests %}
+            <div class="relative group animate-scaleIn delay-{{ forloop.counter }}00">
+                <div class="bg-gradient-to-br from-gray-50 to-white border-2 {% if forloop.counter == 1 %}border-yellow-400{% elif forloop.counter == 2 %}border-gray-400{% else %}border-orange-400{% endif %} rounded-2xl p-6 text-center transform transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl">
+                    <!-- Rank Badge -->
+                    <div class="flex justify-center mb-4">
+                        <div class="rank-badge {% if forloop.counter == 1 %}gradient-gold{% elif forloop.counter == 2 %}gradient-silver{% else %}gradient-bronze{% endif %}">
+                            #{{ forloop.counter }}
+                        </div>
+                    </div>
+                    
+                    <!-- Interest Name -->
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ interest.name }}</h3>
+                    
+                    <!-- Score Display -->
+                    <div class="flex items-center justify-center space-x-2 mb-4">
+                        <span class="text-3xl font-bold text-indigo-600">{{ interest.score }}</span>
+                        <span class="text-sm text-gray-500">/ 156</span>
+                    </div>
+                    
+                    <!-- Average Score -->
+                    <div class="text-sm text-gray-600 mb-4">
+                        <span class="font-semibold">Rata-rata:</span> {{ interest.average }}
+                    </div>
+                    
+                    {% if interest.bonus > 0 %}
+                    <div class="inline-flex items-center space-x-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
+                        <i class="fas fa-trophy"></i>
+                        <span>Bonus: -{{ interest.bonus }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Progress Bar -->
+                    <div class="mt-4">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: {% widthratio interest.score 156 100 %}%;">
+                                {% widthratio interest.score 156 100 %}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ==================== ALL SCORES SECTION ==================== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+    <div class="result-card p-8 animate-fadeInUp delay-200">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <i class="fas fa-chart-bar text-indigo-600 mr-3"></i>
+            Skor Lengkap Semua Kategori
+        </h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {% for score_item in all_scores %}
+            <div class="score-item animate-slideInRight delay-{{ forloop.counter }}00">
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-semibold text-gray-800 flex items-center">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 mr-2 text-sm font-bold">
+                            {{ forloop.counter }}
+                        </span>
+                        {{ score_item.category_name }}
+                    </h4>
+                    <span class="text-xl font-bold text-indigo-600">{{ score_item.score_data.total }}</span>
+                </div>
+                <div class="progress-bar-container h-6">
+                    <div class="progress-bar-fill" style="width: {% widthratio score_item.score_data.total 156 100 %}%; font-size: 12px;">
+                        {% widthratio score_item.score_data.total 156 100 %}%
+                    </div>
+                </div>
+                {% if score_item.score_data.bonus %}
+                <p class="text-xs text-green-600 mt-1">
+                    <i class="fas fa-award mr-1"></i>Bonus: -{{ score_item.score_data.bonus }}
+                </p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+<!-- ==================== RECOMMENDATIONS SECTION ==================== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Career Recommendations -->
+        <div class="result-card p-8 animate-fadeInUp delay-300">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <i class="fas fa-briefcase text-blue-600 mr-3"></i>
+                Rekomendasi Karir
+            </h2>
+            <div class="space-y-3">
+                {% for career in career_recommendations %}
+                <div class="recommendation-item animate-slideInRight delay-{{ forloop.counter }}00">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                            {{ forloop.counter }}
+                        </div>
+                        <span class="text-gray-800 font-medium">{{ career }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Study Recommendations -->
+        <div class="result-card p-8 animate-fadeInUp delay-400">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <i class="fas fa-graduation-cap text-purple-600 mr-3"></i>
+                Rekomendasi Jurusan
+            </h2>
+            <div class="space-y-3">
+                {% for study in study_recommendations %}
+                <div class="recommendation-item animate-slideInRight delay-{{ forloop.counter }}00">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">
+                            {{ forloop.counter }}
+                        </div>
+                        <span class="text-gray-800 font-medium">{{ study }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== PRESTASI SECTION (If Any) ==================== -->
+{% if prestasi_list %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+    <div class="result-card p-8 animate-fadeInUp delay-400">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <i class="fas fa-award text-yellow-500 mr-3"></i>
+            Prestasi yang Mempengaruhi Hasil
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for prestasi in prestasi_list %}
+            <div class="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-xl p-4">
+                <div class="flex items-start space-x-3">
+                    <i class="{{ prestasi.get_jenis_icon }} text-2xl text-yellow-600"></i>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-gray-900 mb-1">{{ prestasi.nama }}</h4>
+                        <p class="text-sm {{ prestasi.get_tingkat_display_color }} font-semibold">{{ prestasi.get_tingkat_display }}</p>
+                        <p class="text-sm text-gray-600">{{ prestasi.peringkat }} - {{ prestasi.tahun }}</p>
+                        {% if prestasi.bonus_score > 0 %}
+                        <span class="inline-block mt-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            Bonus: -{{ prestasi.bonus_score }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ==================== ACTION BUTTONS ==================== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-12">
+    <div class="flex flex-wrap justify-center gap-4 no-print">
+        <a href="{% url 'students:list' %}" 
+           class="inline-flex items-center px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <i class="fas fa-list mr-2"></i>
+            Daftar Siswa
+        </a>
+        
+        <a href="{% url 'students:detail' student.pk %}" 
+           class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <i class="fas fa-user mr-2"></i>
+            Profil Siswa
+        </a>
+        
+        <button onclick="window.print()" 
+                class="inline-flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <i class="fas fa-print mr-2"></i>
+            Cetak Hasil
+        </button>
+        
+        <!-- SEMENTARA DIHIDE ATAU DIGANTI DENGAN PRINT -->
+        {% comment %}
+        <a href="{% url 'students:rmib_export_pdf' student.pk %}" 
+           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <i class="fas fa-file-pdf mr-2"></i>
+            Download PDF
+        </a>
+        {% endcomment %}
+    </div>
+</section>
+
+
+<!-- ==================== FOOTER INFO ==================== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl p-6 text-center">
+        <p class="text-gray-700">
+            <i class="fas fa-info-circle text-indigo-600 mr-2"></i>
+            <strong>Catatan:</strong> Hasil tes ini adalah indikasi minat dan bakat berdasarkan pilihan Anda. 
+            Untuk konsultasi lebih lanjut, silakan hubungi guru BK atau konselor sekolah.
+        </p>
+        <p class="text-sm text-gray-600 mt-2">
+            <i class="fas fa-calendar-alt mr-1"></i>
+            Tes diselesaikan pada: <strong>{{ rmib_result.submitted_at|date:"d F Y, H:i" }}</strong>
+        </p>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Confetti animation on load
+window.addEventListener('load', function() {
+    createConfetti();
+});
+
+function createConfetti() {
+    const colors = ['#fbbf24', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'];
+    const confettiCount = 50;
+    
+    for (let i = 0; i < confettiCount; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.style.cssText = `
+                position: fixed;
+                top: -10px;
+                left: ${Math.random() * 100}%;
+                width: 10px;
+                height: 10px;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                opacity: 0.8;
+                pointer-events: none;
+                z-index: 9999;
+                animation: confetti 3s ease-out forwards;
+            `;
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 3000);
+        }, i * 30);
+    }
+}
+
+// Smooth scroll for internal links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+});
+</script>
+{% endblock %}

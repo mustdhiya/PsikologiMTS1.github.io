@@ -5,1439 +5,1577 @@
 
 {% block extra_css %}
 <style>
-/* ==================== ENHANCED ANIMATIONS & TRANSITIONS ==================== */
-.fade-in { 
-    animation: fadeIn 0.6s ease-in-out; 
-    opacity: 0;
-    animation-fill-mode: forwards;
-}
-.slide-in-up { 
-    animation: slideInUp 0.5s ease-out; 
-    opacity: 0;
-    animation-fill-mode: forwards;
-}
-.slide-in-right { 
-    animation: slideInRight 0.4s ease-out; 
-    opacity: 0;
-    animation-fill-mode: forwards;
-}
-.bounce-in { 
-    animation: bounceIn 0.7s ease-out; 
-    opacity: 0;
-    animation-fill-mode: forwards;
-}
-.scale-in { 
-    animation: scaleIn 0.4s ease-out; 
-    opacity: 0;
-    animation-fill-mode: forwards;
+/* ==================== MODERN ANIMATIONS 2025 ==================== */
+@keyframes fadeInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideInUp {
-    from { opacity: 0; transform: translateY(50px); }
-    to { opacity: 1; transform: translateY(0); }
-}
 @keyframes slideInRight {
-    from { opacity: 0; transform: translateX(40px); }
-    to { opacity: 1; transform: translateX(0); }
+    from { 
+        opacity: 0; 
+        transform: translateX(-20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
 }
-@keyframes bounceIn {
-    0% { transform: scale(0.3); opacity: 0; }
-    50% { transform: scale(1.05); }
-    70% { transform: scale(0.9); }
-    100% { transform: scale(1); opacity: 1; }
-}
+
 @keyframes scaleIn {
-    from { transform: scale(0.8); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from { 
+        opacity: 0; 
+        transform: scale(0.9); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
 }
 
-/* ==================== BULK ACTIONS ENHANCEMENTS ==================== */
-.bulk-actions-bar {
-    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-    border-radius: 12px;
-    padding: 1rem 1.5rem;
-    margin: 1rem 0;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
-    transform: translateY(-20px);
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+.animate-fadeInUp {
+    animation: fadeInUp 0.6s ease-out forwards;
     opacity: 0;
-    visibility: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid #4b5563;
 }
 
-.bulk-actions-bar.show {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
+.animate-slideInRight {
+    animation: slideInRight 0.5s ease-out forwards;
+    opacity: 0;
 }
 
-.bulk-actions-bar .counter {
-    color: #fbbf24;
-    font-weight: 600;
-    font-size: 1.1rem;
+.animate-scaleIn {
+    animation: scaleIn 0.4s ease-out forwards;
+    opacity: 0;
 }
 
-.bulk-delete-btn {
-    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    border: none;
-    cursor: pointer;
-}
+/* Staggered animation delays */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
 
-.bulk-delete-btn:hover {
-    background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(185, 28, 28, 0.4);
-}
-
-.bulk-delete-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* ==================== CHECKBOX ENHANCEMENTS ==================== */
-.student-checkbox {
-    transform: scale(1.2);
-    accent-color: #3b82f6;
-    cursor: pointer;
-}
-
-.student-checkbox:checked {
-    accent-color: #1d4ed8;
-}
-
-.select-all-checkbox {
-    transform: scale(1.3);
-    accent-color: #059669;
-    cursor: pointer;
-}
-
-.checkbox-cell {
-    width: 50px;
-    padding-right: 1rem;
-}
-
-.table-row.selected {
-    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 1px #3b82f6;
-}
-
-/* ==================== ENHANCED CARD EFFECTS ==================== */
-.hover-card {
+/* ==================== MODERN CARD DESIGN ==================== */
+.card-modern {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateZ(0);
-}
-.hover-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
-/* ==================== PROGRESS BAR ENHANCEMENTS ==================== */
-.progress-bar {
-    background: linear-gradient(90deg, #10B981 0%, #059669 100%);
-    height: 8px;
-    border-radius: 4px;
-    transition: width 0.8s ease-out;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-}
-
-.progress-bar-blue {
-    background: linear-gradient(90deg, #3B82F6 0%, #1D4ED8 100%);
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-}
-
-.progress-bar-yellow {
-    background: linear-gradient(90deg, #F59E0B 0%, #D97706 100%);
-    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
-}
-
-/* ==================== STATUS BADGES ==================== */
-.status-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: inline-flex;
-    align-items: center;
-    transition: all 0.2s ease;
-}
-
-.status-badge:hover {
-    transform: scale(1.05);
-}
-
-/* ==================== PAGINATION ENHANCEMENTS ==================== */
-.pagination-container {
-    background: white;
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.pagination-info {
-    font-size: 0.875rem;
-    color: #6b7280;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.pagination-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.pagination-btn {
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border: 1px solid #d1d5db;
-    background: white;
-    color: #374151;
-}
-
-.pagination-btn:hover:not(.disabled) {
-    background: #f3f4f6;
-    transform: translateY(-1px);
-}
-
-.pagination-btn.current {
-    background: #3b82f6;
-    color: white;
-    border-color: #3b82f6;
-}
-
-.pagination-btn.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* ==================== SEARCH & FILTER ENHANCEMENTS ==================== */
-.filter-form {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e5e7eb;
-    transition: all 0.3s ease;
-}
-
-.filter-form:hover {
-    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
-}
-
-.form-input {
-    transition: all 0.3s ease;
-    border: 1px solid #d1d5db;
-}
-
-.form-input:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    outline: none;
-}
-
-/* ==================== TABLE ENHANCEMENTS ==================== */
-.data-table {
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-.table-row {
-    transition: all 0.2s ease;
-    border-bottom: 1px solid #f3f4f6;
-}
-
-.table-row:hover:not(.selected) {
-    background: #f8fafc;
-    transform: scale(1.001);
-}
-
-.table-row:last-child {
-    border-bottom: none;
-}
-
-/* ==================== RESPONSIVE ENHANCEMENTS ==================== */
-@media (max-width: 768px) {
-    .hover-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-    
-    .pagination-controls {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .filter-form {
-        margin: 1rem;
-        padding: 1rem;
-    }
-    
-    .bulk-actions-bar {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-}
-
-/* ==================== ENHANCED TOOLTIPS ==================== */
-.tooltip-trigger:hover .tooltip {
-    opacity: 1;
-    visibility: visible;
+.card-modern:hover {
     transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-.tooltip {
+.card-glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* ==================== GRADIENT BACKGROUNDS ==================== */
+.gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.gradient-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.gradient-info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.gradient-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* ==================== STATS CARD ==================== */
+.stats-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card::before {
+    content: '';
     position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-5px);
-    background: #1f2937;
-    color: white;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.5rem;
-    font-size: 0.75rem;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.2s ease;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+}
+
+.stats-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+/* ==================== MODERN TABLE DESIGN ==================== */
+.table-modern {
+    border-spacing: 0 8px;
+    border-collapse: separate;
+}
+
+.table-modern thead th {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 16px;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    border: none;
+    position: sticky;
+    top: 0;
     z-index: 10;
 }
 
-.tooltip::after {
+.table-modern tbody tr {
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+}
+
+.table-modern tbody tr:hover {
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    z-index: 1;
+}
+
+.table-modern tbody td {
+    padding: 16px;
+    border: none;
+    vertical-align: middle;
+}
+
+.table-modern tbody tr td:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.table-modern tbody tr td:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+/* ==================== AVATAR DESIGN ==================== */
+.avatar-modern {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 18px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar-modern::after {
     content: '';
     position: absolute;
-    top: 100%;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+}
+
+/* ==================== BADGE DESIGN ==================== */
+.badge-modern {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    transition: all 0.2s ease;
+}
+
+.badge-modern:hover {
+    transform: scale(1.05);
+}
+
+.badge-pending {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+}
+
+.badge-completed {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+}
+
+.badge-in-progress {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+}
+
+/* ==================== BUTTON DESIGN ==================== */
+.btn-modern {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-modern::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.btn-modern:hover::before {
+    opacity: 1;
+}
+
+.btn-modern:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-outline {
+    background: white;
+    border: 2px solid #e2e8f0;
+    color: #475569;
+}
+
+.btn-outline:hover {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+/* ==================== SEARCH & FILTER DESIGN ==================== */
+.search-box {
+    position: relative;
+}
+
+.search-box input {
+    padding-left: 48px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.search-box input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    outline: none;
+}
+
+.search-box .search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 18px;
+}
+
+.filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #475569;
+}
+
+.filter-tag button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    color: #475569;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-tag button:hover {
+    background: #94a3b8;
+    color: white;
+}
+
+/* ==================== PROGRESS BAR ==================== */
+.progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+/* ==================== TOOLTIP ==================== */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    background-color: #1e293b;
+    color: white;
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    position: absolute;
+    z-index: 100;
+    bottom: 125%;
     left: 50%;
     transform: translateX(-50%);
-    border: 4px solid transparent;
-    border-top-color: #1f2937;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+    white-space: nowrap;
 }
 
-/* ==================== TOAST NOTIFICATIONS ==================== */
-.toast-container {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    z-index: 1000;
-    max-width: 400px;
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }
 
-.toast {
+/* ==================== EMPTY STATE ==================== */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.empty-state-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 24px;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #94a3b8;
+}
+
+/* ==================== PAGINATION ==================== */
+.pagination {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.pagination-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
     background: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    margin-bottom: 0.5rem;
-    padding: 1rem;
-    border-left: 4px solid;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
 }
 
-.toast.show {
-    transform: translateX(0);
+.pagination-item:hover {
+    border-color: #667eea;
+    color: #667eea;
+    transform: translateY(-2px);
 }
 
-.toast-success {
-    border-left-color: #10b981;
+.pagination-item.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
 }
 
-.toast-error {
-    border-left-color: #ef4444;
+.pagination-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
-.toast-warning {
-    border-left-color: #f59e0b;
-}
-
-.toast-info {
-    border-left-color: #3b82f6;
-}
-
-/* ==================== CONFIRMATION MODAL ==================== */
+/* ==================== MODAL DESIGN ==================== */
 .modal-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 1000;
     opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease;
 }
 
-.modal-overlay.show {
+.modal-overlay.active {
     opacity: 1;
-    visibility: visible;
 }
 
 .modal-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
     background: white;
-    border-radius: 16px;
-    padding: 2rem;
+    border-radius: 20px;
     max-width: 500px;
     width: 90%;
-    max-height: 80vh;
+    max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transform: scale(0.9);
     transition: transform 0.3s ease;
 }
 
-.modal-overlay.show .modal-content {
-    transform: translate(-50%, -50%) scale(1);
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+
+/* ==================== LOADING SPINNER ==================== */
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .table-modern {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-responsive {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .btn-modern {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .card-modern {
+        border-radius: 12px;
+    }
+    
+    .table-modern thead {
+        display: none;
+    }
+    
+    .table-modern tbody tr {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+        padding: 16px;
+        border-radius: 12px;
+    }
+    
+    .table-modern tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .table-modern tbody td:last-child {
+        border-bottom: none;
+    }
+    
+    .table-modern tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #64748b;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+}
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .table-modern tbody tr {
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+    }
+}
+
+/* ==================== SCROLLBAR STYLING ==================== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3d91 100%);
+}
+
+/* ==================== SELECTION HIGHLIGHT ==================== */
+::selection {
+    background: rgba(102, 126, 234, 0.2);
+    color: inherit;
+}
+
+::-moz-selection {
+    background: rgba(102, 126, 234, 0.2);
+    color: inherit;
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-    <!-- Enhanced Header Section -->
-    <header class="bg-white shadow-lg border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 py-6">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between fade-in">
-                <div class="mb-6 lg:mb-0">
-                    <div class="flex items-center space-x-3 mb-3">
-                        <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                            <i class="fas fa-users text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h1 class="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                                Daftar Siswa & RMIB
-                            </h1>
-                            <p class="text-gray-600">Kelola data siswa dan hasil tes RMIB</p>
-                        </div>
+<!-- ==================== HEADER SECTION ==================== -->
+<header class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-2xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="animate-fadeInUp">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <!-- Title Section -->
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-white/20 backdrop-blur-lg rounded-2xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-users-class text-3xl"></i>
                     </div>
-                    
-                    <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-users text-blue-500"></i>
-                            <span><strong>{{ total_students }}</strong> siswa terdaftar</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span><strong>{{ completed_tests }}</strong> tes selesai</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-clock text-yellow-500"></i>
-                            <span><strong>{{ pending_tests }}</strong> belum tes</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-calendar-alt text-purple-500"></i>
-                            <span>Update: {{ "now"|date:"d M Y, H:i" }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <a href="{% url 'students:export_csv' %}" 
-                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white font-semibold rounded-xl hover:from-gray-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
-                        <i class="fas fa-download mr-2"></i>
-                        Export CSV
-                    </a>
-                    <a href="{% url 'students:batch_import' %}" 
-                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
-                        <i class="fas fa-upload mr-2"></i>
-                        Import Batch
-                    </a>
-                    <a href="{% url 'students:create' %}" 
-                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
-                        <i class="fas fa-plus mr-2"></i>
-                        Tambah Siswa
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Enhanced Stats Cards -->
-    <section class="max-w-7xl mx-auto px-4 -mt-4 relative z-10">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <!-- Total Siswa -->
-            <div class="bg-white rounded-2xl p-6 shadow-lg hover-card bounce-in">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-users text-blue-600 text-xl"></i>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-xs text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded-full">
-                            Total
-                        </span>
-                    </div>
-                </div>
-                <h3 class="text-3xl font-bold text-gray-900 mb-1" data-stat="total">{{ total_students|default:0 }}</h3>
-                <p class="text-gray-600 text-sm">Siswa Terdaftar</p>
-                <div class="mt-3 bg-gray-200 rounded-full h-2">
-                    <div class="progress-bar" style="width: 100%"></div>
-                </div>
-            </div>
-
-            <!-- Tes Selesai -->
-            <div class="bg-white rounded-2xl p-6 shadow-lg hover-card bounce-in" style="animation-delay: 0.1s">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-xs text-green-600 font-semibold bg-green-50 px-2 py-1 rounded-full">
-                            {% if total_students > 0 %}
-                                {% widthratio completed_tests total_students 100 %}%
-                            {% else %}
-                                0%
-                            {% endif %}
-                        </span>
-                    </div>
-                </div>
-                <h3 class="text-3xl font-bold text-gray-900 mb-1">{{ completed_tests|default:0 }}</h3>
-                <p class="text-gray-600 text-sm">Tes Selesai</p>
-                <div class="mt-3 bg-gray-200 rounded-full h-2">
-                    <div class="progress-bar" style="width: {% if total_students > 0 %}{% widthratio completed_tests total_students 100 %}{% else %}0{% endif %}%"></div>
-                </div>
-            </div>
-
-            <!-- Sedang Tes -->
-            <div class="bg-white rounded-2xl p-6 shadow-lg hover-card bounce-in" style="animation-delay: 0.2s">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-play-circle text-blue-600 text-xl"></i>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-xs text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded-full">
-                            {% if total_students > 0 %}
-                                {% widthratio in_progress_tests total_students 100 %}%
-                            {% else %}
-                                0%
-                            {% endif %}
-                        </span>
-                    </div>
-                </div>
-                <h3 class="text-3xl font-bold text-gray-900 mb-1">{{ in_progress_tests|default:0 }}</h3>
-                <p class="text-gray-600 text-sm">Sedang Tes</p>
-                <div class="mt-3 bg-gray-200 rounded-full h-2">
-                    <div class="progress-bar progress-bar-blue" style="width: {% if total_students > 0 %}{% widthratio in_progress_tests total_students 100 %}{% else %}0{% endif %}%"></div>
-                </div>
-            </div>
-
-            <!-- Belum Tes -->
-            <div class="bg-white rounded-2xl p-6 shadow-lg hover-card bounce-in" style="animation-delay: 0.3s">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-clock text-yellow-600 text-xl"></i>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-xs text-yellow-600 font-semibold bg-yellow-50 px-2 py-1 rounded-full">
-                            {% if total_students > 0 %}
-                                {% widthratio pending_tests total_students 100 %}%
-                            {% else %}
-                                0%
-                            {% endif %}
-                        </span>
-                    </div>
-                </div>
-                <h3 class="text-3xl font-bold text-gray-900 mb-1">{{ pending_tests|default:0 }}</h3>
-                <p class="text-gray-600 text-sm">Belum Tes</p>
-                <div class="mt-3 bg-gray-200 rounded-full h-2">
-                    <div class="progress-bar progress-bar-yellow" style="width: {% if total_students > 0 %}{% widthratio pending_tests total_students 100 %}{% else %}0{% endif %}%"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Enhanced Filters & Search -->
-    <section class="max-w-7xl mx-auto px-4 mb-6">
-        <div class="filter-form p-6 slide-in-up">
-            <form method="get" class="space-y-4" id="filterForm">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-                    <!-- Global Search -->
-                    <div class="lg:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-search mr-2 text-gray-400"></i>Pencarian Global
-                        </label>
-                        <input type="text" 
-                               name="search" 
-                               value="{{ search }}" 
-                               placeholder="Cari nama, NISN, tempat lahir..." 
-                               class="form-input w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                    </div>
-
-                    <!-- Class Filter -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-layer-group mr-2 text-gray-400"></i>Kelas
-                        </label>
-                        <select name="class" class="form-input w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                            <option value="">Semua Kelas</option>
-                            {% for class_name in available_classes %}
-                                <option value="{{ class_name }}" {% if class_filter == class_name %}selected{% endif %}>
-                                    Kelas {{ class_name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Status Filter -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-flag mr-2 text-gray-400"></i>Status
-                        </label>
-                        <select name="status" class="form-input w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                            <option value="">Semua Status</option>
-                            {% for status_value, status_label in status_choices %}
-                                <option value="{{ status_value }}" {% if status_filter == status_value %}selected{% endif %}>
-                                    {{ status_label }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Gender Filter -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-venus-mars mr-2 text-gray-400"></i>Jenis Kelamin
-                        </label>
-                        <select name="gender" class="form-input w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                            <option value="">Semua</option>
-                            {% for gender_value, gender_label in gender_choices %}
-                                <option value="{{ gender_value }}" {% if gender_filter == gender_value %}selected{% endif %}>
-                                    {{ gender_label }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex flex-col justify-end space-y-2">
-                        <button type="submit" 
-                                class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-lg">
-                            <i class="fas fa-filter mr-2"></i>Filter
-                        </button>
-                        <a href="{% url 'students:list' %}" 
-                           class="w-full px-6 py-2 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-all duration-200 text-center">
-                            <i class="fas fa-refresh mr-2"></i>Reset
-                        </a>
+                        <h1 class="text-3xl lg:text-4xl font-bold tracking-tight">Daftar Siswa</h1>
+                        <p class="text-indigo-100 mt-1">Manajemen data siswa dan tes RMIB</p>
                     </div>
                 </div>
-            </form>
-        </div>
-    </section>
-
-    <!-- Bulk Actions Bar (Hidden by default) -->
-    {% if request.user.is_staff %}
-    <section class="max-w-7xl mx-auto px-4">
-        <div class="bulk-actions-bar" id="bulkActionsBar">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-2">
-                        <i class="fas fa-check-square text-blue-400"></i>
-                        <span class="text-white">
-                            <span class="counter" id="selectedCounter">0</span> siswa dipilih
-                        </span>
-                    </div>
-                    <button type="button" 
-                            id="selectAllVisible"
-                            class="text-blue-400 hover:text-blue-300 text-sm underline transition-colors">
-                        Pilih semua di halaman ini
-                    </button>
-                    <button type="button" 
-                            id="clearSelection"
-                            class="text-gray-400 hover:text-gray-300 text-sm underline transition-colors">
-                        Batalkan pilihan
-                    </button>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <button type="button" 
-                            id="bulkDeleteBtn"
-                            class="bulk-delete-btn">
-                        <i class="fas fa-trash-alt mr-2"></i>
-                        Hapus Terpilih
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-    {% endif %}
-
-    <!-- Enhanced Students Table -->
-    <section class="max-w-7xl mx-auto px-4 mb-8">
-        <div class="data-table fade-in">
-            <div class="overflow-x-auto">
-                <table class="min-w-full">
-                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
-                        <tr>
-                            {% if request.user.is_staff %}
-                            <th class="checkbox-cell px-4 py-4 text-left">
-                                <div class="flex items-center justify-center">
-                                    <input type="checkbox" 
-                                           id="selectAll"
-                                           class="select-all-checkbox"
-                                           title="Pilih/batalkan semua">
-                                </div>
-                            </th>
-                            {% endif %}
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-user"></i>
-                                    <span>Siswa</span>
-                                </div>
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-graduation-cap"></i>
-                                    <span>Kelas</span>
-                                </div>
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-flag"></i>
-                                    <span>Status RMIB</span>
-                                </div>
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-star"></i>
-                                    <span>Minat Teratas</span>
-                                </div>
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-chart-line"></i>
-                                    <span>Progress</span>
-                                </div>
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-cogs"></i>
-                                    <span>Aksi</span>
-                                </div>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        {% for student in students %}
-                        <tr class="table-row" data-student-id="{{ student.pk }}" data-student-name="{{ student.name }}">
-                            {% if request.user.is_staff %}
-                            <td class="checkbox-cell px-4 py-4">
-                                <div class="flex items-center justify-center">
-                                    <input type="checkbox" 
-                                           class="student-checkbox"
-                                           data-student-id="{{ student.pk }}"
-                                           data-student-name="{{ student.name }}"
-                                           value="{{ student.pk }}">
-                                </div>
-                            </td>
-                            {% endif %}
-                            <td class="px-6 py-4">
-                                <div class="flex items-center space-x-4">
-                                    <div class="relative tooltip-trigger">
-                                        <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                                            {{ student.name|first|upper }}
-                                        </div>
-                                        <div class="tooltip">
-                                            {{ student.name }}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="text-sm font-semibold text-gray-900">{{ student.name }}</div>
-                                        <div class="text-xs text-gray-500 space-y-1">
-                                            <div><strong>NISN:</strong> {{ student.nisn }}</div>
-                                            <div><strong>{{ student.get_gender_display }}:</strong> {{ student.birth_date|date:"d M Y" }}</div>
-                                            {% if student.birth_place %}
-                                                <div><strong>TTL:</strong> {{ student.birth_place }}</div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="space-y-2">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        <i class="fas fa-graduation-cap mr-1"></i>
-                                        {{ student.student_class }}
-                                    </span>
-                                    <div class="text-xs text-gray-500">
-                                        Angkatan {{ student.entry_year }}
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                {% if student.test_status == 'pending' %}
-                                    <span class="status-badge bg-yellow-100 text-yellow-700">
-                                        <i class="fas fa-hourglass-half mr-1"></i>Belum Tes
-                                    </span>
-                                {% elif student.test_status == 'in_progress' %}
-                                    <span class="status-badge bg-blue-100 text-blue-700">
-                                        <i class="fas fa-play-circle mr-1"></i>Sedang Tes
-                                    </span>
-                                {% elif student.test_status == 'completed' %}
-                                    <span class="status-badge bg-green-100 text-green-700">
-                                        <i class="fas fa-check-circle mr-1"></i>Selesai
-                                    </span>
-                                {% endif %}
-                                
-                                {% if student.test_date %}
-                                    <div class="text-xs text-gray-400 mt-1">
-                                        {{ student.test_date|date:"d M Y" }}
-                                    </div>
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="flex flex-wrap gap-1">
-                                    {% if student.test_status == 'completed' %}
-                                        <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">Scientific</span>
-                                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Medical</span>
-                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">Social</span>
-                                    {% else %}
-                                        <span class="text-xs text-gray-400 italic">Belum tersedia</span>
-                                    {% endif %}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="flex items-center space-x-3">
-                                    {% if student.test_status == 'completed' %}
-                                        <div class="flex-1 bg-gray-200 rounded-full h-2">
-                                            <div class="bg-green-500 h-2 rounded-full transition-all duration-1000" style="width: 100%"></div>
-                                        </div>
-                                        <span class="text-xs font-medium text-gray-600 min-w-0">100%</span>
-                                    {% elif student.test_status == 'in_progress' %}
-                                        <div class="flex-1 bg-gray-200 rounded-full h-2">
-                                            <div class="bg-blue-500 h-2 rounded-full transition-all duration-1000" style="width: 65%"></div>
-                                        </div>
-                                        <span class="text-xs font-medium text-gray-600 min-w-0">65%</span>
-                                    {% else %}
-                                        <div class="flex-1 bg-gray-200 rounded-full h-2">
-                                            <div class="bg-gray-300 h-2 rounded-full" style="width: 0%"></div>
-                                        </div>
-                                        <span class="text-xs font-medium text-gray-600 min-w-0">0%</span>
-                                    {% endif %}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="flex items-center space-x-2">
-                                    <a href="{% url 'students:detail' student.pk %}" 
-                                       class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-xs font-medium tooltip-trigger relative">
-                                        <i class="fas fa-eye mr-1"></i>Detail
-                                        <div class="tooltip">Lihat detail siswa</div>
-                                    </a>
-                                    
-                                    {% if request.user.is_staff %}
-                                        <a href="{% url 'students:update' student.pk %}" 
-                                           class="inline-flex items-center px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs font-medium tooltip-trigger relative">
-                                            <i class="fas fa-edit mr-1"></i>Edit
-                                            <div class="tooltip">Edit data siswa</div>
-                                        </a>
-                                        
-                                        <button onclick="deleteStudent({{ student.pk }}, '{{ student.name|escapejs }}')" 
-                                                class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-xs font-medium tooltip-trigger relative">
-                                            <i class="fas fa-trash-alt mr-1"></i>Hapus
-                                            <div class="tooltip">Hapus siswa</div>
-                                        </button>
-                                    {% endif %}
-                                    
-                                    {% if student.test_status == 'completed' %}
-                                        <button class="inline-flex items-center px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-xs font-medium tooltip-trigger relative">
-                                            <i class="fas fa-chart-bar mr-1"></i>RMIB
-                                            <div class="tooltip">Lihat hasil RMIB</div>
-                                        </button>
-                                    {% else %}
-                                        <button class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-500 rounded-lg transition-colors text-xs font-medium tooltip-trigger relative" disabled>
-                                            <i class="fas fa-chart-bar mr-1"></i>RMIB
-                                            <div class="tooltip">Tes belum selesai</div>
-                                        </button>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="{% if request.user.is_staff %}7{% else %}6{% endif %}" class="px-6 py-16 text-center">
-                                <div class="flex flex-col items-center">
-                                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-                                        <i class="fas fa-users text-gray-300 text-4xl"></i>
-                                    </div>
-                                    <h3 class="text-xl font-semibold text-gray-600 mb-2">
-                                        {% if search or class_filter or status_filter or gender_filter %}
-                                            Tidak ada hasil yang ditemukan
-                                        {% else %}
-                                            Belum ada data siswa
-                                        {% endif %}
-                                    </h3>
-                                    <p class="text-gray-500 mb-6 max-w-md">
-                                        {% if search or class_filter or status_filter or gender_filter %}
-                                            Coba ubah kriteria pencarian atau filter untuk mendapatkan hasil yang berbeda
-                                        {% else %}
-                                            Mulai dengan menambahkan siswa baru atau import data dari file CSV
-                                        {% endif %}
-                                    </p>
-                                    <div class="flex flex-col sm:flex-row gap-3">
-                                        {% if search or class_filter or status_filter or gender_filter %}
-                                            <a href="{% url 'students:list' %}" 
-                                               class="inline-flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all">
-                                                <i class="fas fa-refresh mr-2"></i>Reset Filter
-                                            </a>
-                                        {% endif %}
-                                        <a href="{% url 'students:create' %}" 
-                                           class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
-                                            <i class="fas fa-plus mr-2"></i>Tambah Siswa
-                                        </a>
-                                        <a href="{% url 'students:batch_import' %}" 
-                                           class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all">
-                                            <i class="fas fa-upload mr-2"></i>Import CSV
-                                        </a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Enhanced Pagination Footer -->
-            {% if students %}
-            <div class="pagination-container border-t border-gray-200">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <!-- Pagination Info -->
-                    <div class="pagination-info">
-                        <i class="fas fa-info-circle text-blue-500"></i>
-                        <span>
-                            Showing 
-                            <strong>{{ page_obj.start_index }}</strong>
-                            to 
-                            <strong>{{ page_obj.end_index }}</strong>
-                            of 
-                            <strong>{{ page_obj.paginator.count }}</strong>
-                            {% if search or class_filter or status_filter or gender_filter %}
-                                filtered
-                            {% endif %}
-                            results
-                        </span>
-                        {% if search or class_filter or status_filter or gender_filter %}
-                            <span class="ml-2 text-blue-600">
-                                | <a href="{% url 'students:list' %}" class="hover:underline">Clear filters</a>
-                            </span>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Pagination Controls -->
-                    {% if page_obj.paginator.num_pages > 1 %}
-                    <div class="pagination-controls">
-                        {% if page_obj.has_previous %}
-                            <a href="?{% if search %}search={{ search }}&{% endif %}{% if class_filter %}class={{ class_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if gender_filter %}gender={{ gender_filter }}&{% endif %}page=1" 
-                               class="pagination-btn">
-                                <i class="fas fa-angle-double-left mr-1"></i>First
-                            </a>
-                            <a href="?{% if search %}search={{ search }}&{% endif %}{% if class_filter %}class={{ class_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if gender_filter %}gender={{ gender_filter }}&{% endif %}page={{ page_obj.previous_page_number }}" 
-                               class="pagination-btn">
-                                <i class="fas fa-angle-left mr-1"></i>Previous
-                            </a>
-                        {% else %}
-                            <span class="pagination-btn disabled">
-                                <i class="fas fa-angle-double-left mr-1"></i>First
-                            </span>
-                            <span class="pagination-btn disabled">
-                                <i class="fas fa-angle-left mr-1"></i>Previous
-                            </span>
-                        {% endif %}                        
-                        
-                        {% for num in page_obj.paginator.page_range %}
-                            {% if num == page_obj.number %}
-                                <span class="pagination-btn current">{{ num }}</span>
-                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                                <a href="?{% if search %}search={{ search }}&{% endif %}{% if class_filter %}class={{ class_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if gender_filter %}gender={{ gender_filter }}&{% endif %}page={{ num }}" 
-                                   class="pagination-btn">{{ num }}</a>
-                            {% elif num == 1 or num == page_obj.paginator.num_pages %}
-                                <a href="?{% if search %}search={{ search }}&{% endif %}{% if class_filter %}class={{ class_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if gender_filter %}gender={{ gender_filter }}&{% endif %}page={{ num }}" 
-                                   class="pagination-btn">{{ num }}</a>
-                            {% elif num == page_obj.number|add:'-4' or num == page_obj.number|add:'4' %}
-                                <span class="pagination-btn disabled">...</span>
-                            {% endif %}
-                        {% endfor %}
-                        
-                        {% if page_obj.has_next %}
-                            <a href="?{% if search %}search={{ search }}&{% endif %}{% if class_filter %}class={{ class_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if gender_filter %}gender={{ gender_filter }}&{% endif %}page={{ page_obj.next_page_number }}" 
-                               class="pagination-btn">
-                                Next<i class="fas fa-angle-right ml-1"></i>
-                            </a>
-                            <a href="?{% if search %}search={{ search }}&{% endif %}{% if class_filter %}class={{ class_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if gender_filter %}gender={{ gender_filter }}&{% endif %}page={{ page_obj.paginator.num_pages }}" 
-                               class="pagination-btn">
-                                Last<i class="fas fa-angle-double-right ml-1"></i>
-                            </a>
-                        {% else %}
-                            <span class="pagination-btn disabled">
-                                Next<i class="fas fa-angle-right ml-1"></i>
-                            </span>
-                            <span class="pagination-btn disabled">
-                                Last<i class="fas fa-angle-double-right ml-1"></i>
-                            </span>
-                        {% endif %}
-                    </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap gap-3 no-print">
+                    <a href="{% url 'students:export_csv' %}" class="btn-modern btn-outline bg-white/10 backdrop-blur-lg text-white border-white/30 hover:bg-white/20">
+                        <i class="fas fa-file-export"></i>
+                        <span>Export CSV</span>
+                    </a>
+                    {% if request.user.is_staff %}
+                    <a href="{% url 'students:batch_import' %}" class="btn-modern btn-outline bg-white/10 backdrop-blur-lg text-white border-white/30 hover:bg-white/20">
+                        <i class="fas fa-file-import"></i>
+                        <span>Import Batch</span>
+                    </a>
                     {% endif %}
+                    <a href="{% url 'students:create' %}" class="btn-modern btn-success shadow-lg hover:shadow-xl">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Tambah Siswa</span>
+                    </a>
                 </div>
             </div>
-            {% endif %}
         </div>
-    </section>
+    </div>
+</header>
 
-    <!-- Bulk Delete Confirmation Modal -->
-    <div class="modal-overlay" id="bulkDeleteModal">
-        <div class="modal-content">
-            <div class="flex items-center space-x-3 mb-4">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+<!-- ==================== STATS CARDS SECTION ==================== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 stats-grid">
+        <!-- Total Students Card -->
+        <div class="card-modern stats-card animate-scaleIn delay-100">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="stats-icon gradient-primary text-white">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-full">
+                        Total
+                    </span>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-gray-900">Konfirmasi Hapus Multiple</h3>
-                    <p class="text-gray-600">Tindakan ini tidak dapat dibatalkan!</p>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-1">{{ total_students }}</h3>
+                    <p class="text-sm text-gray-600">Total Siswa</p>
+                </div>
+                <div class="mt-4">
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" style="width: 100%;"></div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-                <p class="text-red-800 font-medium mb-2">
-                    Anda akan menghapus <span id="deleteCount" class="font-bold">0</span> siswa berikut:
-                </p>
-                <div id="studentList" class="max-h-40 overflow-y-auto text-sm text-red-700">
-                    <!-- Student names will be inserted here -->
+        </div>
+
+        <!-- Completed Tests Card -->
+        <div class="card-modern stats-card animate-scaleIn delay-200">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="stats-icon gradient-success text-white">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-green-600 bg-green-100 px-3 py-1 rounded-full">
+                        {% if total_students > 0 %}
+                            {% widthratio completed_tests total_students 100 %}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </span>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-1">{{ completed_tests }}</h3>
+                    <p class="text-sm text-gray-600">Tes Selesai</p>
+                </div>
+                <div class="mt-4">
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" style="width: {% if total_students > 0 %}{% widthratio completed_tests total_students 100 %}{% else %}0{% endif %}%; background: linear-gradient(90deg, #10b981 0%, #059669 100%);"></div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                <h4 class="font-semibold text-yellow-800 mb-2">Konsekuensi:</h4>
-                <ul class="text-yellow-700 text-sm space-y-1">
-                    <li>• Semua data siswa akan dihapus permanen</li>
-                    <li>• Akun login akan ikut terhapus</li>
-                    <li>• Riwayat prestasi akan hilang</li>
-                    <li>• Hasil tes RMIB akan terhapus</li>
-                </ul>
+        </div>
+
+        <!-- In Progress Tests Card -->
+        <div class="card-modern stats-card animate-scaleIn delay-300">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="stats-icon gradient-info text-white">
+                        <i class="fas fa-spinner"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-blue-600 bg-blue-100 px-3 py-1 rounded-full">
+                        {% if total_students > 0 %}
+                            {% widthratio in_progress_tests total_students 100 %}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </span>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-1">{{ in_progress_tests }}</h3>
+                    <p class="text-sm text-gray-600">Sedang Tes</p>
+                </div>
+                <div class="mt-4">
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" style="width: {% if total_students > 0 %}{% widthratio in_progress_tests total_students 100 %}{% else %}0{% endif %}%; background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);"></div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="flex items-center mb-4">
-                <input type="checkbox" id="confirmBulkDelete" class="mr-3 scale-125">
-                <label for="confirmBulkDelete" class="text-gray-900">
-                    Saya memahami konsekuensi dan yakin untuk menghapus siswa-siswa ini
-                </label>
+        </div>
+
+        <!-- Pending Tests Card -->
+        <div class="card-modern stats-card animate-scaleIn delay-400">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="stats-icon gradient-warning text-white">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-amber-600 bg-amber-100 px-3 py-1 rounded-full">
+                        {% if total_students > 0 %}
+                            {% widthratio pending_tests total_students 100 %}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </span>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-1">{{ pending_tests }}</h3>
+                    <p class="text-sm text-gray-600">Belum Tes</p>
+                </div>
+                <div class="mt-4">
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" style="width: {% if total_students > 0 %}{% widthratio pending_tests total_students 100 %}{% else %}0{% endif %}%; background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);"></div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="flex justify-end space-x-3">
-                <button type="button" 
-                        id="cancelBulkDelete"
-                        class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all">
-                    Batal
+        </div>
+    </div>
+</section>
+
+<!-- ==================== SEARCH & FILTER SECTION ==================== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+    <div class="card-modern p-6 animate-fadeInUp">
+        <form method="get" action="{% url 'students:list' %}" class="space-y-6">
+            <!-- Search Bar -->
+            <div class="search-box">
+                <i class="search-icon fas fa-search"></i>
+                <input 
+                    type="text" 
+                    name="search" 
+                    value="{{ search }}"
+                    placeholder="Cari nama, NISN, kelas, atau tempat lahir..."
+                    class="w-full px-4 py-3 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-indigo-500"
+                >
+            </div>
+
+            <!-- Filters Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <!-- Class Filter -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-chalkboard-teacher text-indigo-600 mr-2"></i>Kelas
+                    </label>
+                    <select name="class" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
+                        <option value="">Semua Kelas</option>
+                        {% for class in available_classes %}
+                        <option value="{{ class }}" {% if class_filter == class %}selected{% endif %}>
+                            Kelas {{ class }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Status Filter -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-tasks text-green-600 mr-2"></i>Status Tes
+                    </label>
+                    <select name="status" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
+                        <option value="">Semua Status</option>
+                        {% for status_value, status_label in status_choices %}
+                        <option value="{{ status_value }}" {% if status_filter == status_value %}selected{% endif %}>
+                            {{ status_label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Gender Filter -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-venus-mars text-purple-600 mr-2"></i>Jenis Kelamin
+                    </label>
+                    <select name="gender" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
+                        <option value="">Semua</option>
+                        {% for gender_value, gender_label in gender_choices %}
+                        <option value="{{ gender_value }}" {% if gender_filter == gender_value %}selected{% endif %}>
+                            {{ gender_label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Year Filter -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-calendar text-blue-600 mr-2"></i>Tahun Masuk
+                    </label>
+                    <select name="year" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
+                        <option value="">Semua Tahun</option>
+                        {% for year in available_years %}
+                        <option value="{{ year }}" {% if year_filter == year|stringformat:"s" %}selected{% endif %}>
+                            {{ year }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Sort -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-sort text-gray-600 mr-2"></i>Urutkan
+                    </label>
+                    <select name="sort" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
+                        <option value="">Default</option>
+                        <option value="name" {% if sort == 'name' %}selected{% endif %}>Nama A-Z</option>
+                        <option value="nisn" {% if sort == 'nisn' %}selected{% endif %}>NISN</option>
+                        <option value="class" {% if sort == 'class' %}selected{% endif %}>Kelas</option>
+                        <option value="status" {% if sort == 'status' %}selected{% endif %}>Status</option>
+                        <option value="date" {% if sort == 'date' %}selected{% endif %}>Terbaru</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-3">
+                <button type="submit" class="btn-modern btn-primary">
+                    <i class="fas fa-filter"></i>
+                    <span>Terapkan Filter</span>
                 </button>
-                <button type="button" 
-                        id="confirmBulkDeleteBtn"
-                        disabled
-                        class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed transition-all">
-                    Hapus Semua
+                <a href="{% url 'students:list' %}" class="btn-modern btn-outline">
+                    <i class="fas fa-redo"></i>
+                    <span>Reset</span>
+                </a>
+            </div>
+
+            <!-- Active Filters Display -->
+            {% if search or class_filter or status_filter or gender_filter or year_filter %}
+            <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-gray-200">
+                <span class="text-sm font-semibold text-gray-700">Filter Aktif:</span>
+                {% if search %}
+                <div class="filter-tag">
+                    <i class="fas fa-search text-xs"></i>
+                    <span>{{ search }}</span>
+                    <button type="button" onclick="removeFilter('search')">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                </div>
+                {% endif %}
+                {% if class_filter %}
+                <div class="filter-tag">
+                    <i class="fas fa-chalkboard-teacher text-xs"></i>
+                    <span>Kelas {{ class_filter }}</span>
+                    <button type="button" onclick="removeFilter('class')">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                </div>
+                {% endif %}
+                {% if status_filter %}
+                <div class="filter-tag">
+                    <i class="fas fa-tasks text-xs"></i>
+                    <span>{{ status_filter|capfirst }}</span>
+                    <button type="button" onclick="removeFilter('status')">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                </div>
+                {% endif %}
+                {% if gender_filter %}
+                <div class="filter-tag">
+                    <i class="fas fa-venus-mars text-xs"></i>
+                    <span>{% for g_val, g_label in gender_choices %}{% if g_val == gender_filter %}{{ g_label }}{% endif %}{% endfor %}</span>
+                    <button type="button" onclick="removeFilter('gender')">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                </div>
+                {% endif %}
+                {% if year_filter %}
+                <div class="filter-tag">
+                    <i class="fas fa-calendar text-xs"></i>
+                    <span>{{ year_filter }}</span>
+                    <button type="button" onclick="removeFilter('year')">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</section>
+
+<!-- ==================== BULK ACTIONS (Staff Only) ==================== -->
+{% if request.user.is_staff %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 no-print">
+    <div class="card-modern p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200" id="bulkActionsBar" style="display: none;">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
+                    <span id="selectedCount">0</span>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">siswa dipilih</span>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button type="button" onclick="clearSelection()" class="btn-modern btn-outline text-sm">
+                    <i class="fas fa-times"></i>
+                    <span>Batal</span>
+                </button>
+                <button type="button" onclick="bulkDelete()" class="btn-modern text-sm" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white;">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Hapus Terpilih</span>
                 </button>
             </div>
         </div>
     </div>
+</section>
+{% endif %}
 
-    <!-- Toast Container -->
-    <div id="toastContainer" class="toast-container"></div>
+<!-- ==================== DATA TABLE SECTION ==================== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 mb-12">
+    <div class="card-modern p-6">
+        <!-- Table Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900">
+                    <i class="fas fa-table text-indigo-600 mr-2"></i>
+                    Data Siswa
+                </h2>
+                <p class="text-sm text-gray-600 mt-1">
+                    Menampilkan 
+                    <span class="font-semibold text-indigo-600">
+                        {{ page_obj.start_index }}-{{ page_obj.end_index }}
+                    </span> 
+                    dari 
+                    <span class="font-semibold text-indigo-600">{{ page_obj.paginator.count }}</span> 
+                    siswa
+                </p>
+            </div>
+            {% if request.user.is_staff %}
+            <div class="flex items-center gap-2 no-print">
+                <label class="inline-flex items-center gap-2 cursor-pointer text-sm font-semibold text-gray-700">
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)" class="w-5 h-5 rounded border-2 border-gray-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500">
+                    <span>Pilih Semua</span>
+                </label>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            {% if students %}
+            <table class="table-modern w-full">
+                <thead>
+                    <tr>
+                        {% if request.user.is_staff %}
+                        <th class="no-print" style="width: 50px;">
+                            <input type="checkbox" id="selectAllHeader" onchange="toggleSelectAll(this)" class="w-5 h-5 rounded border-2 border-gray-300 text-indigo-600">
+                        </th>
+                        {% endif %}
+                        <th style="width: 80px;">Avatar</th>
+                        <th>Siswa</th>
+                        <th>NISN</th>
+                        <th>Kelas</th>
+                        <th>Jenis Kelamin</th>
+                        <th>Status Tes</th>
+                        <th>Prestasi</th>
+                        <th class="no-print">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr class="animate-fadeInUp" style="animation-delay: {{ forloop.counter|add:"-1"|stringformat:"s" }}00ms;">
+                        {% if request.user.is_staff %}
+                        <td class="no-print" data-label="">
+                            <input type="checkbox" name="student_ids" value="{{ student.pk }}" onchange="updateBulkActions()" class="student-checkbox w-5 h-5 rounded border-2 border-gray-300 text-indigo-600">
+                        </td>
+                        {% endif %}
+                        <td data-label="Avatar">
+                            <div class="avatar-modern {% cycle 'gradient-primary' 'gradient-success' 'gradient-info' 'gradient-warning' %}">
+                                {{ student.name|first|upper }}
+                                <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full" title="Akun Aktif"></span>
+                            </div>
+                        </td>
+                        <td data-label="Nama">
+                            <div>
+                                <div class="font-semibold text-gray-900">{{ student.name }}</div>
+                                <div class="text-xs text-gray-500 mt-1">
+                                    <i class="fas fa-map-marker-alt mr-1"></i>{{ student.birth_place|default:"—" }}
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    <i class="fas fa-birthday-cake mr-1"></i>{{ student.birth_date|date:"d M Y" }}
+                                </div>
+                            </div>
+                        </td>
+                        <td data-label="NISN">
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono text-sm font-semibold text-gray-700">{{ student.nisn }}</span>
+                                <button onclick="copyToClipboard('{{ student.nisn }}')" class="tooltip text-gray-400 hover:text-indigo-600 transition">
+                                    <i class="fas fa-copy text-sm"></i>
+                                    <span class="tooltiptext">Copy NISN</span>
+                                </button>
+                            </div>
+                        </td>
+                        <td data-label="Kelas">
+                            <span class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg font-semibold text-sm">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                {{ student.student_class }}
+                            </span>
+                        </td>
+                        <td data-label="Jenis Kelamin">
+                            {% if student.gender == 'L' %}
+                            <span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-lg font-semibold text-sm">
+                                <i class="fas fa-mars"></i>
+                                Laki-laki
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-2 px-3 py-1 bg-pink-100 text-pink-700 rounded-lg font-semibold text-sm">
+                                <i class="fas fa-venus"></i>
+                                Perempuan
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Status">
+                            {% if student.test_status == 'completed' %}
+                            <span class="badge-modern badge-completed">
+                                <i class="fas fa-check-circle"></i>
+                                Selesai
+                            </span>
+                            {% elif student.test_status == 'in_progress' %}
+                            <span class="badge-modern badge-in-progress">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Sedang Tes
+                            </span>
+                            {% else %}
+                            <span class="badge-modern badge-pending">
+                                <i class="fas fa-clock"></i>
+                                Belum Tes
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Prestasi">
+                            {% if student.prestasi.count > 0 %}
+                            <div class="tooltip">
+                                <span class="inline-flex items-center gap-2 px-3 py-1 bg-amber-100 text-amber-700 rounded-lg font-semibold text-sm">
+                                    <i class="fas fa-trophy"></i>
+                                    {{ student.prestasi.count }}
+                                </span>
+                                <span class="tooltiptext">{{ student.prestasi.count }} Prestasi</span>
+                            </div>
+                            {% else %}
+                            <span class="text-sm text-gray-400">—</span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Aksi" class="no-print">
+                            <div class="flex flex-wrap gap-2">
+                                <a href="{% url 'students:detail' student.pk %}" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition">
+                                    <i class="fas fa-eye"></i>
+                                    <span class="tooltiptext">Lihat Detail</span>
+                                </a>
+                                {% if request.user.is_staff %}
+                                <a href="{% url 'students:update' student.pk %}" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-100 text-amber-600 hover:bg-amber-600 hover:text-white transition">
+                                    <i class="fas fa-edit"></i>
+                                    <span class="tooltiptext">Edit</span>
+                                </a>
+                                <button onclick="deleteStudent({{ student.pk }}, '{{ student.name|escapejs }}')" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition">
+                                    <i class="fas fa-trash-alt"></i>
+                                    <span class="tooltiptext">Hapus</span>
+                                </button>
+                                {% endif %}
+                                {% if student.test_status != 'completed' %}
+                                <a href="{% url 'students:rmib_test' student.pk %}" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white transition">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    <span class="tooltiptext">Mulai Tes RMIB</span>
+                                </a>
+                                {% else %}
+                                <a href="{% url 'students:rmib_result' student.pk %}" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-green-100 text-green-600 hover:bg-green-600 hover:text-white transition">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <span class="tooltiptext">Lihat Hasil</span>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-users-slash"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Tidak Ada Data</h3>
+                <p class="text-gray-600 mb-6">
+                    {% if search or class_filter or status_filter or gender_filter or year_filter %}
+                    Tidak ada siswa yang sesuai dengan filter yang dipilih.
+                    <br>Coba ubah atau reset filter pencarian Anda.
+                    {% else %}
+                    Belum ada data siswa dalam sistem.
+                    <br>Mulai tambahkan siswa dengan klik tombol di bawah.
+                    {% endif %}
+                </p>
+                {% if search or class_filter or status_filter or gender_filter or year_filter %}
+                <a href="{% url 'students:list' %}" class="btn-modern btn-outline">
+                    <i class="fas fa-redo"></i>
+                    <span>Reset Filter</span>
+                </a>
+                {% else %}
+                <a href="{% url 'students:create' %}" class="btn-modern btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Tambah Siswa Pertama</span>
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.paginator.num_pages > 1 %}
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <!-- Page Info -->
+                <div class="text-sm text-gray-600">
+                    Halaman <span class="font-semibold text-indigo-600">{{ page_obj.number }}</span> dari <span class="font-semibold text-indigo-600">{{ page_obj.paginator.num_pages }}</span>
+                </div>
+
+                <!-- Pagination Controls -->
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                    {% else %}
+                    <span class="pagination-item disabled">
+                        <i class="fas fa-angle-double-left"></i>
+                    </span>
+                    <span class="pagination-item disabled">
+                        <i class="fas fa-angle-left"></i>
+                    </span>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <span class="pagination-item active">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item">{{ num }}</a>
+                        {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                        <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item">{{ num }}</a>
+                        {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+                        <span class="pagination-item disabled">...</span>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                    {% else %}
+                    <span class="pagination-item disabled">
+                        <i class="fas fa-angle-right"></i>
+                    </span>
+                    <span class="pagination-item disabled">
+                        <i class="fas fa-angle-double-right"></i>
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ==================== DELETE CONFIRMATION MODAL ==================== -->
+<div id="deleteModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="p-6">
+            <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-red-100">
+                <i class="fas fa-exclamation-triangle text-3xl text-red-600"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-center text-gray-900 mb-2">Konfirmasi Hapus</h3>
+            <p class="text-center text-gray-600 mb-6">
+                Anda yakin ingin menghapus siswa <strong id="studentName"></strong>?
+                <br>Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <div class="flex gap-3">
+                <button type="button" onclick="closeDeleteModal()" class="flex-1 btn-modern btn-outline">
+                    <i class="fas fa-times"></i>
+                    <span>Batal</span>
+                </button>
+                <button type="button" onclick="confirmDelete()" class="flex-1 btn-modern" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white;">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Ya, Hapus</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Hidden form for bulk delete -->
-{% if request.user.is_staff %}
-<form id="bulkDeleteForm" method="post" action="{% url 'students:bulk_delete' %}" style="display: none;">
-    {% csrf_token %}
-    <div id="selectedStudentIds"></div>
-</form>
-{% endif %}
+<!-- ==================== BULK DELETE CONFIRMATION MODAL ==================== -->
+<div id="bulkDeleteModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="p-6">
+            <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-red-100">
+                <i class="fas fa-exclamation-triangle text-3xl text-red-600"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-center text-gray-900 mb-2">Konfirmasi Hapus Massal</h3>
+            <p class="text-center text-gray-600 mb-6">
+                Anda yakin ingin menghapus <strong id="bulkCount"></strong> siswa yang dipilih?
+                <br>Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <div class="flex gap-3">
+                <button type="button" onclick="closeBulkDeleteModal()" class="flex-1 btn-modern btn-outline">
+                    <i class="fas fa-times"></i>
+                    <span>Batal</span>
+                </button>
+                <button type="button" onclick="confirmBulkDelete()" class="flex-1 btn-modern" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white;">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Ya, Hapus Semua</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    'use strict';
-    
-    // Check if CSRF token exists
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                     document.querySelector('meta[name=csrf-token]')?.content;
-    
-    if (!csrfToken) {
-        console.error('CSRF token not found!');
-    }
-    
-    // Global variables
-    let selectedStudents = new Set();
-    const bulkActionsBar = document.getElementById('bulkActionsBar');
-    const selectedCounter = document.getElementById('selectedCounter');
-    const studentCheckboxes = document.querySelectorAll('.student-checkbox');
-    const selectAllCheckbox = document.getElementById('selectAll');
-    const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
-    const bulkDeleteModal = document.getElementById('bulkDeleteModal');
-    
-    // Initialize bulk actions functionality
-    if (bulkActionsBar) {
-        initializeBulkActions();
-    }
-    
-    function initializeBulkActions() {
-        // Individual checkbox change handler
-        studentCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', handleStudentCheckboxChange);
-        });
-        
-        // Select all checkbox handler
-        if (selectAllCheckbox) {
-            selectAllCheckbox.addEventListener('change', handleSelectAllChange);
-        }
-        
-        // Bulk action buttons
-        document.getElementById('selectAllVisible')?.addEventListener('click', selectAllVisible);
-        document.getElementById('clearSelection')?.addEventListener('click', clearAllSelections);
-        bulkDeleteBtn?.addEventListener('click', showBulkDeleteModal);
-        
-        // Modal handlers
-        document.getElementById('cancelBulkDelete')?.addEventListener('click', hideBulkDeleteModal);
-        document.getElementById('confirmBulkDelete')?.addEventListener('change', toggleConfirmButton);
-        document.getElementById('confirmBulkDeleteBtn')?.addEventListener('click', executeBulkDelete);
-        
-        // Close modal on overlay click
-        bulkDeleteModal?.addEventListener('click', function(e) {
-            if (e.target === this) {
-                hideBulkDeleteModal();
+// ==================== CSRF TOKEN SETUP ====================
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
-        });
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+// ==================== COPY TO CLIPBOARD ====================
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showNotification('NISN berhasil disalin!', 'success');
+    }).catch(err => {
+        showNotification('Gagal menyalin NISN', 'error');
+    });
+}
+
+// ==================== FILTER MANAGEMENT ====================
+function removeFilter(filterName) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(filterName);
+    window.location.href = url.toString();
+}
+
+// ==================== BULK ACTIONS ====================
+let selectedStudents = new Set();
+
+function updateBulkActions() {
+    const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+    selectedStudents = new Set(Array.from(checkboxes).map(cb => cb.value));
+    
+    const count = selectedStudents.size;
+    const bulkBar = document.getElementById('bulkActionsBar');
+    const countElement = document.getElementById('selectedCount');
+    
+    if (count > 0) {
+        bulkBar.style.display = 'block';
+        countElement.textContent = count;
+    } else {
+        bulkBar.style.display = 'none';
     }
     
-    function handleStudentCheckboxChange(e) {
-        const checkbox = e.target;
-        const studentId = checkbox.dataset.studentId;
-        const studentName = checkbox.dataset.studentName;
-        const row = checkbox.closest('tr');
-        
-        if (checkbox.checked) {
-            selectedStudents.add({ id: studentId, name: studentName });
-            row.classList.add('selected');
+    // Update select all checkbox state
+    const selectAllCheckboxes = document.querySelectorAll('#selectAll, #selectAllHeader');
+    const totalCheckboxes = document.querySelectorAll('.student-checkbox').length;
+    selectAllCheckboxes.forEach(cb => {
+        cb.checked = count === totalCheckboxes && count > 0;
+        cb.indeterminate = count > 0 && count < totalCheckboxes;
+    });
+}
+
+function toggleSelectAll(checkbox) {
+    const checkboxes = document.querySelectorAll('.student-checkbox');
+    checkboxes.forEach(cb => {
+        cb.checked = checkbox.checked;
+    });
+    updateBulkActions();
+}
+
+function clearSelection() {
+    const checkboxes = document.querySelectorAll('.student-checkbox, #selectAll, #selectAllHeader');
+    checkboxes.forEach(cb => {
+        cb.checked = false;
+        cb.indeterminate = false;
+    });
+    selectedStudents.clear();
+    document.getElementById('bulkActionsBar').style.display = 'none';
+}
+
+function bulkDelete() {
+    if (selectedStudents.size === 0) {
+        showNotification('Tidak ada siswa yang dipilih', 'warning');
+        return;
+    }
+    
+    document.getElementById('bulkCount').textContent = selectedStudents.size;
+    const modal = document.getElementById('bulkDeleteModal');
+    modal.classList.add('active');
+}
+
+function confirmBulkDelete() {
+    const deleteBtn = event.target.closest('button');
+    const originalContent = deleteBtn.innerHTML;
+    
+    deleteBtn.disabled = true;
+    deleteBtn.innerHTML = '<span class="spinner"></span> Menghapus...';
+    
+    fetch('{% url "students:bulk_delete" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({
+            student_ids: Array.from(selectedStudents)
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(`${data.deleted_count} siswa berhasil dihapus`, 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         } else {
-            selectedStudents.delete(Array.from(selectedStudents).find(s => s.id === studentId));
-            row.classList.remove('selected');
+            throw new Error(data.message || 'Terjadi kesalahan');
         }
-        
-        updateBulkActionsBar();
-        updateSelectAllCheckbox();
-    }
+    })
+    .catch(error => {
+        showNotification(error.message, 'error');
+        deleteBtn.disabled = false;
+        deleteBtn.innerHTML = originalContent;
+    });
+}
+
+function closeBulkDeleteModal() {
+    const modal = document.getElementById('bulkDeleteModal');
+    modal.classList.remove('active');
+}
+
+// ==================== SINGLE DELETE ====================
+let deleteStudentId = null;
+
+function deleteStudent(studentId, studentName) {
+    deleteStudentId = studentId;
+    document.getElementById('studentName').textContent = studentName;
     
-    function handleSelectAllChange(e) {
-        const isChecked = e.target.checked;
-        
-        studentCheckboxes.forEach(checkbox => {
-            const studentId = checkbox.dataset.studentId;
-            const studentName = checkbox.dataset.studentName;
-            const row = checkbox.closest('tr');
-            
-            checkbox.checked = isChecked;
-            
-            if (isChecked) {
-                selectedStudents.add({ id: studentId, name: studentName });
-                row.classList.add('selected');
-            } else {
-                selectedStudents.delete(Array.from(selectedStudents).find(s => s.id === studentId));
-                row.classList.remove('selected');
-            }
-        });
-        
-        updateBulkActionsBar();
-    }
+    const modal = document.getElementById('deleteModal');
+    modal.classList.add('active');
+}
+
+function confirmDelete() {
+    if (!deleteStudentId) return;
     
-    function selectAllVisible() {
-        studentCheckboxes.forEach(checkbox => {
-            if (!checkbox.checked) {
-                checkbox.checked = true;
-                checkbox.dispatchEvent(new Event('change'));
-            }
-        });
-    }
+    const deleteBtn = event.target.closest('button');
+    const originalContent = deleteBtn.innerHTML;
     
-    function clearAllSelections() {
-        studentCheckboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                checkbox.checked = false;
-                checkbox.dispatchEvent(new Event('change'));
-            }
-        });
-        
-        if (selectAllCheckbox) {
-            selectAllCheckbox.checked = false;
+    deleteBtn.disabled = true;
+    deleteBtn.innerHTML = '<span class="spinner"></span> Menghapus...';
+    
+    fetch(`/students/${deleteStudentId}/delete/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
         }
-    }
-    
-    function updateBulkActionsBar() {
-        const count = selectedStudents.size;
-        selectedCounter.textContent = count;
-        
-        if (count > 0) {
-            bulkActionsBar.classList.add('show');
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Siswa berhasil dihapus', 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         } else {
-            bulkActionsBar.classList.remove('show');
+            throw new Error(data.message || 'Terjadi kesalahan');
         }
+    })
+    .catch(error => {
+        showNotification(error.message, 'error');
+        deleteBtn.disabled = false;
+        deleteBtn.innerHTML = originalContent;
+    });
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteModal');
+    modal.classList.remove('active');
+    deleteStudentId = null;
+}
+
+function closeModal(event) {
+    if (event.target.classList.contains('modal-overlay')) {
+        closeDeleteModal();
+        closeBulkDeleteModal();
     }
+}
+
+// ==================== NOTIFICATION SYSTEM ====================
+function showNotification(message, type = 'info', duration = 5000) {
+    // Remove existing notifications
+    const existingNotifs = document.querySelectorAll('.notification-toast');
+    existingNotifs.forEach(n => n.remove());
     
-    function updateSelectAllCheckbox() {
-        if (!selectAllCheckbox) return;
-        
-        const totalCheckboxes = studentCheckboxes.length;
-        const checkedCheckboxes = document.querySelectorAll('.student-checkbox:checked').length;
-        
-        selectAllCheckbox.checked = totalCheckboxes > 0 && checkedCheckboxes === totalCheckboxes;
-        selectAllCheckbox.indeterminate = checkedCheckboxes > 0 && checkedCheckboxes < totalCheckboxes;
-    }
-    
-    function showBulkDeleteModal() {
-        if (selectedStudents.size === 0) return;
-        
-        // Update modal content
-        document.getElementById('deleteCount').textContent = selectedStudents.size;
-        
-        const studentList = document.getElementById('studentList');
-        studentList.innerHTML = '';
-        
-        Array.from(selectedStudents).forEach((student, index) => {
-            const item = document.createElement('div');
-            item.className = 'flex items-center space-x-2 py-1';
-            item.innerHTML = `
-                <span class="w-6 text-center font-medium">${index + 1}.</span>
-                <span>${student.name}</span>
-            `;
-            studentList.appendChild(item);
-        });
-        
-        // Reset confirmation
-        document.getElementById('confirmBulkDelete').checked = false;
-        document.getElementById('confirmBulkDeleteBtn').disabled = true;
-        
-        // Show modal
-        bulkDeleteModal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-    }
-    
-    function hideBulkDeleteModal() {
-        bulkDeleteModal.classList.remove('show');
-        document.body.style.overflow = '';
-    }
-    
-    function toggleConfirmButton() {
-        const checkbox = document.getElementById('confirmBulkDelete');
-        const button = document.getElementById('confirmBulkDeleteBtn');
-        button.disabled = !checkbox.checked;
-    }
-    
-    function executeBulkDelete() {
-        if (selectedStudents.size === 0) return;
-        
-        console.log('Executing bulk delete for:', Array.from(selectedStudents));
-        
-        // Create form data
-        const form = document.getElementById('bulkDeleteForm');
-        if (!form) {
-            console.error('Bulk delete form not found!');
-            showNotification('Form tidak ditemukan', 'error');
-            return;
-        }
-        
-        const studentIds = document.getElementById('selectedStudentIds');
-        studentIds.innerHTML = '';
-        
-        Array.from(selectedStudents).forEach(student => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'student_ids';
-            input.value = student.id;
-            studentIds.appendChild(input);
-            console.log('Added student ID to form:', student.id);
-        });
-        
-        // Show loading state
-        const button = document.getElementById('confirmBulkDeleteBtn');
-        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menghapus...';
-        button.disabled = true;
-        
-        showNotification(`Menghapus ${selectedStudents.size} siswa...`, 'info', 0);
-        
-        // Submit form
-        console.log('Submitting bulk delete form...');
-        form.submit();
-    }
-    
-    // Individual delete function with better error handling
-    window.deleteStudent = function(studentId, studentName) {
-        console.log(`Delete student called: ID=${studentId}, Name=${studentName}`);
-        
-        if (!confirm(`Apakah Anda yakin ingin menghapus siswa "${studentName}"?\n\nTindakan ini tidak dapat dibatalkan!`)) {
-            return;
-        }
-        
-        const confirmation = prompt(`Untuk mengonfirmasi penghapusan siswa "${studentName}", ketik "HAPUS":`);
-        
-        if (confirmation !== 'HAPUS') {
-            showNotification('Penghapusan dibatalkan. Konfirmasi tidak sesuai.', 'info');
-            return;
-        }
-        
-        if (!csrfToken) {
-            showNotification('CSRF token tidak ditemukan. Refresh halaman dan coba lagi.', 'error');
-            return;
-        }
-        
-        showNotification('Menghapus siswa...', 'info', 0);
-        
-        // AJAX delete request
-        const deleteUrl = `/students/${studentId}/delete-ajax/`;
-        console.log('Sending delete request to:', deleteUrl);
-        
-        fetch(deleteUrl, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest',
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            credentials: 'same-origin', // Include cookies
-        })
-        .then(response => {
-            console.log('Delete response status:', response.status);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            return response.json();
-        })
-        .then(data => {
-            console.log('Delete response data:', data);
-            document.querySelector('.toast')?.remove();
-            
-            if (data.success) {
-                showNotification(data.message, 'success', 3000);
-                
-                // Remove the row from table with animation
-                const row = document.querySelector(`tr[data-student-id="${studentId}"]`);
-                if (row) {
-                    row.style.transition = 'all 0.3s ease';
-                    row.style.opacity = '0';
-                    row.style.transform = 'translateX(-100%)';
-                    setTimeout(() => {
-                        row.remove();
-                        updateStudentCounts();
-                    }, 300);
-                }
-                
-                // Redirect or reload after delay
-                setTimeout(() => {
-                    if (data.redirect_url) {
-                        window.location.href = data.redirect_url;
-                    } else {
-                        window.location.reload();
-                    }
-                }, 1500);
-                
-            } else {
-                showNotification(data.message || 'Gagal menghapus siswa', 'error', 5000);
-            }
-        })
-        .catch(error => {
-            document.querySelector('.toast')?.remove();
-            console.error('Delete error:', error);
-            showNotification('Terjadi kesalahan saat menghapus siswa: ' + error.message, 'error', 5000);
-        });
+    const colors = {
+        success: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+        error: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+        warning: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+        info: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'
     };
     
-    // Update student counts function
-    function updateStudentCounts() {
-        const rows = document.querySelectorAll('tbody tr[data-student-id]');
-        const totalCount = rows.length;
-        
-        const totalElement = document.querySelector('[data-stat="total"]');
-        if (totalElement) {
-            totalElement.textContent = totalCount;
-        }
-    }
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-times-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
     
-    // Enhanced toast notification function
-    function showNotification(message, type = 'info', duration = 5000) {
-        // Remove existing toasts
-        document.querySelectorAll('.toast').forEach(t => t.remove());
-        
-        const toast = document.createElement('div');
-        const colors = {
-            success: 'toast-success',
-            error: 'toast-error',
-            warning: 'toast-warning',
-            info: 'toast-info'
-        };
-        
-        const icons = {
-            success: 'fas fa-check-circle text-green-600',
-            error: 'fas fa-exclamation-circle text-red-600',
-            warning: 'fas fa-exclamation-triangle text-yellow-600',
-            info: 'fas fa-info-circle text-blue-600'
-        };
-        
-        toast.className = `toast ${colors[type]}`;
-        toast.innerHTML = `
-            <div class="flex items-start space-x-3">
-                <i class="${icons[type]} mt-0.5" aria-hidden="true"></i>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-gray-900 leading-relaxed">${message}</p>
-                </div>
-                <button onclick="this.closest('.toast').remove()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `;
-        
-        const container = document.getElementById('toastContainer');
-        if (container) {
-            container.appendChild(toast);
-            
-            setTimeout(() => toast.classList.add('show'), 100);
-            
-            if (duration > 0) {
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    setTimeout(() => {
-                        if (toast.parentNode) toast.remove();
-                    }, 300);
-                }, duration);
-            }
-        }
-    }
+    const notification = document.createElement('div');
+    notification.className = 'notification-toast';
+    notification.style.cssText = `
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 9999;
+        background: ${colors[type]};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        animation: slideInRight 0.3s ease-out;
+        max-width: 400px;
+    `;
     
-    // Initialize other features
-    const progressBars = document.querySelectorAll('.progress-bar');
-    progressBars.forEach((bar, index) => {
-        const width = bar.style.width;
-        bar.style.width = '0%';
+    notification.innerHTML = `
+        <i class="fas ${icons[type]} text-xl"></i>
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()" style="margin-left: auto; background: rgba(255,255,255,0.2); border: none; color: white; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-times text-sm"></i>
+        </button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    if (duration > 0) {
         setTimeout(() => {
-            bar.style.width = width;
-        }, 500 + (index * 200));
-    });
+            notification.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => notification.remove(), 300);
+        }, duration);
+    }
+}
+
+// ==================== KEYBOARD SHORTCUTS ====================
+document.addEventListener('keydown', function(e) {
+    // Escape key closes modals
+    if (e.key === 'Escape') {
+        closeDeleteModal();
+        closeBulkDeleteModal();
+    }
     
-    console.log('Delete system initialized successfully');
-    console.log('CSRF Token:', csrfToken ? 'Found' : 'Missing');
-    console.log('Staff permissions:', {{ request.user.is_staff|yesno:"true,false" }});
+    // Ctrl/Cmd + K focuses search
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        document.querySelector('input[name="search"]')?.focus();
+    }
+});
+
+// ==================== SMOOTH SCROLL ====================
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// ==================== INITIALIZE ====================
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-hide notifications after page load
+    {% if messages %}
+    {% for message in messages %}
+    showNotification('{{ message }}', '{{ message.tags }}');
+    {% endfor %}
+    {% endif %}
+    
+    // Initialize tooltips for touch devices
+    if ('ontouchstart' in window) {
+        document.querySelectorAll('.tooltip').forEach(el => {
+            el.addEventListener('touchstart', function() {
+                this.querySelector('.tooltiptext')?.classList.add('visible');
+            });
+            el.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    this.querySelector('.tooltiptext')?.classList.remove('visible');
+                }, 2000);
+            });
+        });
+    }
 });
 </script>
 {% endblock %}
