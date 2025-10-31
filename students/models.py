@@ -5,6 +5,7 @@ from core.models import BaseModel
 import secrets
 import string
 
+
 class Student(BaseModel):
     """Model utama untuk data siswa"""
     GENDER_CHOICES = [
@@ -49,23 +50,20 @@ class Student(BaseModel):
     def generate_password(self):
         """Generate automatic password for student"""
         if not self.generated_password:
-            # Generate password: First 3 letters of name + birth year + 2 random digits
             name_part = ''.join(c for c in self.name.split()[0][:3] if c.isalpha()).upper()
             year_part = str(self.birth_date.year)[-2:] if self.birth_date else '00'
             random_part = ''.join(secrets.choice(string.digits) for _ in range(2))
             
             self.generated_password = f"{name_part}{year_part}{random_part}"
-            self.save()  # Save the generated password
+            self.save()
         
         return self.generated_password
     
     def create_user_account(self):
         """Create Django User account for student"""
         if not self.user:
-            # Generate password if not exists
             password = self.generate_password()
             
-            # Create user with NISN as username
             user = User.objects.create_user(
                 username=self.nisn,
                 email=f"{self.nisn}@student.mts1samarinda.id",
@@ -74,7 +72,6 @@ class Student(BaseModel):
                 password=password
             )
             
-            # Link user to student
             self.user = user
             self.save()
             
@@ -85,15 +82,12 @@ class Student(BaseModel):
     def reset_password(self):
         """Reset student password to generated one"""
         if self.user:
-            # Generate new password
-            self.generated_password = ''  # Clear existing to force regeneration
+            self.generated_password = ''
             new_password = self.generate_password()
             
-            # Set new password for user
             self.user.set_password(new_password)
             self.user.save()
             
-            # Update student record
             self.password_changed = False
             self.login_attempts = 0
             self.is_locked = False
@@ -107,7 +101,6 @@ class Student(BaseModel):
         self.login_attempts += 1
         self.last_login_attempt = timezone.now()
         
-        # Lock account after 5 failed attempts
         if self.login_attempts >= 5:
             self.is_locked = True
         
@@ -177,7 +170,7 @@ class Prestasi(BaseModel):
     tahun = models.IntegerField()
     keterangan = models.TextField(blank=True)
     sertifikat = models.FileField(upload_to='sertifikat_prestasi/', blank=True)
-    bonus_score = models.IntegerField(default=0)  # Bonus untuk RMIB
+    bonus_score = models.IntegerField(default=0)
     
     def get_tingkat_display_color(self):
         """Get color class for tingkat display"""
@@ -210,45 +203,82 @@ class Prestasi(BaseModel):
     
     def __str__(self):
         return f"{self.student.name} - {self.nama}"
+
+
 class RMIBResult(BaseModel):
     """Model untuk menyimpan hasil tes RMIB"""
     student = models.OneToOneField(Student, on_delete=models.CASCADE, related_name='rmib_result')
-    rankings = models.JSONField(default=dict)  # Store rankings for each category
-    original_scores = models.JSONField(default=dict)  # Scores before prestasi bonus
-    final_scores = models.JSONField(default=dict)  # Final scores after prestasi bonus
-    top_interests = models.JSONField(default=list)  # Top 3 interests
-    submitted_at = models.DateTimeField()
     
-    # Analysis fields
+    # Level storage: {category_key: level_value}
+    levels = models.JSONField(default=dict, help_text="Levels untuk setiap kategori (1-12)")
+    
+    # Scores
+    category_scores = models.JSONField(default=dict, help_text="Score per kategori (level × 5)")
+    total_score = models.IntegerField(default=0, help_text="Total score dari semua kategori")
+    
+    # Top interests
     primary_interest = models.CharField(max_length=20, blank=True)
+    primary_level = models.IntegerField(default=0)
+    
     secondary_interest = models.CharField(max_length=20, blank=True)
+    secondary_level = models.IntegerField(default=0)
+    
     tertiary_interest = models.CharField(max_length=20, blank=True)
+    tertiary_level = models.IntegerField(default=0)
     
-    # Recommendation fields
-    career_recommendations = models.JSONField(default=list)
-    study_recommendations = models.JSONField(default=list)
+    # Status tracking
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('in_progress', 'Sedang Dikerjakan'),
+            ('completed', 'Selesai'),
+            ('edited', 'Diedit')  # ← NEW: Track if edited
+        ],
+        default='in_progress'
+    )
     
-    def get_interest_summary(self):
-        """Get formatted summary of top interests"""
-        if self.top_interests:
-            return [interest['name'] for interest in self.top_interests[:3]]
-        return []
+    submitted_at = models.DateTimeField(help_text="Waktu tes diselesaikan")
+    edited_at = models.DateTimeField(null=True, blank=True, help_text="Waktu terakhir diedit")
     
-    def calculate_interest_percentage(self):
-        """Calculate interest distribution percentages"""
-        if not self.final_scores:
-            return {}
+    def calculate_scores(self):
+        """Calculate scores dari levels"""
+        self.category_scores = {}
+        self.total_score = 0
         
-        total_possible = 12 * 9  # Max possible total
-        percentages = {}
+        for category, level in self.levels.items():
+            score = level * 5
+            self.category_scores[category] = score
+            self.total_score += score
         
-        for category, data in self.final_scores.items():
-            # Lower score = higher interest (inverted percentage)
-            score = data.get('final', 0)
-            percentage = ((12 - score) / 12) * 100
-            percentages[category] = round(percentage, 1)
+        # Find top 3 interests
+        sorted_levels = sorted(self.levels.items(), key=lambda x: x[1], reverse=True)
         
-        return percentages
+        if len(sorted_levels) > 0:
+            self.primary_interest = sorted_levels[0][0]
+            self.primary_level = sorted_levels[0][1]
+        
+        if len(sorted_levels) > 1:
+            self.secondary_interest = sorted_levels[1][0]
+            self.secondary_level = sorted_levels[1][1]
+        
+        if len(sorted_levels) > 2:
+            self.tertiary_interest = sorted_levels[2][0]
+            self.tertiary_level = sorted_levels[2][1]
+    
+    def get_ranking_summary(self):
+        """Get all categories sorted by level"""
+        return sorted(self.levels.items(), key=lambda x: x[1], reverse=True)
+    
+    def mark_as_edited(self):
+        """Mark this result as edited"""
+        self.status = 'edited'
+        self.edited_at = timezone.now()
+        self.save()
+    
+    def reset_for_editing(self):
+        """Reset status to in_progress for editing"""
+        self.status = 'in_progress'
+        self.save()
     
     class Meta:
         ordering = ['-submitted_at']
@@ -256,4 +286,4 @@ class RMIBResult(BaseModel):
         verbose_name_plural = 'Hasil RMIB'
     
     def __str__(self):
-        return f"RMIB Result - {self.student.name}"
+        return f"RMIB Result - {self.student.name} ({self.status})"

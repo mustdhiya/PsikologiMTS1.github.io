@@ -5,271 +5,230 @@
 
 {% block extra_css %}
 <style>
-    /* ✨ Enhanced Animations & Transitions */
-    .fade-in {
-        animation: fadeIn 0.6s ease-in-out;
-    }
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-    .slide-in-right {
-        animation: slideInRight 0.4s ease-out;
-    }
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
 
-    .scale-in {
-        animation: scaleIn 0.4s ease-out;
-    }
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
 
-    .bounce-in {
-        animation: bounceIn 0.7s ease-out;
-    }
+.fade-in { animation: fadeInUp 0.6s ease-in-out; }
+.slide-in-right { animation: slideInRight 0.4s ease-out; }
+.scale-in { animation: scaleIn 0.4s ease-out; }
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+/* ==================== LEVEL SLIDER ==================== */
+.level-slider {
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #ef4444, #f97316, #eab308, #10b981, #3b82f6, #8b5cf6);
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
 
-    @keyframes slideInRight {
-        from {
-            opacity: 0;
-            transform: translateX(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
+.level-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    border: 3px solid #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    transition: all 0.2s ease;
+}
 
-    @keyframes scaleIn {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
+.level-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+}
 
-    @keyframes bounceIn {
-        0% {
-            opacity: 0;
-            transform: scale(0.3);
-        }
-        50% {
-            opacity: 1;
-            transform: scale(1.05);
-        }
-        70% {
-            transform: scale(0.9);
-        }
-        100% {
-            transform: scale(1);
-        }
-    }
+.level-slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    border: 3px solid #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    transition: all 0.2s ease;
+}
 
-    /* Progress Bar Styles */
-    .progress-bar {
-        transition: width 0.3s ease;
-    }
+.level-slider::-moz-range-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+}
 
-    /* Category Badge Styles */
-    .category-badge {
-        transition: all 0.3s ease;
-    }
+/* ==================== CATEGORY CARD ==================== */
+.category-card {
+    transition: all 0.3s ease;
+    border: 2px solid #e5e7eb;
+}
 
-    .category-badge:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+.category-card:hover {
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-    /* Custom Scrollbar */
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 8px;
-    }
+/* ==================== LEVEL DISPLAY ==================== */
+.level-display {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: #3b82f6;
+    min-width: 80px;
+}
 
-    .custom-scrollbar::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-    }
+.level-label {
+    font-size: 0.85rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 10px;
-    }
+.score-display {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #10b981;
+}
 
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #555;
-    }
+/* ==================== TOAST ==================== */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 300px;
+    max-width: 500px;
+    animation: slideInRight 0.4s ease-out;
+}
 
-    /* Ranking Input Styles */
-    .ranking-input {
-        transition: all 0.2s ease;
-    }
+/* ==================== MODAL OVERLAY ==================== */
+.modal-overlay {
+    backdrop-filter: blur(4px);
+    animation: fadeInUp 0.3s ease-in-out;
+}
 
-    .ranking-input:focus {
-        transform: scale(1.05);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-    }
+/* ==================== LOADING SPINNER ==================== */
+.spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
 
-    .ranking-input.valid {
-        border-color: #10b981;
-        background-color: #d1fae5;
-    }
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
-    .ranking-input.invalid {
-        border-color: #ef4444;
-        background-color: #fee2e2;
-    }
+/* ==================== DISABLED STATE ==================== */
+.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 
-    .ranking-input.duplicate {
-        border-color: #f59e0b;
-        background-color: #fef3c7;
-    }
+/* ==================== CATEGORY COLORS ==================== */
+.bg-category-outdoor { background-color: #10b981; }
+.bg-category-mechanical { background-color: #3b82f6; }
+.bg-category-computational { background-color: #8b5cf6; }
+.bg-category-scientific { background-color: #6366f1; }
+.bg-category-personal_contact { background-color: #ec4899; }
+.bg-category-aesthetic { background-color: #f97316; }
+.bg-category-literary { background-color: #14b8a6; }
+.bg-category-musical { background-color: #ef4444; }
+.bg-category-social_service { background-color: #f59e0b; }
+.bg-category-clerical { background-color: #6b7280; }
+.bg-category-practical { background-color: #eab308; }
+.bg-category-medical { background-color: #dc2626; }
 
-    /* Toast Notification */
-    .toast {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        min-width: 300px;
-        max-width: 500px;
-        animation: slideInRight 0.4s ease-out;
-    }
+/* ==================== PROGRESS BAR ==================== */
+.progress-bar { transition: width 0.3s ease; }
 
-    /* Modal Overlay */
-    .modal-overlay {
-        backdrop-filter: blur(4px);
-        animation: fadeIn 0.3s ease-in-out;
-    }
+/* ==================== SCROLLBAR ==================== */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
 
-    /* Confetti Animation */
-    @keyframes confetti-fall {
-        0% {
-            transform: translateY(-100vh) rotate(0deg);
-            opacity: 1;
-        }
-        100% {
-            transform: translateY(100vh) rotate(720deg);
-            opacity: 0;
-        }
-    }
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
 
-    .confetti {
-        position: fixed;
-        width: 10px;
-        height: 10px;
-        background-color: #f00;
-        animation: confetti-fall 3s linear infinite;
-    }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
 
-    /* Completed Indicator */
-    .completed-indicator {
-        position: relative;
-    }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
 
-    .completed-indicator::after {
-        content: '✓';
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background: #10b981;
-        color: white;
-        border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: bold;
-    }
+/* ==================== CATEGORY BADGE ==================== */
+.category-badge {
+    transition: all 0.3s ease;
+    border: 2px solid #e5e7eb;
+}
 
-    /* Loading Spinner */
-    .spinner {
-        border: 3px solid #f3f3f3;
-        border-top: 3px solid #3b82f6;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-    }
+.category-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-color: #3b82f6;
+}
 
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    /* Disabled State */
-    .btn-disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        pointer-events: none;
-    }
-
-    /* Category Colors */
-    .bg-category-outdoor { background-color: #10b981; }
-    .bg-category-mechanical { background-color: #3b82f6; }
-    .bg-category-computational { background-color: #8b5cf6; }
-    .bg-category-scientific { background-color: #6366f1; }
-    .bg-category-personal_contact { background-color: #ec4899; }
-    .bg-category-aesthetic { background-color: #f97316; }
-    .bg-category-literary { background-color: #14b8a6; }
-    .bg-category-musical { background-color: #ef4444; }
-    .bg-category-social_service { background-color: #f59e0b; }
-    .bg-category-clerical { background-color: #6b7280; }
-    .bg-category-practical { background-color: #eab308; }
-    .bg-category-medical { background-color: #dc2626; }
-
-    /* Random Button Pulse Animation */
-    @keyframes pulse-random {
-        0%, 100% {
-            box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
-        }
-        50% {
-            box-shadow: 0 0 0 10px rgba(236, 72, 153, 0);
-        }
-    }
-
-    .btn-random-pulse {
-        animation: pulse-random 2s infinite;
-    }
+.category-badge.completed {
+    background-color: #d1fae5;
+    border-color: #10b981;
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 py-8">
+<!-- CSRF Token -->
+{% csrf_token %}
+
+<div class="max-w-6xl mx-auto px-4 py-8">
     <!-- Header Section -->
     <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg p-6 mb-6 text-white fade-in">
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-3xl font-bold mb-2">
-                    <i class="fas fa-clipboard-list mr-2"></i>
-                    Tes RMIB - Rothwell Miller Interest Blank
+                    <i class="fas fa-chart-line mr-2"></i>Tes RMIB - Level Minat Karir
                 </h1>
                 <p class="text-blue-100">
                     <i class="fas fa-user mr-2"></i>{{ student.name }} ({{ student.nisn }})
                 </p>
                 <p class="text-blue-100 text-sm mt-1">
-                    <i class="fas fa-school mr-2"></i>{{ student.kelas }} - {{ student.jurusan }}
+                    <i class="fas fa-school mr-2"></i>{{ student.student_class }}
                 </p>
             </div>
             <div class="text-right">
                 <div class="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
                     <p class="text-sm text-blue-100">Total Kategori</p>
-                    <p class="text-3xl font-bold">{{ total_categories }}</p>
+                    <p class="text-3xl font-bold">12</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Instructions Panel -->
-    <div id="instructionsPanel" class="bg-white rounded-lg shadow-lg p-6 mb-6 scale-in">
+    <div id="instructionsPanel" class="bg-white rounded-lg shadow-lg p-8 mb-6 scale-in">
         <div class="flex items-start space-x-4">
             <div class="flex-shrink-0">
                 <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -277,56 +236,42 @@
                 </div>
             </div>
             <div class="flex-1">
-                <h2 class="text-xl font-bold text-gray-800 mb-3">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">
                     <i class="fas fa-book-open mr-2"></i>Petunjuk Pengerjaan Tes RMIB
                 </h2>
-                
                 <div class="space-y-3">
                     <div class="flex items-start space-x-3">
                         <i class="fas fa-check-circle text-green-500 mt-1"></i>
-                        <p class="text-gray-700">
-                            Anda akan diberikan <strong>{{ total_categories }} kategori pekerjaan</strong> dengan masing-masing <strong>12 jenis aktivitas</strong>.
-                        </p>
+                        <p class="text-gray-700">Anda akan menilai <strong>12 kategori pekerjaan</strong> sesuai tingkat kesesuaian minat Anda.</p>
                     </div>
-                    
                     <div class="flex items-start space-x-3">
-                        <i class="fas fa-sort-numeric-down text-blue-500 mt-1"></i>
-                        <p class="text-gray-700">
-                            Urutkan setiap aktivitas dari <strong>peringkat 1 (paling disukai)</strong> hingga <strong>peringkat 12 (paling tidak disukai)</strong>.
-                        </p>
+                        <i class="fas fa-sliders-h text-blue-500 mt-1"></i>
+                        <p class="text-gray-700">Untuk setiap kategori, pilih <strong>level dari 1 (Sangat Tidak Sesuai)</strong> sampai <strong>12 (Sangat Sesuai)</strong>.</p>
                     </div>
-                    
                     <div class="flex items-start space-x-3">
-                        <i class="fas fa-exclamation-triangle text-yellow-500 mt-1"></i>
-                        <p class="text-gray-700">
-                            <strong>Penting:</strong> Tidak boleh ada peringkat yang sama dalam satu kategori. Setiap angka 1-12 hanya boleh digunakan <strong>satu kali</strong>.
-                        </p>
+                        <i class="fas fa-calculator text-purple-500 mt-1"></i>
+                        <p class="text-gray-700">Setiap level mewakili <strong>kelipatan 5 poin</strong> (1=5 poin, 2=10 poin, ... 12=60 poin). Total skor = jumlah semua level × 5.</p>
                     </div>
-                    
                     <div class="flex items-start space-x-3">
                         <i class="fas fa-save text-purple-500 mt-1"></i>
-                        <p class="text-gray-700">
-                            Progress Anda akan <strong>tersimpan otomatis</strong> setiap 30 detik. Anda dapat melanjutkan kapan saja.
-                        </p>
+                        <p class="text-gray-700">Progress Anda akan <strong>tersimpan otomatis</strong> setiap 30 detik. Anda dapat melanjutkan kapan saja.</p>
                     </div>
-                    
                     <div class="flex items-start space-x-3">
                         <i class="fas fa-clock text-red-500 mt-1"></i>
-                        <p class="text-gray-700">
-                            Waktu pengerjaan: <strong>Tidak terbatas</strong>. Kerjakan dengan tenang dan jujur sesuai minat Anda.
-                        </p>
+                        <p class="text-gray-700">Waktu pengerjaan <strong>Tidak terbatas</strong>. Kerjakan dengan tenang dan jujur sesuai minat Anda.</p>
                     </div>
+                </div>
 
-                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-lightbulb text-yellow-400"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-yellow-700">
-                                    <strong>Tips:</strong> Pilih berdasarkan <strong>minat pribadi Anda</strong>, bukan berdasarkan gaji, status sosial, atau ekspektasi orang lain.
-                                </p>
-                            </div>
+                <!-- Tip Box -->
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-lightbulb text-yellow-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                <strong>Tips:</strong> Pilih level berdasarkan <strong>minat pribadi Anda</strong>, bukan berdasarkan gaji, status sosial, atau ekspektasi orang lain.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -335,266 +280,69 @@
                 <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mt-4">
                     <div class="flex items-center">
                         <i class="fas fa-history text-blue-500 mr-3"></i>
-                        <p class="text-blue-700">
-                            <strong>Progress Ditemukan!</strong> Anda memiliki jawaban yang tersimpan sebelumnya. Klik "Mulai Tes" untuk melanjutkan.
-                        </p>
+                        <p class="text-blue-700"><strong>Progress Ditemukan!</strong> Anda memiliki jawaban yang tersimpan sebelumnya. Klik Mulai Tes untuk melanjutkan.</p>
                     </div>
                 </div>
                 {% endif %}
-
-                <!-- ========== ACTION BUTTONS ========== -->
-                <div class="flex justify-center mt-8 space-x-4">
-                    {% if has_progress %}
-                    <!-- Resume Progress Button -->
-                    <button id="startTestBtn" 
-                            type="button"
-                            onclick="console.log('Button clicked!'); startTest(); return false;"
-                            class="inline-flex items-center px-12 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xl font-bold rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300">
-                        <i class="fas fa-play-circle mr-3 text-2xl"></i>
-                        <div class="text-left">
-                            <div class="text-sm opacity-90">Progress Ditemukan</div>
-                            <div>Lanjutkan Tes</div>
-                        </div>
-                    </button>
-                    {% else %}
-                    <!-- ========== BUTTON LANJUTKAN TES ========== -->
-                    <button id="startTestBtn" 
-                            type="button"
-                            onclick="
-                                console.log('Button clicked!');
-                                
-                                // Inline function
-                                (async function() {
-                                    try {
-                                        document.getElementById('loadingModal').classList.remove('hidden');
-                                        
-                                        const response = await fetch('/students/{{ student.pk }}/rmib/start/', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-CSRFToken': (function() {
-                                                    let cookieValue = null;
-                                                    if (document.cookie && document.cookie !== '') {
-                                                        const cookies = document.cookie.split(';');
-                                                        for (let i = 0; i < cookies.length; i++) {
-                                                            const cookie = cookies[i].trim();
-                                                            if (cookie.substring(0, 10) === ('csrftoken=')) {
-                                                                cookieValue = decodeURIComponent(cookie.substring(10));
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-                                                    return cookieValue;
-                                                })()
-                                            }
-                                        });
-                                        
-                                        const data = await response.json();
-                                        
-                                        if (data.success) {
-                                            document.getElementById('instructionsPanel').classList.add('hidden');
-                                            document.getElementById('testInterface').classList.remove('hidden');
-                                            
-                                            alert('Tes dimulai! Silakan pilih kategori.');
-                                        } else {
-                                            alert('Gagal memulai tes: ' + data.message);
-                                        }
-                                        
-                                        document.getElementById('loadingModal').classList.add('hidden');
-                                    } catch (error) {
-                                        console.error('Error:', error);
-                                        alert('Terjadi kesalahan: ' + error.message);
-                                        document.getElementById('loadingModal').classList.add('hidden');
-                                    }
-                                })();
-                                
-                                return false;
-                            "
-                            class="inline-flex items-center px-12 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xl font-bold rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300">
-                        <i class="fas fa-play-circle mr-3 text-2xl"></i>
-                        <span>Lanjutkan Tes</span>
-                    </button>
-
-                    {% endif %}
-                    
-                    <!-- Back Button -->
-                    <a href="{% url 'students:list' %}" 
-                    class="inline-flex items-center px-8 py-4 bg-gray-200 hover:bg-gray-300 text-gray-800 text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Kembali
-                    </a>
-                </div>
-
             </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-center mt-8 space-x-4">
+            <button id="startTestBtn" type="button" 
+                    class="inline-flex items-center px-12 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xl font-bold rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300">
+                <i class="fas fa-play-circle mr-3 text-2xl"></i>
+                <span>{% if has_progress %}Lanjutkan Tes{% else %}Mulai Tes{% endif %}</span>
+            </button>
+            <a href="{% url 'students:list' %}" 
+               class="inline-flex items-center px-8 py-4 bg-gray-200 hover:bg-gray-300 text-gray-800 text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                <i class="fas fa-arrow-left mr-2"></i>Kembali
+            </a>
         </div>
     </div>
 
-    <!-- Test Interface (Hidden Initially) -->
+    <!-- Test Interface Hidden Initially -->
     <div id="testInterface" class="hidden">
         <!-- Progress Header -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-6 slide-in-right">
             <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                    <div class="text-sm text-gray-600">
+                <div>
+                    <p class="text-sm text-gray-600">
                         <i class="fas fa-tasks mr-2"></i>Progress Pengerjaan
-                    </div>
-                    <div class="text-lg font-bold text-blue-600">
-                        <span id="completedCount">0</span> / {{ total_categories }}
-                    </div>
-                </div>
-                <!-- ========== FLOATING SAVE BUTTONS (DIPERBAIKI) ========== -->
-                <div id="floatingSaveBtn" >
-                    <!-- Auto Save Status -->
-                    <div class="bg-white rounded-lg shadow-lg px-4 py-2.5 border-2 border-blue-500 flex items-center space-x-2 backdrop-blur-sm bg-opacity-95">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                            <span class="text-xs text-gray-600 font-medium">Auto-save:</span>
-                            <span id="autoSaveStatus" class="text-xs font-bold text-blue-600">Aktif</span>
-                        </div>
-                    </div> <br>
-                    
-                    <!-- Manual Save Button -->
-                    <button id="manualSaveBtn" 
-                            onclick="manualSave(); return false;"
-                            class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center space-x-2">
-                        <i class="fas fa-check-circle text-lg"></i>
-                        <div class="text-left">
-                            <div class="text-xs opacity-90 leading-tight">Selesai & Simpan</div>
-                            <div class="text-sm font-bold leading-tight">Hasil Final</div>
-                        </div>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                <div id="progressBar" 
-                     class="progress-bar bg-gradient-to-r from-blue-500 to-purple-500 h-4 rounded-full transition-all duration-300" 
-                     style="width: 0%">
-                </div>
-            </div>
-            <p class="text-xs text-gray-500 mt-2 text-right">
-                <span id="progressPercentage">0</span>% selesai
-            </p>
-        </div>
-
-        <!-- Category Navigation -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-list mr-2"></i>Kategori Pekerjaan
-            </h3>
-            <div id="categoryNav" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 custom-scrollbar" style="max-height: 400px; overflow-y: auto;">
-                {% for key, category in rmib_categories.items %}
-                <button data-category="{{ key }}" 
-                        class="category-btn category-badge text-left p-4 rounded-lg border-2 border-gray-200 hover:border-blue-400 transition duration-300 bg-gradient-to-br from-white to-gray-50">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center bg-category-{{ key }} text-white">
-                            <i class="{{ category.icon }}"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-gray-800 text-sm truncate">{{ category.name }}</p>
-                            <p class="text-xs text-gray-500 truncate">{{ category.description }}</p>
-                        </div>
-                    </div>
-                </button>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- Questions Panel -->
-        <div id="questionsPanel" class="bg-white rounded-lg shadow-lg p-6 mb-6 hidden">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center space-x-4">
-                    <div id="currentCategoryIcon" class="w-12 h-12 rounded-full flex items-center justify-center text-white">
-                        <i class="fas fa-briefcase"></i>
-                    </div>
-                    <div>
-                        <h3 id="currentCategoryTitle" class="text-2xl font-bold text-gray-800"></h3>
-                        <p id="currentCategoryDesc" class="text-sm text-gray-600"></p>
-                    </div>
-                </div>
-                <button id="closeCategoryBtn" 
-                        class="text-gray-400 hover:text-gray-600 transition duration-300">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-
-            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-                <p class="text-sm text-blue-800">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    <strong>Instruksi:</strong> Beri peringkat 1-12 untuk setiap aktivitas (1 = paling disukai, 12 = paling tidak disukai)
-                </p>
-            </div>
-
-            <!-- TOMBOL RANDOM BARU - DITAMBAHKAN DI SINI -->
-            <div class="flex justify-between items-center mb-4">
-                <button id="randomFillBtn" 
-                        class="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg btn-random-pulse">
-                    <i class="fas fa-random mr-2"></i>Isi Random (Testing)
-                </button>
-                <button id="clearAllBtn" 
-                        class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
-                    <i class="fas fa-eraser mr-2"></i>Hapus Semua
-                </button>
-            </div>
-
-            <div id="validationWarning" class="hidden bg-red-50 border-l-4 border-red-500 p-4 mb-4">
-                <p class="text-sm text-red-800">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                    <strong id="validationMessage">Ada kesalahan dalam pengisian!</strong>
-                </p>
-            </div>
-
-            <div id="questionsList" class="space-y-3 mb-6">
-                <!-- Questions will be dynamically loaded here -->
-            </div>
-
-            <div class="flex justify-between items-center pt-4 border-t">
-                <button id="validateBtn" 
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
-                    <i class="fas fa-check-circle mr-2"></i>Validasi Jawaban
-                </button>
-                <button id="submitCategoryBtn" 
-                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 btn-disabled">
-                    <i class="fas fa-save mr-2"></i>Simpan Kategori
-                </button>
-            </div>
-        </div>
-
-        <!-- Submit Test Section -->
-        <div id="submitTestSection" class="bg-white rounded-lg shadow-lg p-6 hidden">
-            <div class="text-center">
-                <div class="mb-4">
-                    <i class="fas fa-check-circle text-green-500 text-6xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-gray-800 mb-2">Semua Kategori Sudah Selesai!</h3>
-                <p class="text-gray-600 mb-6">Anda telah menyelesaikan seluruh kategori tes RMIB. Klik tombol di bawah untuk mengirimkan jawaban Anda.</p>
-                
-                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-left">
-                    <p class="text-sm text-yellow-800">
-                        <i class="fas fa-exclamation-triangle mr-2"></i>
-                        <strong>Perhatian:</strong> Setelah mengirimkan tes, Anda tidak dapat mengubah jawaban lagi. Pastikan semua jawaban sudah benar.
+                    </p>
+                    <p class="text-2xl font-bold text-blue-600">
+                        <span id="filledCount">0</span>/12 Kategori
                     </p>
                 </div>
-
-                <div class="flex justify-center space-x-4">
-                    <button id="reviewAnswersBtn" 
-                            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
-                        <i class="fas fa-eye mr-2"></i>Review Jawaban
-                    </button>
-                    <button id="finalSubmitBtn" 
-                            class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105">
-                        <i class="fas fa-paper-plane mr-2"></i>Kirim Tes RMIB
-                    </button>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Total Skor</p>
+                    <p class="text-3xl font-bold text-green-600" id="totalScore">0 poin</p>
                 </div>
             </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                <div id="progressBar" class="progress-bar bg-gradient-to-r from-green-500 to-blue-500 h-4 rounded-full" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- Categories Grid -->
+        <div id="categoriesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Categories will be loaded here -->
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center">
+            <button id="submitBtn" 
+                    class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 px-16 rounded-lg shadow-xl transform hover:scale-105 transition-all text-lg btn-disabled">
+                <i class="fas fa-check-circle mr-2"></i>Simpan Hasil Tes
+            </button>
         </div>
     </div>
 </div>
 
 <!-- Toast Container -->
-<div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2">
-    <!-- Toasts will be dynamically added here -->
-</div>
+<div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
 <!-- Loading Modal -->
 <div id="loadingModal" class="hidden fixed inset-0 bg-black bg-opacity-50 modal-overlay flex items-center justify-center z-50">
@@ -604,15 +352,16 @@
     </div>
 </div>
 
-<!-- ========== CONFIRMATION MODAL ========== -->
+<!-- Confirmation Modal -->
 <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden items-center justify-center">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 transform transition-all scale-95 hover:scale-100">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 transform transition-all">
         <div class="text-center">
             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
                 <i class="fas fa-exclamation-triangle text-yellow-600 text-2xl"></i>
             </div>
             <h3 id="confirmTitle" class="text-2xl font-bold text-gray-900 mb-2">Konfirmasi</h3>
             <p id="confirmMessage" class="text-gray-600 mb-6">Apakah Anda yakin?</p>
+
             <div class="flex space-x-3">
                 <button id="confirmNoBtn" 
                         class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition duration-300">
@@ -620,940 +369,21 @@
                 </button>
                 <button id="confirmYesBtn" 
                         class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
-                    <i class="fas fa-check mr-2"></i>Ya, Lanjutkan
+                    <i class="fas fa-check mr-2"></i>Lanjutkan
                 </button>
             </div>
         </div>
     </div>
 </div>
-
 {% endblock %}
 
-{{% block extra_js %}
+{% block extra_js %}
 <script>
-// ==================== GLOBAL STATE ====================
-const RMIB_DATA = {
-    categories: {{ rmib_categories_json|safe }},
-    questions: {{ rmib_questions_json|safe }},
-    studentId: {{ student.pk }},
-    studentName: "{{ student.name|escapejs }}",
-    hasProgress: {{ has_progress|lower }}
-};
-
-let currentCategory = null;
-let currentRankings = {};
-let completedCategories = new Set();
-let autoSaveInterval = null;
-let confirmCallback = null;
-let listenersInitialized = false;
-
-// ==================== ✅ TAMBAHKAN INI DI PALING ATAS ====================
-// Make startTest globally accessible
-window.startTest = async function() {
-    try {
-        console.log('🚀 === startTest() called ===');
-        showLoading();
-        
-        const response = await fetch(`/students/{{ student.pk }}/rmib/start/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            }
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            document.getElementById('instructionsPanel').classList.add('hidden');
-            document.getElementById('testInterface').classList.remove('hidden');
-            
-            startAutoSave();
-            
-            if (RMIB_DATA.hasProgress) {
-                console.log('📥 Has progress, loading...');
-                await loadSavedProgress();
-            }
-            
-            hideLoading();
-            showToast('success', 'Tes Dimulai', 
-                RMIB_DATA.hasProgress 
-                    ? 'Progress Anda telah dimuat. Lanjutkan pengerjaan!' 
-                    : 'Selamat mengerjakan tes RMIB. Progress akan otomatis tersimpan.');
-        } else {
-            hideLoading();
-            showToast('error', 'Gagal Memulai Tes', data.message);
-        }
-    } catch (error) {
-        hideLoading();
-        console.error('❌ Start test error:', error);
-        showToast('error', 'Error', 'Terjadi kesalahan: ' + error.message);
-    }
-};
-
-// Make other functions globally accessible
-window.showLoading = function() {
-    const modal = document.getElementById('loadingModal');
-    if (modal) modal.classList.remove('hidden');
-};
-
-window.hideLoading = function() {
-    const modal = document.getElementById('loadingModal');
-    if (modal) modal.classList.add('hidden');
-};
-
-window.showToast = function(type, title, message) {
-    const toastContainer = document.getElementById('toastContainer');
-    if (!toastContainer) return;
-    
-    const iconMap = {
-        'success': { icon: 'fa-check-circle', color: 'green' },
-        'error': { icon: 'fa-exclamation-circle', color: 'red' },
-        'warning': { icon: 'fa-exclamation-triangle', color: 'yellow' },
-        'info': { icon: 'fa-info-circle', color: 'blue' }
-    };
-    
-    const config = iconMap[type] || iconMap['info'];
-    
-    const toast = document.createElement('div');
-    toast.className = `toast bg-white rounded-lg shadow-lg p-4 border-l-4 border-${config.color}-500`;
-    toast.innerHTML = `
-        <div class="flex items-start space-x-3">
-            <i class="fas ${config.icon} text-${config.color}-500 text-xl mt-0.5"></i>
-            <div class="flex-1">
-                <p class="font-bold text-gray-800">${title}</p>
-                <p class="text-sm text-gray-600">${message}</p>
-            </div>
-            <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `;
-    
-    toastContainer.appendChild(toast);
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-    }, 5000);
-};
-
-window.getCookie = function(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-};
-
-// ==================== INITIALIZATION ====================
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('=== DOM Content Loaded ===');
-    console.log('Student ID:', RMIB_DATA.studentId);
-    console.log('Has Progress:', RMIB_DATA.hasProgress);
-    
-    // Verify startTest is accessible
-    console.log('startTest function:', typeof window.startTest);
-    
-    initializeEventListeners();
-});
-
-// ==================== EVENT LISTENERS ====================
-function initializeEventListeners() {
-    if (listenersInitialized) {
-        console.log('Event listeners already initialized, skipping...');
-        return;
-    }
-    
-    console.log('Initializing event listeners...');
-    
-    // Start test button
-    const startTestBtn = document.getElementById('startTestBtn');
-    if (startTestBtn) {
-        startTestBtn.addEventListener('click', startTest);
-    }
-    
-    // Category buttons
-    document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const category = e.currentTarget.dataset.category;
-            openCategory(category);
-        });
-    });
-    
-    // Close category button
-    const closeCategoryBtn = document.getElementById('closeCategoryBtn');
-    if (closeCategoryBtn) {
-        closeCategoryBtn.addEventListener('click', closeCategory);
-    }
-    
-    // Validate button
-    const validateBtn = document.getElementById('validateBtn');
-    if (validateBtn) {
-        validateBtn.addEventListener('click', validateCurrentCategory);
-    }
-    
-    // Submit category button
-    const submitCategoryBtn = document.getElementById('submitCategoryBtn');
-    if (submitCategoryBtn) {
-        submitCategoryBtn.addEventListener('click', submitCategory);
-    }
-    
-    // Manual save button
-    const manualSaveBtn = document.getElementById('manualSaveBtn');
-    if (manualSaveBtn) {
-        const newBtn = manualSaveBtn.cloneNode(true);
-        manualSaveBtn.parentNode.replaceChild(newBtn, manualSaveBtn);
-        newBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('=== Manual Save Button Clicked ===');
-            manualSave();
-        });
-    }
-    
-    // Final submit button
-    const finalSubmitBtn = document.getElementById('finalSubmitBtn');
-    if (finalSubmitBtn) {
-        finalSubmitBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('=== Final Submit Button Clicked ===');
-            confirmFinalSubmit();
-        });
-    }
-    
-    // Top bar save button
-    const manualSaveTopBtn = document.getElementById('manualSaveTopBtn');
-    if (manualSaveTopBtn) {
-        manualSaveTopBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            manualSave();
-        });
-    }
-    
-    // Review button
-    const reviewBtn = document.getElementById('reviewAnswersBtn');
-    if (reviewBtn) {
-        reviewBtn.addEventListener('click', reviewAnswers);
-    }
-    
-    // Confirmation modal buttons
-    const confirmYesBtn = document.getElementById('confirmYesBtn');
-    if (confirmYesBtn) {
-        confirmYesBtn.addEventListener('click', () => {
-            console.log('Confirm Yes clicked');
-            if (confirmCallback) {
-                confirmCallback();
-            }
-            hideConfirmationModal();
-        });
-    }
-    
-    const confirmNoBtn = document.getElementById('confirmNoBtn');
-    if (confirmNoBtn) {
-        confirmNoBtn.addEventListener('click', () => {
-            console.log('Confirm No clicked');
-            hideConfirmationModal();
-        });
-    }
-
-    // Random & Clear buttons
-    const randomBtn = document.getElementById('randomFillBtn');
-    if (randomBtn) {
-        randomBtn.addEventListener('click', fillRandomRankings);
-    }
-    
-    const clearBtn = document.getElementById('clearAllBtn');
-    if (clearBtn) {
-        clearBtn.addEventListener('click', clearAllRankings);
-    }
-    
-    listenersInitialized = true;
-    console.log('✅ Event listeners initialized');
-}
-
-// ==================== RANDOM & CLEAR ====================
-function fillRandomRankings() {
-    const inputs = document.querySelectorAll('.ranking-input');
-    if (inputs.length === 0) {
-        showToast('warning', 'Tidak Ada Input', 'Tidak ada pertanyaan yang dapat diisi.');
-        return;
-    }
-
-    const rankings = Array.from({ length: 12 }, (_, i) => i + 1);
-    shuffleArray(rankings);
-
-    inputs.forEach((input, index) => {
-        input.value = rankings[index];
-        const event = new Event('input', { bubbles: true });
-        input.dispatchEvent(event);
-    });
-
-    showToast('success', 'Random Fill Berhasil', 'Semua ranking telah diisi secara random.');
-    setTimeout(() => validateCurrentCategory(), 500);
-}
-
-function clearAllRankings() {
-    const inputs = document.querySelectorAll('.ranking-input');
-    if (inputs.length === 0) {
-        showToast('warning', 'Tidak Ada Input', 'Tidak ada pertanyaan.');
-        return;
-    }
-
-    inputs.forEach(input => {
-        input.value = '';
-        input.classList.remove('valid', 'invalid', 'duplicate');
-    });
-
-    document.getElementById('validationWarning').classList.add('hidden');
-    document.getElementById('submitCategoryBtn').classList.add('btn-disabled');
-    showToast('info', 'Semua Dihapus', 'Semua ranking telah dihapus.');
-}
-
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-// ==================== TEST FLOW ====================
-async function startTest() {
-    try {
-        console.log('=== startTest() called ===');
-        showLoading();
-        
-        const response = await fetch(`/students/{{ student.pk }}/rmib/start/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            }
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            document.getElementById('instructionsPanel').classList.add('hidden');
-            document.getElementById('testInterface').classList.remove('hidden');
-            
-            startAutoSave();
-            
-            // ✅ CRITICAL: Load progress if exists
-            if (RMIB_DATA.hasProgress) {
-                console.log('📥 Has progress, loading saved data...');
-                await loadSavedProgress();
-            }
-            
-            hideLoading();
-            showToast('success', 'Tes Dimulai', 
-                RMIB_DATA.hasProgress 
-                    ? 'Progress Anda telah dimuat. Lanjutkan pengerjaan!' 
-                    : 'Selamat mengerjakan tes RMIB. Progress akan otomatis tersimpan.');
-        } else {
-            hideLoading();
-            showToast('error', 'Gagal Memulai Tes', data.message);
-        }
-    } catch (error) {
-        hideLoading();
-        console.error('Start test error:', error);
-        showToast('error', 'Error', 'Terjadi kesalahan: ' + error.message);
-    }
-}
-
-function openCategory(categoryKey) {
-    console.log(`=== Opening category: ${categoryKey} ===`);
-    
-    currentCategory = categoryKey;
-    const category = RMIB_DATA.categories[categoryKey];
-    const questions = RMIB_DATA.questions[categoryKey];
-    
-    // Update header
-    document.getElementById('currentCategoryTitle').textContent = category.name;
-    document.getElementById('currentCategoryDesc').textContent = category.description;
-    document.getElementById('currentCategoryIcon').className = 
-        `w-12 h-12 rounded-full flex items-center justify-center text-white bg-category-${categoryKey}`;
-    document.getElementById('currentCategoryIcon').innerHTML = `<i class="${category.icon}"></i>`;
-    
-    // Load questions with saved data
-    loadQuestions(categoryKey, questions);
-    
-    // Show panel
-    document.getElementById('questionsPanel').classList.remove('hidden');
-    document.getElementById('questionsPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function loadQuestions(categoryKey, questions) {
-    console.log(`📝 Loading questions for ${categoryKey}`);
-    
-    const questionsList = document.getElementById('questionsList');
-    questionsList.innerHTML = '';
-    
-    // ✅ CRITICAL: Get saved rankings
-    const savedRankings = currentRankings[categoryKey] || {};
-    console.log('Saved rankings for', categoryKey, ':', savedRankings);
-    
-    questions.forEach((question, index) => {
-        const questionItem = document.createElement('div');
-        questionItem.className = 'flex items-center space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-200';
-        
-        // ✅ CRITICAL: Get saved value (support both string and number keys)
-        const savedValue = savedRankings[index.toString()] || savedRankings[index] || '';
-        console.log(`  Question ${index}: saved value = "${savedValue}"`);
-        
-        questionItem.innerHTML = `
-            <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
-                ${index + 1}
-            </div>
-            <div class="flex-1">
-                <p class="text-gray-800">${question}</p>
-            </div>
-            <div class="flex-shrink-0">
-                <input type="number" 
-                       min="1" 
-                       max="12" 
-                       data-question-index="${index}"
-                       value="${savedValue}"
-                       placeholder="1-12"
-                       class="ranking-input w-20 px-3 py-2 border-2 border-gray-300 rounded-lg text-center font-bold focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-        `;
-        
-        questionsList.appendChild(questionItem);
-    });
-    
-    // Add event listeners
-    document.querySelectorAll('.ranking-input').forEach(input => {
-        input.addEventListener('input', handleRankingInput);
-        input.addEventListener('blur', validateRankingInput);
-        
-        // ✅ Trigger validation for saved values
-        if (input.value) {
-            const event = new Event('input', { bubbles: true });
-            input.dispatchEvent(event);
-        }
-    });
-    
-    // Auto-validate if completed
-    if (completedCategories.has(categoryKey)) {
-        console.log(`✅ Category ${categoryKey} already completed, auto-validating...`);
-        setTimeout(() => validateCurrentCategory(), 300);
-    }
-    
-    console.log(`✅ Questions loaded for ${categoryKey}`);
-}
-
-function handleRankingInput(e) {
-    const input = e.target;
-    const value = parseInt(input.value);
-    
-    input.classList.remove('valid', 'invalid', 'duplicate');
-    
-    if (isNaN(value) || value < 1 || value > 12) {
-        if (input.value !== '') input.classList.add('invalid');
-        return;
-    }
-    
-    // Check duplicates
-    const allInputs = document.querySelectorAll('.ranking-input');
-    let isDuplicate = false;
-    
-    allInputs.forEach(otherInput => {
-        if (otherInput !== input && parseInt(otherInput.value) === value) {
-            isDuplicate = true;
-        }
-    });
-    
-    if (isDuplicate) {
-        input.classList.add('duplicate');
-    } else {
-        input.classList.add('valid');
-    }
-    
-    document.getElementById('validationWarning').classList.add('hidden');
-}
-
-function validateRankingInput(e) {
-    const input = e.target;
-    const value = parseInt(input.value);
-    
-    if (isNaN(value) || value < 1 || value > 12) {
-        input.classList.remove('valid', 'duplicate');
-        input.classList.add('invalid');
-    }
-}
-
-function validateCurrentCategory() {
-    const inputs = document.querySelectorAll('.ranking-input');
-    const rankings = {};
-    let isValid = true;
-    let errorMessage = '';
-    
-    inputs.forEach(input => {
-        const index = input.dataset.questionIndex;
-        const value = parseInt(input.value);
-        
-        if (isNaN(value) || value < 1 || value > 12) {
-            isValid = false;
-            errorMessage = 'Semua pertanyaan harus diisi dengan angka 1-12!';
-            input.classList.add('invalid');
-        } else {
-            rankings[index] = value;
-            input.classList.remove('invalid');
-        }
-    });
-    
-    const values = Object.values(rankings);
-    const uniqueValues = new Set(values);
-    
-    if (values.length !== 12) {
-        isValid = false;
-        errorMessage = 'Semua 12 pertanyaan harus diisi!';
-    } else if (uniqueValues.size !== values.length) {
-        isValid = false;
-        errorMessage = 'Setiap angka 1-12 hanya boleh digunakan satu kali!';
-        
-        inputs.forEach(input => {
-            const value = parseInt(input.value);
-            const count = values.filter(v => v === value).length;
-            if (count > 1) input.classList.add('duplicate');
-        });
-    } else {
-        for (let i = 1; i <= 12; i++) {
-            if (!values.includes(i)) {
-                isValid = false;
-                errorMessage = `Angka ${i} belum digunakan!`;
-                break;
-            }
-        }
-    }
-    
-    if (isValid) {
-        document.getElementById('validationWarning').classList.add('hidden');
-        document.getElementById('submitCategoryBtn').classList.remove('btn-disabled');
-        showToast('success', 'Validasi Berhasil', 'Semua jawaban sudah benar.');
-        
-        inputs.forEach(input => {
-            input.classList.remove('invalid', 'duplicate');
-            input.classList.add('valid');
-        });
-        
-        return true;
-    } else {
-        document.getElementById('validationWarning').classList.remove('hidden');
-        document.getElementById('validationMessage').textContent = errorMessage;
-        document.getElementById('submitCategoryBtn').classList.add('btn-disabled');
-        showToast('error', 'Validasi Gagal', errorMessage);
-        return false;
-    }
-}
-
-function submitCategory() {
-    if (!validateCurrentCategory()) return;
-    
-    const inputs = document.querySelectorAll('.ranking-input');
-    const rankings = {};
-    
-    inputs.forEach(input => {
-        const index = parseInt(input.dataset.questionIndex);
-        const value = parseInt(input.value);
-        rankings[index] = value;
-    });
-    
-    currentRankings[currentCategory] = rankings;
-    completedCategories.add(currentCategory);
-    
-    updateProgress();
-    markCategoryAsCompleted(currentCategory);
-    closeCategory();
-    saveProgress();
-    
-    showToast('success', 'Kategori Disimpan', `Kategori "${RMIB_DATA.categories[currentCategory].name}" berhasil disimpan!`);
-    
-    if (completedCategories.size === Object.keys(RMIB_DATA.categories).length) {
-        showSubmitTestSection();
-    }
-}
-
-function closeCategory() {
-    document.getElementById('questionsPanel').classList.add('hidden');
-    currentCategory = null;
-    document.getElementById('categoryNav').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function markCategoryAsCompleted(categoryKey) {
-    const categoryBtn = document.querySelector(`[data-category="${categoryKey}"]`);
-    if (categoryBtn && !categoryBtn.classList.contains('completed-indicator')) {
-        categoryBtn.classList.add('completed-indicator', 'border-green-500');
-        categoryBtn.classList.remove('border-gray-200');
-    }
-}
-
-function updateProgress() {
-    const total = Object.keys(RMIB_DATA.categories).length;
-    const completed = completedCategories.size;
-    const percentage = Math.round((completed / total) * 100);
-    
-    document.getElementById('completedCount').textContent = completed;
-    document.getElementById('progressBar').style.width = percentage + '%';
-    document.getElementById('progressPercentage').textContent = percentage;
-}
-
-function showSubmitTestSection() {
-    document.getElementById('submitTestSection').classList.remove('hidden');
-    document.getElementById('submitTestSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    createConfetti();
-}
-
-function createConfetti() {
-    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
-    for (let i = 0; i < 50; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.left = Math.random() * 100 + '%';
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.animationDelay = Math.random() * 3 + 's';
-        document.body.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 3000);
-    }
-}
-
-// ==================== SAVE & LOAD ====================
-async function saveProgress() {
-    try {
-        const response = await fetch(`/students/{{ student.pk }}/rmib/save/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({ rankings: currentRankings })
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            const now = new Date();
-            document.getElementById('autoSaveStatus').textContent = 
-                `Tersimpan ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-        }
-    } catch (error) {
-        console.error('Autosave error:', error);
-    }
-}
-
-async function loadSavedProgress() {
-    try {
-        console.log('📥 === loadSavedProgress() START ===');
-        showLoading();
-        
-        const response = await fetch(`/students/{{ student.pk }}/rmib/load/`, {
-            method: 'GET',
-            headers: { 'X-CSRFToken': getCookie('csrftoken') }
-        });
-        
-        const data = await response.json();
-        console.log('📦 Load response:', data);
-        
-        if (data.success && data.has_progress) {
-            console.log('✅ Progress found, loading...');
-            currentRankings = data.rankings;
-            console.log('📊 Current rankings:', currentRankings);
-            
-            // Mark completed categories
-            Object.keys(currentRankings).forEach(categoryKey => {
-                const rankings = currentRankings[categoryKey];
-                console.log(`  Processing ${categoryKey}:`, Object.keys(rankings).length, 'items');
-                
-                if (Object.keys(rankings).length === 12) {
-                    const values = Object.values(rankings).map(v => parseInt(v));
-                    const sortedValues = [...values].sort((a, b) => a - b);
-                    const expectedValues = Array.from({ length: 12 }, (_, i) => i + 1);
-                    
-                    if (JSON.stringify(sortedValues) === JSON.stringify(expectedValues)) {
-                        completedCategories.add(categoryKey);
-                        markCategoryAsCompleted(categoryKey);
-                        console.log(`  ✅ ${categoryKey} marked as completed`);
-                    } else {
-                        console.warn(`  ⚠️ ${categoryKey} has invalid rankings`);
-                    }
-                } else {
-                    console.warn(`  ⚠️ ${categoryKey} incomplete: ${Object.keys(rankings).length}/12`);
-                }
-            });
-            
-            updateProgress();
-            
-            if (completedCategories.size === Object.keys(RMIB_DATA.categories).length) {
-                console.log('🎉 All categories completed!');
-                showSubmitTestSection();
-            }
-            
-            hideLoading();
-            showToast('success', 'Progress Dimuat', 
-                `${completedCategories.size} dari ${Object.keys(RMIB_DATA.categories).length} kategori berhasil dimuat.`);
-            
-            console.log('✅ === loadSavedProgress() END ===');
-        } else {
-            hideLoading();
-            console.log('ℹ️ No progress found');
-            showToast('info', 'Tidak Ada Progress', 'Mulai tes dari awal.');
-        }
-    } catch (error) {
-        hideLoading();
-        console.error('❌ Load progress error:', error);
-        showToast('error', 'Gagal Memuat Progress', error.message);
-    }
-}
-
-function startAutoSave() {
-    if (autoSaveInterval) clearInterval(autoSaveInterval);
-    
-    autoSaveInterval = setInterval(() => {
-        if (Object.keys(currentRankings).length > 0) {
-            saveProgress();
-        }
-    }, 30000);
-}
-
-// ==================== MANUAL SAVE & SUBMIT ====================
-async function manualSave() {
-    console.log('=== manualSave() START ===');
-    
-    const totalCategories = Object.keys(RMIB_DATA.categories).length;
-    const completedCount = completedCategories.size;
-    
-    console.log(`Progress: ${completedCount}/${totalCategories}`);
-    
-    if (completedCount < totalCategories) {
-        showToast('warning', 'Tes Belum Lengkap', 
-            `Anda baru menyelesaikan ${completedCount} dari ${totalCategories} kategori.`);
-        return;
-    }
-    
-    showConfirmationModal(
-        'Simpan Hasil Tes?',
-        'Setelah disimpan, Anda tidak dapat mengubah jawaban lagi. Lanjutkan?',
-        submitFinalResults
-    );
-}
-
-async function submitFinalResults() {
-    try {
-        console.log('🚀 === submitFinalResults() START ===');
-        showLoading();
-        
-        const totalCategories = Object.keys(RMIB_DATA.categories).length;
-        if (completedCategories.size !== totalCategories) {
-            hideLoading();
-            showToast('error', 'Tes Belum Lengkap', `Hanya ${completedCategories.size} kategori selesai.`);
-            return;
-        }
-        
-        // Validate rankings
-        for (const [categoryKey, rankings] of Object.entries(currentRankings)) {
-            const values = Object.values(rankings).map(v => parseInt(v));
-            
-            if (values.length !== 12) {
-                hideLoading();
-                showToast('error', 'Data Tidak Lengkap', `Kategori ${categoryKey} tidak lengkap.`);
-                return;
-            }
-            
-            const sortedValues = [...values].sort((a, b) => a - b);
-            const expectedValues = Array.from({ length: 12 }, (_, i) => i + 1);
-            if (JSON.stringify(sortedValues) !== JSON.stringify(expectedValues)) {
-                hideLoading();
-                showToast('error', 'Ranking Tidak Valid', `Kategori ${categoryKey} invalid.`);
-                return;
-            }
-        }
-        
-        // Calculate total
-        let totalScore = 0;
-        Object.values(currentRankings).forEach(rankings => {
-            Object.values(rankings).forEach(rank => {
-                totalScore += parseInt(rank);
-            });
-        });
-        
-        const expectedTotal = 936;
-        if (totalScore !== expectedTotal) {
-            hideLoading();
-            showToast('error', 'Validasi Gagal', `Total skor ${totalScore}, seharusnya ${expectedTotal}.`);
-            return;
-        }
-        
-        console.log('✅ All validations passed, submitting...');
-        
-        const response = await fetch(`/students/{{ student.pk }}/rmib/submit/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({ rankings: currentRankings })
-        });
-        
-        const data = await response.json();
-        console.log('📨 Submit response:', data);
-        
-        hideLoading();
-        
-        if (data.success) {
-            if (autoSaveInterval) clearInterval(autoSaveInterval);
-            
-            showToast('success', 'Tes Berhasil Disimpan!', 
-                'Anda akan diarahkan ke halaman hasil...');
-            
-            setTimeout(() => {
-                window.location.href = data.redirect_url || `/students/{{ student.pk }}/rmib/result/`;
-            }, 2000);
-        } else {
-            showToast('error', 'Gagal Menyimpan', data.message);
-        }
-    } catch (error) {
-        hideLoading();
-        console.error('❌ Submit error:', error);
-        showToast('error', 'Error', error.message);
-    }
-}
-
-function confirmFinalSubmit() {
-    manualSave();
-}
-
-function finalSubmitTest() {
-    submitFinalResults();
-}
-
-function reviewAnswers() {
-    document.getElementById('categoryNav').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    showToast('info', 'Review Jawaban', 'Klik kategori untuk melihat/mengubah jawaban.');
-}
-
-// ==================== UI HELPERS ====================
-function showToast(type, title, message) {
-    const toastContainer = document.getElementById('toastContainer');
-    const iconMap = {
-        'success': { icon: 'fa-check-circle', color: 'green' },
-        'error': { icon: 'fa-exclamation-circle', color: 'red' },
-        'warning': { icon: 'fa-exclamation-triangle', color: 'yellow' },
-        'info': { icon: 'fa-info-circle', color: 'blue' }
-    };
-    
-    const config = iconMap[type] || iconMap['info'];
-    
-    const toast = document.createElement('div');
-    toast.className = `toast bg-white rounded-lg shadow-lg p-4 border-l-4 border-${config.color}-500`;
-    toast.innerHTML = `
-        <div class="flex items-start space-x-3">
-            <i class="fas ${config.icon} text-${config.color}-500 text-xl mt-0.5"></i>
-            <div class="flex-1">
-                <p class="font-bold text-gray-800">${title}</p>
-                <p class="text-sm text-gray-600">${message}</p>
-            </div>
-            <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `;
-    
-    toastContainer.appendChild(toast);
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-    }, 5000);
-}
-
-function showLoading() {
-    document.getElementById('loadingModal').classList.remove('hidden');
-}
-
-function hideLoading() {
-    document.getElementById('loadingModal').classList.add('hidden');
-}
-
-function showConfirmationModal(title, message, callback) {
-    console.log('📢 showConfirmationModal:', title);
-    
-    const modal = document.getElementById('confirmationModal');
-    if (!modal) {
-        console.error('❌ Modal not found!');
-        return;
-    }
-    
-    const titleEl = document.getElementById('confirmTitle');
-    const messageEl = document.getElementById('confirmMessage');
-    
-    if (titleEl) titleEl.textContent = title;
-    if (messageEl) messageEl.textContent = message;
-    
-    confirmCallback = callback;
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
-    
-    console.log('✅ Modal shown');
-}
-
-function hideConfirmationModal() {
-    const modal = document.getElementById('confirmationModal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
-    }
-    confirmCallback = null;
-}
-
-// ==================== UTILITIES ====================
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-// Prevent accidental page leave
-window.addEventListener('beforeunload', function (e) {
-    if (completedCategories.size > 0 && completedCategories.size < Object.keys(RMIB_DATA.categories).length) {
-        e.preventDefault();
-        e.returnValue = '';
-        return '';
-    }
-});
-// Test 1: Cek apakah tombol ada
-console.log('Start button:', document.getElementById('startTestBtn'));
-
-// Test 2: Cek event listener
-let btn = document.getElementById('startTestBtn');
-console.log('Button found:', !!btn);
-
-// Test 3: Force click
-if (btn) {
-    btn.click();
-    console.log('Button clicked manually');
-}
-
-// Test 4: Check current state
-console.log('Has progress:', RMIB_DATA.hasProgress);
-console.log('Instructions panel:', document.getElementById('instructionsPanel'));
-console.log('Test interface:', document.getElementById('testInterface'));
+    // Pass data dari Django ke JavaScript
+    window.RMIB_CATEGORIES = {{ rmib_categories_json|safe }};
+    window.STUDENT_ID = {{ student.pk }};
+    window.STUDENT_NAME = "{{ student.name|escapejs }}";
+    window.HAS_PROGRESS = {{ has_progress|lower }};
 </script>
+<script src="{% static 'js/rmib_test.js' %}"></script>
 {% endblock %}
-

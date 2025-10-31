@@ -14,23 +14,45 @@ SECRET_KEY = os.environ.get(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'  # ← Default True untuk development
+# Set via environment variable: DEBUG=False di cPanel
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+
+# Deteksi apakah ini production atau development
+IS_PRODUCTION = not DEBUG and os.environ.get('ENVIRONMENT', 'development') == 'production'
 
 # ALLOWED_HOSTS
-ALLOWED_HOSTS = os.environ.get(
-    'ALLOWED_HOSTS',
-    'prestisia.com,www.prestisia.com,localhost,127.0.0.1'
-).split(',')
+if IS_PRODUCTION:
+    ALLOWED_HOSTS = ['prestisia.com', 'www.prestisia.com']
+else:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:8000', '127.0.0.1:8000']
 
-# CSRF Trusted Origins untuk cPanel
-CSRF_TRUSTED_ORIGINS = [
-    # 'https://prestisia.com',
-    # 'https://www.prestisia.com',
-    # 'http://prestisia.com',
-    # 'http://www.prestisia.com',
-    'http://localhost:8000',  # ← Tambahkan untuk development
-    'http://127.0.0.1:8000',
-]
+# CSRF Trusted Origins
+# settings.py
+if IS_PRODUCTION:
+    # Production CSRF
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = False  # ← PENTING: False agar JS bisa baca
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    CSRF_USE_SESSIONS = False
+    
+    CSRF_TRUSTED_ORIGINS = [
+        'https://prestisia.com',
+        'https://www.prestisia.com',
+    ]
+else:
+    # Development - lebih permissive
+    CSRF_COOKIE_SECURE = False
+    CSRF_COOKIE_HTTPONLY = False
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    CSRF_USE_SESSIONS = False
+    
+    # Allow localhost
+    CSRF_TRUSTED_ORIGINS = [
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+        'http://127.0.0.1:8000/',
+    ]
+
 
 # Application definition
 INSTALLED_APPS = [
@@ -91,10 +113,16 @@ WSGI_APPLICATION = 'psikologimts1.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.mysql'),
-        'NAME': os.environ.get('DB_NAME', 'psikologimts1_db'),
-        'USER': os.environ.get('DB_USER', 'root'),  # ← Default root untuk dev
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),  # ← Kosong untuk XAMPP
+        'ENGINE': os.environ.get(
+            'DB_ENGINE',
+            'django.db.backends.sqlite3' if not IS_PRODUCTION else 'django.db.backends.mysql'
+        ),
+        'NAME': os.environ.get(
+            'DB_NAME',
+            os.path.join(BASE_DIR, 'db_local.sqlite3') if not IS_PRODUCTION else 'psikologimts1_db'
+        ),
+        'USER': os.environ.get('DB_USER', 'root' if not IS_PRODUCTION else ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', '' if not IS_PRODUCTION else ''),
         'HOST': os.environ.get('DB_HOST', 'localhost'),
         'PORT': os.environ.get('DB_PORT', '3306'),
     }
@@ -150,25 +178,38 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
-SESSION_COOKIE_SECURE = not DEBUG  # ← False di development, True di production
+SESSION_COOKIE_SECURE = IS_PRODUCTION  # ← True hanya di production
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 
-# CSRF Settings
-CSRF_COOKIE_SECURE = not DEBUG  # ← False di development, True di production
-CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SAMESITE = 'Lax'
 
-# Security Settings - HANYA untuk Production
-if not DEBUG:
-    SECURE_SSL_REDIRECT = True  # ← Hanya aktif saat DEBUG=False
+
+# ============================================================================
+# SECURITY SETTINGS - HANYA AKTIF DI PRODUCTION SETELAH SSL TERVERIFIKASI
+# ============================================================================
+if IS_PRODUCTION:
+    # Redirect HTTP to HTTPS
+    SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    
+    # ⚠️ HSTS HEADERS - HANYA SETELAH VERIFY SSL CERTIFICATE
+    # Mulai dengan max_age kecil (1 jam) untuk testing
+    # Setelah confirm sempurna, naikkan ke 31536000 (1 tahun)
+    SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', '3600'))  # Default 1 jam
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_PRELOAD = os.environ.get('SECURE_HSTS_PRELOAD', 'False') == 'True'  # Default False
+    
+    # Security headers lainnya
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
     X_FRAME_OPTIONS = 'DENY'
+    SECURE_REFERRER_POLICY = 'same-origin'
+else:
+    # ✅ DEVELOPMENT - Tidak ada SSL redirect atau HSTS
+    SECURE_SSL_REDIRECT = False
+    SECURE_HSTS_SECONDS = 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
 
 # Email Configuration
 if DEBUG:

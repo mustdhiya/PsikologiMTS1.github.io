@@ -25,14 +25,21 @@ urlpatterns = [
     # Bulk operations
     path('bulk-delete/', views.bulk_delete_students, name='bulk_delete'),
     
-    # RMIB URLs
-    path('<int:student_pk>/rmib/', views.rmib_test_interface, name='rmib_test'),
+    # RMIB Test URLs
+    path('<int:student_pk>/rmib/test/', views.rmib_test_interface, name='rmib_test'),
+    path('<int:student_pk>/rmib/result/', views.rmib_result_view, name='rmib_result'),
+    
+    # RMIB Edit & Restart URLs - NEW
+    path('<int:student_pk>/rmib/edit-confirmation/', views.rmib_edit_confirmation, name='rmib_edit_confirmation'),
+    path('<int:student_pk>/rmib/restart/', views.rmib_restart_test, name='rmib_restart'),
+    path('<int:student_pk>/rmib/submit-edited/', views.submit_rmib_test_edited, name='rmib_submit_edited'),
+    path('<int:student_pk>/rmib/cancel-edit/', views.rmib_cancel_edit, name='rmib_cancel_edit'),
+    
+    # RMIB API URLs
     path('<int:student_pk>/rmib/start/', views.start_rmib_test, name='rmib_start'),
     path('<int:student_pk>/rmib/save/', views.save_rmib_progress, name='rmib_save'),
-    path('<int:student_pk>/rmib/submit/', views.submit_rmib_test, name='rmib_submit'),
     path('<int:student_pk>/rmib/load/', views.load_rmib_progress, name='rmib_load'),
-    path('<int:student_pk>/rmib/result/', views.rmib_result_view, name='rmib_result'),
-    path('<int:student_pk>/rmib/export-pdf/', views.export_rmib_pdf, name='rmib_export_pdf'),  # ← TAMBAHKAN INI
+    path('<int:student_pk>/rmib/submit/', views.submit_rmib_test, name='rmib_submit'),
     
     # Legacy compatibility
     path('add/', views.StudentCreateView.as_view()),

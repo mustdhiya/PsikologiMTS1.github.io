@@ -109,7 +109,7 @@ class AdminLoginView(TemplateView):
                 # Log admin login
                 logger.info(f'Admin login successful: {user.username}')
                 
-                return redirect('admin:index')
+                return redirect('core:dashboard')
             else:
                 messages.error(request, 'Akun ini tidak memiliki akses administrator.')
                 logger.warning(f'Non-admin attempted admin login: {user.username}')
