@@ -8,28 +8,28 @@ from pathlib import Path
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Gunakan environment variable untuk production
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY',
     'django-insecure-1a$i4%tv3i6$xf0(dby40p(e6aqh(as%vcck1-l2&s1m&3*kze'
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# WAJIB False untuk production
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'  # ← Default True untuk development
 
-# ALLOWED_HOSTS: Ganti dengan domain Anda
-# Contoh: ['yourdomain.com', 'www.yourdomain.com', 'komering.iixcp.rumahweb.net']
+# ALLOWED_HOSTS
 ALLOWED_HOSTS = os.environ.get(
     'ALLOWED_HOSTS',
-    'yourdomain.com,www.yourdomain.com'
+    'prestisia.com,www.prestisia.com,localhost,127.0.0.1'
 ).split(',')
 
 # CSRF Trusted Origins untuk cPanel
 CSRF_TRUSTED_ORIGINS = [
-    'https://yourdomain.com',
-    'https://www.yourdomain.com',
-    'https://komering.iixcp.rumahweb.net'
+    # 'https://prestisia.com',
+    # 'https://www.prestisia.com',
+    # 'http://prestisia.com',
+    # 'http://www.prestisia.com',
+    'http://localhost:8000',  # ← Tambahkan untuk development
+    'http://127.0.0.1:8000',
 ]
 
 # Application definition
@@ -89,24 +89,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'psikologimts1.wsgi.application'
 
 # Database
-# Untuk production, pertimbangkan menggunakan MySQL
-# Jika tetap menggunakan SQLite, pastikan path sudah benar
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.environ.get('DB_NAME', os.path.join(BASE_DIR, 'db.sqlite3')),
-        'USER': os.environ.get('DB_USER', ''),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', ''),
-        'PORT': os.environ.get('DB_PORT', ''),
-        'OPTIONS': {
-            'timeout': 30,
-            'init_command': (
-                'PRAGMA journal_mode=WAL;'
-                'PRAGMA synchronous=NORMAL;' 
-                'PRAGMA temp_store=MEMORY;'
-            ),
-        } if os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3') == 'django.db.backends.sqlite3' else {}
+        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.mysql'),
+        'NAME': os.environ.get('DB_NAME', 'psikologimts1_db'),
+        'USER': os.environ.get('DB_USER', 'root'),  # ← Default root untuk dev
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),  # ← Kosong untuk XAMPP
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
     }
 }
 
@@ -160,18 +150,18 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
-SESSION_COOKIE_SECURE = not DEBUG  # True di production
+SESSION_COOKIE_SECURE = not DEBUG  # ← False di development, True di production
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 
 # CSRF Settings
-CSRF_COOKIE_SECURE = not DEBUG  # True di production
+CSRF_COOKIE_SECURE = not DEBUG  # ← False di development, True di production
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = 'Lax'
 
-# Security Settings untuk Production
+# Security Settings - HANYA untuk Production
 if not DEBUG:
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = True  # ← Hanya aktif saat DEBUG=False
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
@@ -179,9 +169,8 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
     X_FRAME_OPTIONS = 'DENY'
-    
-# Email Configuration untuk Production
-# Sesuaikan dengan SMTP server cPanel Anda
+
+# Email Configuration
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
@@ -191,7 +180,7 @@ else:
     EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
     EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@yourdomain.com')
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@prestisia.com')
 
 # Logging Configuration
 LOGGING = {
@@ -211,4 +200,7 @@ LOGGING = {
             'propagate': True,
         },
     },
+} if os.path.exists(os.path.join(BASE_DIR, 'logs')) else {
+    'version': 1,
+    'disable_existing_loggers': False,
 }
