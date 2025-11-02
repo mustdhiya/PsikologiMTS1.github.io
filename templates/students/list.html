@@ -5,7 +5,7 @@
 
 {% block extra_css %}
 <style>
-/* ==================== MODERN ANIMATIONS 2025 ==================== */
+/* ==================== ANIMATIONS ==================== */
 @keyframes fadeInUp {
     from { 
         opacity: 0; 
@@ -28,6 +28,17 @@
     }
 }
 
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @keyframes scaleIn {
     from { 
         opacity: 0; 
@@ -39,33 +50,57 @@
     }
 }
 
+@keyframes spin {
+    to { 
+        transform: rotate(360deg); 
+    }
+}
+
 @keyframes shimmer {
-    0% { background-position: -1000px 0; }
-    100% { background-position: 1000px 0; }
+    0% { 
+        background-position: -1000px 0; 
+    }
+    100% { 
+        background-position: 1000px 0; 
+    }
 }
 
-.animate-fadeInUp {
-    animation: fadeInUp 0.6s ease-out forwards;
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1; 
+    }
+    50% { 
+        opacity: 0.5; 
+    }
+}
+
+.animate-fadeInUp { 
+    animation: fadeInUp 0.6s ease-out forwards; 
+    opacity: 0; 
+}
+
+.animate-slideInRight { 
+    animation: slideInRight 0.5s ease-out forwards; 
+    opacity: 0; 
+}
+
+.animate-slideInDown {
+    animation: slideInDown 0.5s ease-out forwards;
     opacity: 0;
 }
 
-.animate-slideInRight {
-    animation: slideInRight 0.5s ease-out forwards;
-    opacity: 0;
+.animate-scaleIn { 
+    animation: scaleIn 0.4s ease-out forwards; 
+    opacity: 0; 
 }
 
-.animate-scaleIn {
-    animation: scaleIn 0.4s ease-out forwards;
-    opacity: 0;
-}
-
-/* Staggered animation delays */
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
 .delay-300 { animation-delay: 0.3s; }
 .delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
 
-/* ==================== MODERN CARD DESIGN ==================== */
+/* ==================== CARD ==================== */
 .card-modern {
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     border-radius: 16px;
@@ -75,36 +110,45 @@
 }
 
 .card-modern:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-.card-glass {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+/* ==================== GRADIENT ==================== */
+.gradient-primary { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
 }
 
-/* ==================== GRADIENT BACKGROUNDS ==================== */
-.gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.gradient-success { 
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
 }
 
-.gradient-success {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+.gradient-warning { 
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
 }
 
-.gradient-warning {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+.gradient-info { 
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
 }
 
-.gradient-info {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+.gradient-danger { 
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
 }
 
-.gradient-danger {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+.gradient-pink {
+    background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+}
+
+.gradient-cyan {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.gradient-orange {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.gradient-teal {
+    background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
 }
 
 /* ==================== STATS CARD ==================== */
@@ -116,59 +160,78 @@
 .stats-card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.stats-card:hover::before {
+    opacity: 1;
 }
 
 .stats-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 28px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
 }
 
-/* ==================== MODERN TABLE DESIGN ==================== */
+.stats-card:hover .stats-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* ==================== TABLE ==================== */
 .table-modern {
-    border-spacing: 0 8px;
+    border-spacing: 0 12px;
     border-collapse: separate;
+    width: 100%;
 }
 
 .table-modern thead th {
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    padding: 16px;
-    font-weight: 600;
+    padding: 16px 20px;
+    font-weight: 700;
     color: #475569;
     text-transform: uppercase;
-    font-size: 12px;
-    letter-spacing: 0.05em;
+    font-size: 11px;
+    letter-spacing: 0.08em;
     border: none;
     position: sticky;
     top: 0;
     z-index: 10;
+    border-radius: 12px;
 }
 
 .table-modern tbody tr {
     background: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(226, 232, 240, 0.6);
 }
 
 .table-modern tbody tr:hover {
-    transform: scale(1.01);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px) scale(1.005);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(0, 0, 0, 0.05);
+    border-color: rgba(102, 126, 234, 0.3);
     z-index: 1;
 }
 
 .table-modern tbody td {
-    padding: 16px;
+    padding: 16px 20px;
     border: none;
     vertical-align: middle;
+    color: #334155;
+    font-size: 14px;
 }
 
 .table-modern tbody tr td:first-child {
@@ -181,171 +244,225 @@
     border-bottom-right-radius: 12px;
 }
 
-/* ==================== AVATAR DESIGN ==================== */
+/* ==================== AVATAR ==================== */
 .avatar-modern {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    font-size: 18px;
+    font-weight: 700;
+    font-size: 20px;
     color: white;
     position: relative;
-    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
 }
 
-.avatar-modern::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+.avatar-modern:hover {
+    transform: scale(1.05) rotate(-3deg);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* ==================== BADGE DESIGN ==================== */
+/* ==================== BADGE ==================== */
 .badge-modern {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
-    border-radius: 20px;
+    padding: 8px 14px;
+    border-radius: 24px;
     font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.025em;
+    font-weight: 700;
     transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
-.badge-modern:hover {
-    transform: scale(1.05);
-}
-
-.badge-pending {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+.badge-pending { 
+    background: #fef3c7; 
     color: #92400e;
+    border: 1px solid #fde68a;
 }
 
-.badge-completed {
-    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+.badge-pending:hover {
+    background: #fcd34d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(253, 224, 71, 0.4);
+}
+
+.badge-completed { 
+    background: #d1fae5; 
     color: #065f46;
+    border: 1px solid #a7f3d0;
 }
 
-.badge-in-progress {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+.badge-completed:hover {
+    background: #6ee7b7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(110, 231, 183, 0.4);
+}
+
+.badge-in-progress { 
+    background: #dbeafe; 
     color: #1e40af;
+    border: 1px solid #bfdbfe;
 }
 
-/* ==================== BUTTON DESIGN ==================== */
+.badge-in-progress:hover {
+    background: #93c5fd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(147, 197, 253, 0.4);
+}
+
+/* ==================== BUTTON ==================== */
 .btn-modern {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
     font-size: 14px;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: none;
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.btn-modern::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
-    opacity: 0;
-    transition: opacity 0.2s ease;
+.btn-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-.btn-modern:hover::before {
-    opacity: 1;
+.btn-modern:active { 
+    transform: scale(0.98); 
 }
 
-.btn-modern:active {
-    transform: scale(0.98);
+.btn-modern:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
-.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.btn-primary { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
     color: white;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.btn-success {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+.btn-primary:hover {
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+.btn-success { 
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
     color: white;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
 }
 
-.btn-outline {
-    background: white;
-    border: 2px solid #e2e8f0;
+.btn-success:hover {
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+.btn-danger:hover {
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6);
+}
+
+.btn-outline { 
+    background: white; 
+    border: 2px solid #e2e8f0; 
     color: #475569;
+    box-shadow: none;
 }
 
-.btn-outline:hover {
-    border-color: #667eea;
+.btn-outline:hover { 
+    border-color: #667eea; 
     color: #667eea;
+    background: #f8fafc;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 }
 
-/* ==================== SEARCH & FILTER DESIGN ==================== */
+/* ==================== SEARCH ==================== */
 .search-box {
     position: relative;
 }
 
 .search-box input {
     padding-left: 48px;
+    padding-right: 16px;
     border-radius: 12px;
     border: 2px solid #e2e8f0;
-    transition: all 0.2s ease;
+    width: 100%;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: white;
 }
 
 .search-box input:focus {
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     outline: none;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
 }
 
-.search-box .search-icon {
+.search-box input::placeholder {
+    color: #cbd5e1;
+}
+
+.search-icon {
     position: absolute;
     left: 16px;
     top: 50%;
     transform: translateY(-50%);
     color: #94a3b8;
     font-size: 18px;
+    pointer-events: none;
 }
 
+/* ==================== FILTER TAG ==================== */
 .filter-tag {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
-    background: #f1f5f9;
-    border-radius: 8px;
+    padding: 8px 14px;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border-radius: 20px;
     font-size: 13px;
     color: #475569;
+    font-weight: 600;
+    border: 1px solid #cbd5e1;
 }
 
 .filter-tag button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: #cbd5e1;
     color: #475569;
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
+    font-size: 12px;
 }
 
 .filter-tag button:hover {
     background: #94a3b8;
     color: white;
+    transform: scale(1.1);
 }
 
 /* ==================== PROGRESS BAR ==================== */
@@ -354,24 +471,12 @@
     background: #e2e8f0;
     border-radius: 10px;
     overflow: hidden;
-    position: relative;
 }
 
 .progress-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
     border-radius: 10px;
     transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.progress-bar-fill::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: shimmer 2s infinite;
 }
 
 /* ==================== TOOLTIP ==================== */
@@ -385,17 +490,28 @@
     background-color: #1e293b;
     color: white;
     text-align: center;
-    padding: 8px 12px;
+    padding: 10px 14px;
     border-radius: 8px;
     position: absolute;
     z-index: 100;
-    bottom: 125%;
+    bottom: 130%;
     left: 50%;
     transform: translateX(-50%);
     opacity: 0;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s ease;
     font-size: 12px;
     white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip .tooltiptext::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1e293b;
 }
 
 .tooltip:hover .tooltiptext {
@@ -406,20 +522,34 @@
 /* ==================== EMPTY STATE ==================== */
 .empty-state {
     text-align: center;
-    padding: 80px 20px;
+    padding: 100px 20px;
 }
 
 .empty-state-icon {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 24px;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 32px;
     background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 48px;
+    font-size: 56px;
     color: #94a3b8;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 12px;
+}
+
+.empty-state p {
+    font-size: 16px;
+    color: #64748b;
+    margin-bottom: 24px;
 }
 
 /* ==================== PAGINATION ==================== */
@@ -427,6 +557,8 @@
     display: flex;
     gap: 8px;
     align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .pagination-item {
@@ -437,13 +569,13 @@
     height: 40px;
     padding: 0 12px;
     border-radius: 10px;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 14px;
     background: white;
     color: #475569;
     border: 2px solid #e2e8f0;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
 }
 
@@ -451,97 +583,133 @@
     border-color: #667eea;
     color: #667eea;
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 }
 
 .pagination-item.active {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border-color: transparent;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
 .pagination-item.disabled {
     opacity: 0.5;
     cursor: not-allowed;
     pointer-events: none;
+    border-color: #e2e8f0;
 }
 
-/* ==================== MODAL DESIGN ==================== */
+/* ==================== MODAL ==================== */
 .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 9999 !important;
+    backdrop-filter: blur(4px) !important;
 }
 
 .modal-overlay.active {
-    opacity: 1;
+    display: flex !important;
+    opacity: 1 !important;
 }
 
 .modal-content {
-    background: white;
-    border-radius: 20px;
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    transform: scale(0.9);
-    transition: transform 0.3s ease;
+    background: white !important;
+    border-radius: 20px !important;
+    max-width: 500px !important;
+    width: 90% !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    position: relative !important;
+    z-index: 10000 !important;
+    padding: 32px !important;
 }
+
 
 .modal-overlay.active .modal-content {
     transform: scale(1);
 }
 
-/* ==================== LOADING SPINNER ==================== */
+/* ==================== SPINNER ==================== */
 .spinner {
     display: inline-block;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border: 3px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     border-top-color: white;
     animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
+/* ==================== BULK ACTIONS BAR ==================== */
+#bulkActionsBar {
+    animation: slideInDown 0.3s ease-out;
 }
 
-/* ==================== RESPONSIVE DESIGN ==================== */
-@media (max-width: 1024px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+/* ==================== NOTIFICATIONS ==================== */
+.notification-toast {
+    animation: slideInRight 0.3s ease-out;
 }
 
+/* ==================== RESPONSIVE ==================== */
 @media (max-width: 768px) {
     .table-modern {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
+        border-spacing: 0 8px;
     }
-    
-    .stats-grid {
-        grid-template-columns: 1fr;
+
+    .table-modern thead th {
+        padding: 12px 12px;
+        font-size: 10px;
     }
-    
-    .filter-responsive {
-        flex-direction: column;
-        gap: 12px;
+
+    .table-modern tbody td {
+        padding: 12px;
+        font-size: 13px;
     }
-    
+
+    .stats-card {
+        grid-column: span 1;
+    }
+
     .btn-modern {
-        width: 100%;
-        justify-content: center;
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+
+    .pagination {
+        gap: 4px;
+    }
+
+    .pagination-item {
+        min-width: 36px;
+        height: 36px;
+        padding: 0 8px;
+        font-size: 12px;
+    }
+
+    .empty-state {
+        padding: 60px 20px;
+    }
+
+    .empty-state-icon {
+        width: 100px;
+        height: 100px;
+        font-size: 42px;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        font-size: 18px;
+    }
+
+    .empty-state p {
+        font-size: 14px;
     }
 }
 
@@ -549,94 +717,88 @@
     .card-modern {
         border-radius: 12px;
     }
-    
-    .table-modern thead {
-        display: none;
+
+    .btn-modern {
+        width: 100%;
+        justify-content: center;
     }
-    
-    .table-modern tbody tr {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 16px;
-        padding: 16px;
-        border-radius: 12px;
-    }
-    
-    .table-modern tbody td {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px solid #f1f5f9;
-    }
-    
-    .table-modern tbody td:last-child {
-        border-bottom: none;
-    }
-    
-    .table-modern tbody td::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: #64748b;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+
+    .grid {
+        grid-template-columns: 1fr !important;
     }
 }
 
-/* ==================== PRINT STYLES ==================== */
 @media print {
-    .no-print {
-        display: none !important;
+    .no-print { 
+        display: none !important; 
     }
-    
-    .table-modern tbody tr {
+
+    .table-modern tbody tr { 
+        box-shadow: none; 
+        border: 1px solid #e2e8f0;
+        page-break-inside: avoid;
+    }
+
+    .card-modern {
         box-shadow: none;
         border: 1px solid #e2e8f0;
     }
 }
 
-/* ==================== SCROLLBAR STYLING ==================== */
-::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar { 
+    width: 10px; 
 }
 
-::-webkit-scrollbar-track {
-    background: #f1f5f9;
+::-webkit-scrollbar-track { 
+    background: #f1f5f9; 
+    border-radius: 10px; 
+}
+
+::-webkit-scrollbar-thumb { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
     border-radius: 10px;
+    transition: all 0.3s ease;
 }
 
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 10px;
+::-webkit-scrollbar-thumb:hover { 
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #5568d3 0%, #6a3d91 100%);
+/* ==================== UTILITY ==================== */
+.no-print {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
 }
 
-/* ==================== SELECTION HIGHLIGHT ==================== */
-::selection {
-    background: rgba(102, 126, 234, 0.2);
-    color: inherit;
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-::-moz-selection {
-    background: rgba(102, 126, 234, 0.2);
-    color: inherit;
+.text-muted {
+    color: #94a3b8;
+}
+
+.cursor-pointer {
+    cursor: pointer;
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- ==================== HEADER SECTION ==================== -->
-<header class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-2xl">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- HEADER -->
+<header class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-2xl relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div class="animate-fadeInUp">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                <!-- Title Section -->
                 <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 bg-white/20 backdrop-blur-lg rounded-2xl flex items-center justify-center shadow-lg">
+                    <div class="w-16 h-16 bg-white/20 backdrop-blur-lg rounded-2xl flex items-center justify-center shadow-lg border border-white/30">
                         <i class="fas fa-users-class text-3xl"></i>
                     </div>
                     <div>
@@ -644,15 +806,13 @@
                         <p class="text-indigo-100 mt-1">Manajemen data siswa dan tes RMIB</p>
                     </div>
                 </div>
-                
-                <!-- Action Buttons -->
                 <div class="flex flex-wrap gap-3 no-print">
-                    <a href="{% url 'students:export_csv' %}" class="btn-modern btn-outline bg-white/10 backdrop-blur-lg text-white border-white/30 hover:bg-white/20">
+                    <a href="{% url 'students:export_csv' %}" class="btn-modern btn-outline bg-white/10 backdrop-blur-lg text-white border-white/30 hover:bg-white/20 hover:border-white/50 shadow-lg">
                         <i class="fas fa-file-export"></i>
                         <span>Export CSV</span>
                     </a>
                     {% if request.user.is_staff %}
-                    <a href="{% url 'students:batch_import' %}" class="btn-modern btn-outline bg-white/10 backdrop-blur-lg text-white border-white/30 hover:bg-white/20">
+                    <a href="{% url 'students:batch_import' %}" class="btn-modern btn-outline bg-white/10 backdrop-blur-lg text-white border-white/30 hover:bg-white/20 hover:border-white/50 shadow-lg">
                         <i class="fas fa-file-import"></i>
                         <span>Import Batch</span>
                     </a>
@@ -667,199 +827,137 @@
     </div>
 </header>
 
-<!-- ==================== STATS CARDS SECTION ==================== -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 stats-grid">
-        <!-- Total Students Card -->
+<!-- STATS CARDS -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10 pb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Students -->
         <div class="card-modern stats-card animate-scaleIn delay-100">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="stats-icon gradient-primary text-white">
+                    <div class="stats-icon gradient-primary">
                         <i class="fas fa-users"></i>
                     </div>
-                    <span class="text-xs font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-full">
-                        Total
-                    </span>
+                    <span class="text-xs font-bold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-full">Total</span>
                 </div>
-                <div>
-                    <h3 class="text-3xl font-bold text-gray-900 mb-1">{{ total_students }}</h3>
-                    <p class="text-sm text-gray-600">Total Siswa</p>
-                </div>
-                <div class="mt-4">
-                    <div class="progress-bar">
-                        <div class="progress-bar-fill" style="width: 100%;"></div>
-                    </div>
+                <h3 class="text-4xl font-bold text-gray-900 mb-1">{{ total_students }}</h3>
+                <p class="text-sm text-gray-600 font-medium">Total Siswa</p>
+                <div class="mt-4 progress-bar">
+                    <div class="progress-bar-fill" style="width: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Completed Tests Card -->
+        <!-- Completed Tests -->
         <div class="card-modern stats-card animate-scaleIn delay-200">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="stats-icon gradient-success text-white">
+                    <div class="stats-icon gradient-success">
                         <i class="fas fa-check-circle"></i>
                     </div>
-                    <span class="text-xs font-semibold text-green-600 bg-green-100 px-3 py-1 rounded-full">
-                        {% if total_students > 0 %}
-                            {% widthratio completed_tests total_students 100 %}%
-                        {% else %}
-                            0%
-                        {% endif %}
+                    <span class="text-xs font-bold text-green-600 bg-green-100 px-3 py-1 rounded-full">
+                        {% if total_students > 0 %}{% widthratio completed_tests total_students 100 %}%{% else %}0%{% endif %}
                     </span>
                 </div>
-                <div>
-                    <h3 class="text-3xl font-bold text-gray-900 mb-1">{{ completed_tests }}</h3>
-                    <p class="text-sm text-gray-600">Tes Selesai</p>
-                </div>
-                <div class="mt-4">
-                    <div class="progress-bar">
-                        <div class="progress-bar-fill" style="width: {% if total_students > 0 %}{% widthratio completed_tests total_students 100 %}{% else %}0{% endif %}%; background: linear-gradient(90deg, #10b981 0%, #059669 100%);"></div>
-                    </div>
+                <h3 class="text-4xl font-bold text-gray-900 mb-1">{{ completed_tests }}</h3>
+                <p class="text-sm text-gray-600 font-medium">Tes Selesai</p>
+                <div class="mt-4 progress-bar">
+                    <div class="progress-bar-fill" style="width: {% if total_students > 0 %}{% widthratio completed_tests total_students 100 %}{% else %}0{% endif %}%; background: linear-gradient(90deg, #10b981 0%, #059669 100%);"></div>
                 </div>
             </div>
         </div>
 
-        <!-- In Progress Tests Card -->
+        <!-- In Progress Tests -->
         <div class="card-modern stats-card animate-scaleIn delay-300">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="stats-icon gradient-info text-white">
+                    <div class="stats-icon gradient-info">
                         <i class="fas fa-spinner"></i>
                     </div>
-                    <span class="text-xs font-semibold text-blue-600 bg-blue-100 px-3 py-1 rounded-full">
-                        {% if total_students > 0 %}
-                            {% widthratio in_progress_tests total_students 100 %}%
-                        {% else %}
-                            0%
-                        {% endif %}
+                    <span class="text-xs font-bold text-blue-600 bg-blue-100 px-3 py-1 rounded-full">
+                        {% if total_students > 0 %}{% widthratio in_progress_tests total_students 100 %}%{% else %}0%{% endif %}
                     </span>
                 </div>
-                <div>
-                    <h3 class="text-3xl font-bold text-gray-900 mb-1">{{ in_progress_tests }}</h3>
-                    <p class="text-sm text-gray-600">Sedang Tes</p>
-                </div>
-                <div class="mt-4">
-                    <div class="progress-bar">
-                        <div class="progress-bar-fill" style="width: {% if total_students > 0 %}{% widthratio in_progress_tests total_students 100 %}{% else %}0{% endif %}%; background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);"></div>
-                    </div>
+                <h3 class="text-4xl font-bold text-gray-900 mb-1">{{ in_progress_tests }}</h3>
+                <p class="text-sm text-gray-600 font-medium">Sedang Tes</p>
+                <div class="mt-4 progress-bar">
+                    <div class="progress-bar-fill" style="width: {% if total_students > 0 %}{% widthratio in_progress_tests total_students 100 %}{% else %}0{% endif %}%; background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Pending Tests Card -->
+        <!-- Pending Tests -->
         <div class="card-modern stats-card animate-scaleIn delay-400">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="stats-icon gradient-warning text-white">
+                    <div class="stats-icon gradient-warning">
                         <i class="fas fa-clock"></i>
                     </div>
-                    <span class="text-xs font-semibold text-amber-600 bg-amber-100 px-3 py-1 rounded-full">
-                        {% if total_students > 0 %}
-                            {% widthratio pending_tests total_students 100 %}%
-                        {% else %}
-                            0%
-                        {% endif %}
+                    <span class="text-xs font-bold text-amber-600 bg-amber-100 px-3 py-1 rounded-full">
+                        {% if total_students > 0 %}{% widthratio pending_tests total_students 100 %}%{% else %}0%{% endif %}
                     </span>
                 </div>
-                <div>
-                    <h3 class="text-3xl font-bold text-gray-900 mb-1">{{ pending_tests }}</h3>
-                    <p class="text-sm text-gray-600">Belum Tes</p>
-                </div>
-                <div class="mt-4">
-                    <div class="progress-bar">
-                        <div class="progress-bar-fill" style="width: {% if total_students > 0 %}{% widthratio pending_tests total_students 100 %}{% else %}0{% endif %}%; background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);"></div>
-                    </div>
+                <h3 class="text-4xl font-bold text-gray-900 mb-1">{{ pending_tests }}</h3>
+                <p class="text-sm text-gray-600 font-medium">Belum Tes</p>
+                <div class="mt-4 progress-bar">
+                    <div class="progress-bar-fill" style="width: {% if total_students > 0 %}{% widthratio pending_tests total_students 100 %}{% else %}0{% endif %}%; background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);"></div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ==================== SEARCH & FILTER SECTION ==================== -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+<!-- SEARCH & FILTER -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
     <div class="card-modern p-6 animate-fadeInUp">
         <form method="get" action="{% url 'students:list' %}" class="space-y-6">
-            <!-- Search Bar -->
+            <!-- Search Input -->
             <div class="search-box">
                 <i class="search-icon fas fa-search"></i>
-                <input 
-                    type="text" 
-                    name="search" 
-                    value="{{ search }}"
-                    placeholder="Cari nama, NISN, kelas, atau tempat lahir..."
-                    class="w-full px-4 py-3 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-indigo-500"
-                >
+                <input type="text" name="search" value="{{ search }}" placeholder="Cari nama, NISN, kelas, atau tempat lahir..." class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-all">
             </div>
 
-            <!-- Filters Grid -->
+            <!-- Filter Dropdowns -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <!-- Class Filter -->
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-chalkboard-teacher text-indigo-600 mr-2"></i>Kelas
-                    </label>
-                    <select name="class" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
+                    <label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-chalkboard-teacher text-indigo-600 mr-2"></i>Kelas</label>
+                    <select name="class" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-all bg-white font-medium">
                         <option value="">Semua Kelas</option>
-                        {% for class in available_classes %}
-                        <option value="{{ class }}" {% if class_filter == class %}selected{% endif %}>
-                            Kelas {{ class }}
-                        </option>
-                        {% endfor %}
+                        {% for class in available_classes %}<option value="{{ class }}" {% if class_filter == class %}selected{% endif %}>Kelas {{ class }}</option>{% endfor %}
                     </select>
                 </div>
 
                 <!-- Status Filter -->
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-tasks text-green-600 mr-2"></i>Status Tes
-                    </label>
-                    <select name="status" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
+                    <label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-tasks text-green-600 mr-2"></i>Status Tes</label>
+                    <select name="status" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-all bg-white font-medium">
                         <option value="">Semua Status</option>
-                        {% for status_value, status_label in status_choices %}
-                        <option value="{{ status_value }}" {% if status_filter == status_value %}selected{% endif %}>
-                            {{ status_label }}
-                        </option>
-                        {% endfor %}
+                        {% for status_value, status_label in status_choices %}<option value="{{ status_value }}" {% if status_filter == status_value %}selected{% endif %}>{{ status_label }}</option>{% endfor %}
                     </select>
                 </div>
 
                 <!-- Gender Filter -->
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-venus-mars text-purple-600 mr-2"></i>Jenis Kelamin
-                    </label>
-                    <select name="gender" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
+                    <label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-venus-mars text-purple-600 mr-2"></i>Jenis Kelamin</label>
+                    <select name="gender" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-all bg-white font-medium">
                         <option value="">Semua</option>
-                        {% for gender_value, gender_label in gender_choices %}
-                        <option value="{{ gender_value }}" {% if gender_filter == gender_value %}selected{% endif %}>
-                            {{ gender_label }}
-                        </option>
-                        {% endfor %}
+                        {% for gender_value, gender_label in gender_choices %}<option value="{{ gender_value }}" {% if gender_filter == gender_value %}selected{% endif %}>{{ gender_label }}</option>{% endfor %}
                     </select>
                 </div>
 
                 <!-- Year Filter -->
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-calendar text-blue-600 mr-2"></i>Tahun Masuk
-                    </label>
-                    <select name="year" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
+                    <label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-calendar text-blue-600 mr-2"></i>Tahun Masuk</label>
+                    <select name="year" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-all bg-white font-medium">
                         <option value="">Semua Tahun</option>
-                        {% for year in available_years %}
-                        <option value="{{ year }}" {% if year_filter == year|stringformat:"s" %}selected{% endif %}>
-                            {{ year }}
-                        </option>
-                        {% endfor %}
+                        {% for year in available_years %}<option value="{{ year }}" {% if year_filter == year|stringformat:"s" %}selected{% endif %}>{{ year }}</option>{% endfor %}
                     </select>
                 </div>
 
-                <!-- Sort -->
+                <!-- Sort Filter -->
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-sort text-gray-600 mr-2"></i>Urutkan
-                    </label>
-                    <select name="sort" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
+                    <label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-sort text-gray-600 mr-2"></i>Urutkan</label>
+                    <select name="sort" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-all bg-white font-medium">
                         <option value="">Default</option>
                         <option value="name" {% if sort == 'name' %}selected{% endif %}>Nama A-Z</option>
                         <option value="nisn" {% if sort == 'nisn' %}selected{% endif %}>NISN</option>
@@ -872,90 +970,45 @@
 
             <!-- Action Buttons -->
             <div class="flex flex-wrap gap-3">
-                <button type="submit" class="btn-modern btn-primary">
-                    <i class="fas fa-filter"></i>
-                    <span>Terapkan Filter</span>
-                </button>
-                <a href="{% url 'students:list' %}" class="btn-modern btn-outline">
-                    <i class="fas fa-redo"></i>
-                    <span>Reset</span>
-                </a>
+                <button type="submit" class="btn-modern btn-primary"><i class="fas fa-filter"></i><span>Terapkan Filter</span></button>
+                <a href="{% url 'students:list' %}" class="btn-modern btn-outline"><i class="fas fa-redo"></i><span>Reset</span></a>
             </div>
 
             <!-- Active Filters Display -->
             {% if search or class_filter or status_filter or gender_filter or year_filter %}
-            <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-gray-200">
-                <span class="text-sm font-semibold text-gray-700">Filter Aktif:</span>
-                {% if search %}
-                <div class="filter-tag">
-                    <i class="fas fa-search text-xs"></i>
-                    <span>{{ search }}</span>
-                    <button type="button" onclick="removeFilter('search')">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
-                </div>
-                {% endif %}
-                {% if class_filter %}
-                <div class="filter-tag">
-                    <i class="fas fa-chalkboard-teacher text-xs"></i>
-                    <span>Kelas {{ class_filter }}</span>
-                    <button type="button" onclick="removeFilter('class')">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
-                </div>
-                {% endif %}
-                {% if status_filter %}
-                <div class="filter-tag">
-                    <i class="fas fa-tasks text-xs"></i>
-                    <span>{{ status_filter|capfirst }}</span>
-                    <button type="button" onclick="removeFilter('status')">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
-                </div>
-                {% endif %}
-                {% if gender_filter %}
-                <div class="filter-tag">
-                    <i class="fas fa-venus-mars text-xs"></i>
-                    <span>{% for g_val, g_label in gender_choices %}{% if g_val == gender_filter %}{{ g_label }}{% endif %}{% endfor %}</span>
-                    <button type="button" onclick="removeFilter('gender')">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
-                </div>
-                {% endif %}
-                {% if year_filter %}
-                <div class="filter-tag">
-                    <i class="fas fa-calendar text-xs"></i>
-                    <span>{{ year_filter }}</span>
-                    <button type="button" onclick="removeFilter('year')">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
-                </div>
-                {% endif %}
+            <div class="flex flex-wrap items-center gap-3 pt-4 border-t-2 border-gray-200">
+                <span class="text-sm font-bold text-gray-700">Filter Aktif:</span>
+                {% if search %}<div class="filter-tag"><i class="fas fa-search text-xs"></i><span>{{ search }}</span><button type="button" onclick="removeFilter('search')" class="hover:scale-125"><i class="fas fa-times text-xs"></i></button></div>{% endif %}
+                {% if class_filter %}<div class="filter-tag"><i class="fas fa-chalkboard-teacher text-xs"></i><span>Kelas {{ class_filter }}</span><button type="button" onclick="removeFilter('class')" class="hover:scale-125"><i class="fas fa-times text-xs"></i></button></div>{% endif %}
+                {% if status_filter %}<div class="filter-tag"><i class="fas fa-tasks text-xs"></i><span>{{ status_filter|capfirst }}</span><button type="button" onclick="removeFilter('status')" class="hover:scale-125"><i class="fas fa-times text-xs"></i></button></div>{% endif %}
+                {% if gender_filter %}<div class="filter-tag"><i class="fas fa-venus-mars text-xs"></i><span>{% for g_val, g_label in gender_choices %}{% if g_val == gender_filter %}{{ g_label }}{% endif %}{% endfor %}</span><button type="button" onclick="removeFilter('gender')" class="hover:scale-125"><i class="fas fa-times text-xs"></i></button></div>{% endif %}
+                {% if year_filter %}<div class="filter-tag"><i class="fas fa-calendar text-xs"></i><span>{{ year_filter }}</span><button type="button" onclick="removeFilter('year')" class="hover:scale-125"><i class="fas fa-times text-xs"></i></button></div>{% endif %}
             </div>
             {% endif %}
         </form>
     </div>
 </section>
 
-<!-- ==================== BULK ACTIONS (Staff Only) ==================== -->
+<!-- BULK ACTIONS BAR -->
 {% if request.user.is_staff %}
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 no-print">
-    <div class="card-modern p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200" id="bulkActionsBar" style="display: none;">
-        <div class="flex flex-wrap items-center justify-between gap-4">
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 no-print">
+    <div class="card-modern p-4 bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 border-2 border-purple-300" id="bulkActionsBar" style="display: none;">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
+                <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-lg">
                     <span id="selectedCount">0</span>
                 </div>
-                <span class="text-sm font-semibold text-gray-700">siswa dipilih</span>
+                <div>
+                    <p class="text-sm font-bold text-gray-900">Siswa Terpilih</p>
+                    <p class="text-xs text-gray-600">Pilih aksi untuk mengelola data</p>
+                </div>
             </div>
             <div class="flex flex-wrap gap-2">
                 <button type="button" onclick="clearSelection()" class="btn-modern btn-outline text-sm">
-                    <i class="fas fa-times"></i>
-                    <span>Batal</span>
+                    <i class="fas fa-times"></i><span>Batal</span>
                 </button>
-                <button type="button" onclick="bulkDelete()" class="btn-modern text-sm" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white;">
-                    <i class="fas fa-trash-alt"></i>
-                    <span>Hapus Terpilih</span>
+                <button type="button" onclick="confirmBulkDelete()" class="btn-modern btn-danger text-sm">
+                    <i class="fas fa-trash-alt"></i><span>Hapus Terpilih</span>
                 </button>
             </div>
         </div>
@@ -963,30 +1016,22 @@
 </section>
 {% endif %}
 
-<!-- ==================== DATA TABLE SECTION ==================== -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 mb-12">
+<!-- TABLE SECTION -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
     <div class="card-modern p-6">
         <!-- Table Header -->
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-                <h2 class="text-xl font-bold text-gray-900">
-                    <i class="fas fa-table text-indigo-600 mr-2"></i>
-                    Data Siswa
-                </h2>
-                <p class="text-sm text-gray-600 mt-1">
-                    Menampilkan 
-                    <span class="font-semibold text-indigo-600">
-                        {{ page_obj.start_index }}-{{ page_obj.end_index }}
-                    </span> 
-                    dari 
-                    <span class="font-semibold text-indigo-600">{{ page_obj.paginator.count }}</span> 
-                    siswa
+                <h2 class="text-2xl font-bold text-gray-900"><i class="fas fa-table text-indigo-600 mr-3"></i>Data Siswa</h2>
+                <p class="text-sm text-gray-600 mt-2">
+                    Menampilkan <span class="font-bold text-indigo-600">{{ page_obj.start_index }}-{{ page_obj.end_index }}</span> 
+                    dari <span class="font-bold text-indigo-600">{{ page_obj.paginator.count }}</span> siswa
                 </p>
             </div>
             {% if request.user.is_staff %}
             <div class="flex items-center gap-2 no-print">
-                <label class="inline-flex items-center gap-2 cursor-pointer text-sm font-semibold text-gray-700">
-                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)" class="w-5 h-5 rounded border-2 border-gray-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500">
+                <label class="inline-flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-700 px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)" class="w-5 h-5 rounded border-2 border-gray-300 text-indigo-600 cursor-pointer">
                     <span>Pilih Semua</span>
                 </label>
             </div>
@@ -996,131 +1041,141 @@
         <!-- Table -->
         <div class="overflow-x-auto">
             {% if students %}
-            <table class="table-modern w-full">
+            <table class="table-modern">
                 <thead>
                     <tr>
-                        {% if request.user.is_staff %}
-                        <th class="no-print" style="width: 50px;">
-                            <input type="checkbox" id="selectAllHeader" onchange="toggleSelectAll(this)" class="w-5 h-5 rounded border-2 border-gray-300 text-indigo-600">
-                        </th>
-                        {% endif %}
-                        <th style="width: 80px;">Avatar</th>
-                        <th>Siswa</th>
-                        <th>NISN</th>
-                        <th>Kelas</th>
-                        <th>Jenis Kelamin</th>
-                        <th>Status Tes</th>
-                        <th>Prestasi</th>
-                        <th class="no-print">Aksi</th>
+                        {% if request.user.is_staff %}<th class="no-print" style="width: 50px;"><input type="checkbox" id="selectAllHeader" onchange="toggleSelectAll(this)" class="w-5 h-5 rounded border-2 border-gray-300 text-indigo-600 cursor-pointer"></th>{% endif %}
+                        <th style="width: 80px;"><i class="fas fa-image text-purple-600 mr-2"></i>Avatar</th>
+                        <th><i class="fas fa-user text-blue-600 mr-2"></i>Siswa</th>
+                        <th><i class="fas fa-id-card text-green-600 mr-2"></i>NISN</th>
+                        <th><i class="fas fa-chalkboard text-indigo-600 mr-2"></i>Kelas</th>
+                        <th><i class="fas fa-venus-mars text-pink-600 mr-2"></i>Jenis Kelamin</th>
+                        <th><i class="fas fa-clipboard-check text-orange-600 mr-2"></i>Status Tes</th>
+                        <th><i class="fas fa-trophy text-amber-600 mr-2"></i>Prestasi</th>
+                        <th class="no-print"><i class="fas fa-cog text-gray-600 mr-2"></i>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for student in students %}
-                    <tr class="animate-fadeInUp" style="animation-delay: {{ forloop.counter|add:"-1"|stringformat:"s" }}00ms;">
+                    <tr class="animate-fadeInUp" style="animation-delay: {{ forloop.counter|add:'-1'|stringformat:'d'}}00ms;">
+                        <!-- Checkbox -->
                         {% if request.user.is_staff %}
-                        <td class="no-print" data-label="">
-                            <input type="checkbox" name="student_ids" value="{{ student.pk }}" onchange="updateBulkActions()" class="student-checkbox w-5 h-5 rounded border-2 border-gray-300 text-indigo-600">
+                        <td class="no-print">
+                            <input type="checkbox" value="{{ student.pk }}" onchange="updateBulkActions()" class="student-checkbox w-5 h-5 rounded border-2 border-gray-300 text-indigo-600 cursor-pointer">
                         </td>
                         {% endif %}
-                        <td data-label="Avatar">
-                            <div class="avatar-modern {% cycle 'gradient-primary' 'gradient-success' 'gradient-info' 'gradient-warning' %}">
+
+                        <!-- Avatar -->
+                        <td>
+                            <div class="avatar-modern {% cycle 'gradient-primary' 'gradient-success' 'gradient-info' 'gradient-warning' 'gradient-danger' 'gradient-pink' 'gradient-cyan' 'gradient-orange' 'gradient-teal' %}">
                                 {{ student.name|first|upper }}
-                                <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full" title="Akun Aktif"></span>
                             </div>
                         </td>
-                        <td data-label="Nama">
+
+                        <!-- Student Info -->
+                        <td>
                             <div>
-                                <div class="font-semibold text-gray-900">{{ student.name }}</div>
-                                <div class="text-xs text-gray-500 mt-1">
-                                    <i class="fas fa-map-marker-alt mr-1"></i>{{ student.birth_place|default:"—" }}
-                                </div>
-                                <div class="text-xs text-gray-500">
-                                    <i class="fas fa-birthday-cake mr-1"></i>{{ student.birth_date|date:"d M Y" }}
+                                <div class="font-bold text-gray-900">{{ student.name }}</div>
+                                <div class="text-xs text-gray-500 mt-1.5 space-y-1">
+                                    <div><i class="fas fa-map-marker-alt mr-1.5 text-red-500"></i>{{ student.birth_place|default:"—" }}</div>
+                                    <div><i class="fas fa-birthday-cake mr-1.5 text-orange-500"></i>{{ student.birth_date|date:"d M Y" }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td data-label="NISN">
+
+                        <!-- NISN -->
+                        <td>
                             <div class="flex items-center gap-2">
-                                <span class="font-mono text-sm font-semibold text-gray-700">{{ student.nisn }}</span>
-                                <button onclick="copyToClipboard('{{ student.nisn }}')" class="tooltip text-gray-400 hover:text-indigo-600 transition">
+                                <span class="font-mono text-sm font-bold text-gray-800">{{ student.nisn }}</span>
+                                <button onclick="copyToClipboard('{{ student.nisn }}')" class="tooltip text-gray-400 hover:text-indigo-600 transition-colors">
                                     <i class="fas fa-copy text-sm"></i>
                                     <span class="tooltiptext">Copy NISN</span>
                                 </button>
                             </div>
                         </td>
-                        <td data-label="Kelas">
-                            <span class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg font-semibold text-sm">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                                {{ student.student_class }}
+
+                        <!-- Class -->
+                        <td>
+                            <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-lg font-bold text-sm">
+                                <i class="fas fa-chalkboard-teacher"></i>{{ student.student_class }}
                             </span>
                         </td>
-                        <td data-label="Jenis Kelamin">
+
+                        <!-- Gender -->
+                        <td>
                             {% if student.gender == 'L' %}
-                            <span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-lg font-semibold text-sm">
-                                <i class="fas fa-mars"></i>
-                                Laki-laki
+                            <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg font-bold text-sm">
+                                <i class="fas fa-mars"></i>Laki-laki
                             </span>
                             {% else %}
-                            <span class="inline-flex items-center gap-2 px-3 py-1 bg-pink-100 text-pink-700 rounded-lg font-semibold text-sm">
-                                <i class="fas fa-venus"></i>
-                                Perempuan
+                            <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-pink-100 text-pink-700 rounded-lg font-bold text-sm">
+                                <i class="fas fa-venus"></i>Perempuan
                             </span>
                             {% endif %}
                         </td>
-                        <td data-label="Status">
+
+                        <!-- Test Status -->
+                        <td>
                             {% if student.test_status == 'completed' %}
                             <span class="badge-modern badge-completed">
-                                <i class="fas fa-check-circle"></i>
-                                Selesai
+                                <i class="fas fa-check-circle"></i>Selesai
                             </span>
                             {% elif student.test_status == 'in_progress' %}
                             <span class="badge-modern badge-in-progress">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                Sedang Tes
+                                <i class="fas fa-spinner fa-spin"></i>Sedang Tes
                             </span>
                             {% else %}
                             <span class="badge-modern badge-pending">
-                                <i class="fas fa-clock"></i>
-                                Belum Tes
+                                <i class="fas fa-clock"></i>Belum Tes
                             </span>
                             {% endif %}
                         </td>
-                        <td data-label="Prestasi">
-                            {% if student.prestasi.count > 0 %}
+
+                        <!-- Achievements -->
+                        <td>
+                            {% if student.achievements.count > 0 %}
                             <div class="tooltip">
-                                <span class="inline-flex items-center gap-2 px-3 py-1 bg-amber-100 text-amber-700 rounded-lg font-semibold text-sm">
-                                    <i class="fas fa-trophy"></i>
-                                    {{ student.prestasi.count }}
+                                <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-100 text-amber-700 rounded-lg font-bold text-sm cursor-help">
+                                    <i class="fas fa-trophy"></i>{{ student.achievements.count }}
                                 </span>
-                                <span class="tooltiptext">{{ student.prestasi.count }} Prestasi</span>
+                                <span class="tooltiptext">{{ student.achievements.count }} Prestasi</span>
                             </div>
                             {% else %}
-                            <span class="text-sm text-gray-400">—</span>
+                            <span class="text-sm text-gray-400 font-medium">—</span>
                             {% endif %}
                         </td>
-                        <td data-label="Aksi" class="no-print">
+
+                        <!-- Actions -->
+                        <td class="no-print">
                             <div class="flex flex-wrap gap-2">
-                                <a href="{% url 'students:detail' student.pk %}" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition">
+                                <!-- View Detail -->
+                                <a href="{% url 'students:detail' student.pk %}" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-110">
                                     <i class="fas fa-eye"></i>
                                     <span class="tooltiptext">Lihat Detail</span>
                                 </a>
+
+                                <!-- Edit -->
                                 {% if request.user.is_staff %}
-                                <a href="{% url 'students:update' student.pk %}" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-100 text-amber-600 hover:bg-amber-600 hover:text-white transition">
+                                <a href="{% url 'students:update' student.pk %}" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-100 text-amber-600 hover:bg-amber-600 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-110">
                                     <i class="fas fa-edit"></i>
-                                    <span class="tooltiptext">Edit</span>
+                                    <span class="tooltiptext">Edit Data</span>
                                 </a>
-                                <button onclick="deleteStudent({{ student.pk }}, '{{ student.name|escapejs }}')" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition">
+
+                                <!-- Delete -->
+                                <button type="button" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-110" onclick="console.log('Delete clicked'); deleteStudent({{ student.pk }}, '{{ student.name|escapejs }}'); return false;">
                                     <i class="fas fa-trash-alt"></i>
-                                    <span class="tooltiptext">Hapus</span>
+                                    <span class="tooltiptext">Hapus Siswa</span>
                                 </button>
                                 {% endif %}
+
+                                <!-- Test or Result -->
                                 {% if student.test_status != 'completed' %}
-                                <a href="{% url 'students:rmib_test' student.pk %}" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white transition">
+                                <a href="{% url 'students:rmib_test' student.pk %}" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-110">
                                     <i class="fas fa-clipboard-list"></i>
-                                    <span class="tooltiptext">Mulai Tes RMIB</span>
+                                    <span class="tooltiptext">Mulai Tes</span>
                                 </a>
                                 {% else %}
-                                <a href="{% url 'students:rmib_result' student.pk %}" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-green-100 text-green-600 hover:bg-green-600 hover:text-white transition">
+                                <a href="{% url 'students:rmib_result' student.pk %}" class="tooltip inline-flex items-center justify-center w-10 h-10 rounded-lg bg-green-100 text-green-600 hover:bg-green-600 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-110">
                                     <i class="fas fa-chart-bar"></i>
                                     <span class="tooltiptext">Lihat Hasil</span>
                                 </a>
@@ -1137,139 +1192,116 @@
                 <div class="empty-state-icon">
                     <i class="fas fa-users-slash"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-900 mb-2">Tidak Ada Data</h3>
-                <p class="text-gray-600 mb-6">
+                <h3>Tidak Ada Data</h3>
+                <p>
                     {% if search or class_filter or status_filter or gender_filter or year_filter %}
-                    Tidak ada siswa yang sesuai dengan filter yang dipilih.
-                    <br>Coba ubah atau reset filter pencarian Anda.
+                    Tidak ada siswa sesuai dengan filter yang Anda terapkan.
                     {% else %}
-                    Belum ada data siswa dalam sistem.
-                    <br>Mulai tambahkan siswa dengan klik tombol di bawah.
+                    Belum ada data siswa dalam sistem. Silakan tambahkan data siswa terlebih dahulu.
                     {% endif %}
                 </p>
-                {% if search or class_filter or status_filter or gender_filter or year_filter %}
-                <a href="{% url 'students:list' %}" class="btn-modern btn-outline">
-                    <i class="fas fa-redo"></i>
-                    <span>Reset Filter</span>
-                </a>
-                {% else %}
-                <a href="{% url 'students:create' %}" class="btn-modern btn-primary">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Tambah Siswa Pertama</span>
-                </a>
-                {% endif %}
+                <div class="flex flex-wrap gap-3 justify-center">
+                    {% if search or class_filter or status_filter or gender_filter or year_filter %}
+                    <a href="{% url 'students:list' %}" class="btn-modern btn-primary">
+                        <i class="fas fa-redo"></i><span>Reset Filter</span>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'students:create' %}" class="btn-modern btn-primary">
+                        <i class="fas fa-user-plus"></i><span>Tambah Siswa</span>
+                    </a>
+                    {% endif %}
+                </div>
             </div>
             {% endif %}
         </div>
 
         <!-- Pagination -->
         {% if page_obj.paginator.num_pages > 1 %}
-        <div class="mt-8 pt-6 border-t border-gray-200">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                <!-- Page Info -->
-                <div class="text-sm text-gray-600">
-                    Halaman <span class="font-semibold text-indigo-600">{{ page_obj.number }}</span> dari <span class="font-semibold text-indigo-600">{{ page_obj.paginator.num_pages }}</span>
+        <div class="mt-8 pt-6 border-t-2 border-gray-200">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="text-sm font-medium text-gray-700">
+                    Halaman <span class="font-bold text-indigo-600">{{ page_obj.number }}</span> 
+                    dari <span class="font-bold text-indigo-600">{{ page_obj.paginator.num_pages }}</span>
+                    <span class="text-gray-500 ml-2">(Total: {{ page_obj.paginator.count }} siswa)</span>
                 </div>
-
-                <!-- Pagination Controls -->
-                <div class="pagination">
+                <nav class="pagination">
                     {% if page_obj.has_previous %}
-                    <a href="?page=1{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item">
+                    <a href="?page=1{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item" title="Halaman Pertama">
                         <i class="fas fa-angle-double-left"></i>
                     </a>
-                    <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item">
+                    <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item" title="Halaman Sebelumnya">
                         <i class="fas fa-angle-left"></i>
                     </a>
                     {% else %}
-                    <span class="pagination-item disabled">
-                        <i class="fas fa-angle-double-left"></i>
-                    </span>
-                    <span class="pagination-item disabled">
-                        <i class="fas fa-angle-left"></i>
-                    </span>
+                    <span class="pagination-item disabled" title="Tidak ada halaman sebelumnya"><i class="fas fa-angle-double-left"></i></span>
+                    <span class="pagination-item disabled" title="Tidak ada halaman sebelumnya"><i class="fas fa-angle-left"></i></span>
                     {% endif %}
 
                     {% for num in page_obj.paginator.page_range %}
                         {% if page_obj.number == num %}
-                        <span class="pagination-item active">{{ num }}</span>
+                        <span class="pagination-item active" title="Halaman {{ num }} (Saat ini)">{{ num }}</span>
                         {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item">{{ num }}</a>
+                        <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item" title="Halaman {{ num }}">{{ num }}</a>
                         {% elif num == 1 or num == page_obj.paginator.num_pages %}
-                        <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item">{{ num }}</a>
-                        {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
-                        <span class="pagination-item disabled">...</span>
+                        <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item" title="Halaman {{ num }}">{{ num }}</a>
                         {% endif %}
                     {% endfor %}
 
                     {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item">
+                    <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item" title="Halaman Selanjutnya">
                         <i class="fas fa-angle-right"></i>
                     </a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item">
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if class_filter %}&class={{ class_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if gender_filter %}&gender={{ gender_filter }}{% endif %}{% if year_filter %}&year={{ year_filter }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-item" title="Halaman Terakhir">
                         <i class="fas fa-angle-double-right"></i>
                     </a>
                     {% else %}
-                    <span class="pagination-item disabled">
-                        <i class="fas fa-angle-right"></i>
-                    </span>
-                    <span class="pagination-item disabled">
-                        <i class="fas fa-angle-double-right"></i>
-                    </span>
+                    <span class="pagination-item disabled" title="Tidak ada halaman selanjutnya"><i class="fas fa-angle-right"></i></span>
+                    <span class="pagination-item disabled" title="Tidak ada halaman selanjutnya"><i class="fas fa-angle-double-right"></i></span>
                     {% endif %}
-                </div>
+                </nav>
             </div>
         </div>
         {% endif %}
     </div>
 </section>
 
-<!-- ==================== DELETE CONFIRMATION MODAL ==================== -->
+<!-- DELETE MODAL -->
 <div id="deleteModal" class="modal-overlay" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="p-6">
-            <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-red-100">
-                <i class="fas fa-exclamation-triangle text-3xl text-red-600"></i>
+        <div class="p-8">
+            <div class="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-red-100 shadow-lg">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-600"></i>
             </div>
-            <h3 class="text-2xl font-bold text-center text-gray-900 mb-2">Konfirmasi Hapus</h3>
-            <p class="text-center text-gray-600 mb-6">
-                Anda yakin ingin menghapus siswa <strong id="studentName"></strong>?
-                <br>Tindakan ini tidak dapat dibatalkan.
+            <h3 class="text-3xl font-bold text-center text-gray-900 mb-3">Konfirmasi Hapus</h3>
+            <p class="text-center text-gray-600 mb-8 leading-relaxed">
+                Anda yakin ingin menghapus <strong class="text-gray-900" id="studentName">Siswa</strong>?
+                <br>
+                <span class="text-red-600 font-semibold">Tindakan ini tidak dapat dibatalkan dan akan menghapus semua data terkait.</span>
             </p>
             <div class="flex gap-3">
-                <button type="button" onclick="closeDeleteModal()" class="flex-1 btn-modern btn-outline">
-                    <i class="fas fa-times"></i>
-                    <span>Batal</span>
-                </button>
-                <button type="button" onclick="confirmDelete()" class="flex-1 btn-modern" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white;">
-                    <i class="fas fa-trash-alt"></i>
-                    <span>Ya, Hapus</span>
-                </button>
+                <button type="button" onclick="closeDeleteModal()" class="flex-1 btn-modern btn-outline"><i class="fas fa-times"></i><span>Batal</span></button>
+                <button type="button" onclick="confirmDelete()" class="flex-1 btn-modern btn-danger"><i class="fas fa-trash-alt"></i><span>Ya, Hapus</span></button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ==================== BULK DELETE CONFIRMATION MODAL ==================== -->
+<!-- BULK DELETE MODAL -->
 <div id="bulkDeleteModal" class="modal-overlay" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="p-6">
-            <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-red-100">
-                <i class="fas fa-exclamation-triangle text-3xl text-red-600"></i>
+        <div class="p-8">
+            <div class="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-red-100 shadow-lg">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-600"></i>
             </div>
-            <h3 class="text-2xl font-bold text-center text-gray-900 mb-2">Konfirmasi Hapus Massal</h3>
-            <p class="text-center text-gray-600 mb-6">
-                Anda yakin ingin menghapus <strong id="bulkCount"></strong> siswa yang dipilih?
-                <br>Tindakan ini tidak dapat dibatalkan.
+            <h3 class="text-3xl font-bold text-center text-gray-900 mb-3">Konfirmasi Hapus Massal</h3>
+            <p class="text-center text-gray-600 mb-8 leading-relaxed">
+                Anda yakin ingin menghapus <strong class="text-red-600 text-xl" id="bulkCount">0</strong> siswa?
+                <br>
+                <span class="text-red-600 font-semibold">Tindakan ini tidak dapat dibatalkan dan akan menghapus semua data terkait dari masing-masing siswa.</span>
             </p>
             <div class="flex gap-3">
-                <button type="button" onclick="closeBulkDeleteModal()" class="flex-1 btn-modern btn-outline">
-                    <i class="fas fa-times"></i>
-                    <span>Batal</span>
-                </button>
-                <button type="button" onclick="confirmBulkDelete()" class="flex-1 btn-modern" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white;">
-                    <i class="fas fa-trash-alt"></i>
-                    <span>Ya, Hapus Semua</span>
-                </button>
+                <button type="button" onclick="closeBulkDeleteModal()" class="flex-1 btn-modern btn-outline"><i class="fas fa-times"></i><span>Batal</span></button>
+                <button type="button" onclick="confirmBulkDelete()" class="flex-1 btn-modern btn-danger"><i class="fas fa-trash-alt"></i><span>Ya, Hapus Semua</span></button>
             </div>
         </div>
     </div>
@@ -1279,7 +1311,11 @@
 
 {% block extra_js %}
 <script>
-// ==================== CSRF TOKEN SETUP ====================
+// ==================== UTILITIES ====================
+console.log('CSRF Token:', getCookie('csrftoken'));
+console.log('Bulk bar:', document.getElementById('bulkActionsBar'));
+console.log('Delete modal:', document.getElementById('deleteModal'));
+
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -1297,16 +1333,14 @@ function getCookie(name) {
 
 const csrftoken = getCookie('csrftoken');
 
-// ==================== COPY TO CLIPBOARD ====================
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-        showNotification('NISN berhasil disalin!', 'success');
-    }).catch(err => {
-        showNotification('Gagal menyalin NISN', 'error');
+        showNotification('✅ NISN berhasil disalin!', 'success', 3000);
+    }).catch(() => {
+        showNotification('❌ Gagal menyalin NISN', 'error', 3000);
     });
 }
 
-// ==================== FILTER MANAGEMENT ====================
 function removeFilter(filterName) {
     const url = new URL(window.location.href);
     url.searchParams.delete(filterName);
@@ -1319,14 +1353,13 @@ let selectedStudents = new Set();
 function updateBulkActions() {
     const checkboxes = document.querySelectorAll('.student-checkbox:checked');
     selectedStudents = new Set(Array.from(checkboxes).map(cb => cb.value));
-    
     const count = selectedStudents.size;
     const bulkBar = document.getElementById('bulkActionsBar');
     const countElement = document.getElementById('selectedCount');
     
     if (count > 0) {
         bulkBar.style.display = 'block';
-        countElement.textContent = count;
+        if (countElement) countElement.textContent = count;
     } else {
         bulkBar.style.display = 'none';
     }
@@ -1360,7 +1393,7 @@ function clearSelection() {
 
 function bulkDelete() {
     if (selectedStudents.size === 0) {
-        showNotification('Tidak ada siswa yang dipilih', 'warning');
+        showNotification('❌ Tidak ada siswa yang dipilih', 'warning', 3000);
         return;
     }
     
@@ -1368,6 +1401,8 @@ function bulkDelete() {
     const modal = document.getElementById('bulkDeleteModal');
     modal.classList.add('active');
 }
+console.log('Selected students:', selectedStudents);
+console.log('Array:', Array.from(selectedStudents));
 
 function confirmBulkDelete() {
     const deleteBtn = event.target.closest('button');
@@ -1376,29 +1411,41 @@ function confirmBulkDelete() {
     deleteBtn.disabled = true;
     deleteBtn.innerHTML = '<span class="spinner"></span> Menghapus...';
     
-    fetch('{% url "students:bulk_delete" %}', {
+    const studentIdArray = Array.from(selectedStudents);
+    console.log('Bulk delete IDs:', studentIdArray);
+    console.log('Request body:', {student_ids: studentIdArray});
+    
+    fetch('/students/bulk-delete/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         },
         body: JSON.stringify({
-            student_ids: Array.from(selectedStudents)
+            student_ids: studentIdArray
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+    })
     .then(data => {
+        console.log('Bulk delete response:', data);
         if (data.success) {
-            showNotification(`${data.deleted_count} siswa berhasil dihapus`, 'success');
+            showNotification(`✅ ${data.deleted_count} siswa berhasil dihapus!`, 'success', 2000);
+            closeBulkDeleteModal();
+            clearSelection();
             setTimeout(() => {
                 window.location.reload();
-            }, 1500);
+            }, 2000);
         } else {
-            throw new Error(data.message || 'Terjadi kesalahan');
+            throw new Error(data.message || 'Gagal menghapus');
         }
     })
     .catch(error => {
-        showNotification(error.message, 'error');
+        console.error('Bulk delete error:', error);
+        showNotification('❌ ' + error.message, 'error', 4000);
         deleteBtn.disabled = false;
         deleteBtn.innerHTML = originalContent;
     });
@@ -1418,6 +1465,10 @@ function deleteStudent(studentId, studentName) {
     
     const modal = document.getElementById('deleteModal');
     modal.classList.add('active');
+    modal.style.display = 'flex';
+    modal.style.visibility = 'visible';
+    console.log('Modal:', modal);
+    console.log('Modal classes:', modal.className);
 }
 
 function confirmDelete() {
@@ -1429,26 +1480,36 @@ function confirmDelete() {
     deleteBtn.disabled = true;
     deleteBtn.innerHTML = '<span class="spinner"></span> Menghapus...';
     
-    fetch(`/students/${deleteStudentId}/delete/`, {
+    console.log('Deleting student ID:', deleteStudentId);
+    
+    // ✅ GANTI KE delete-ajax ENDPOINT
+    fetch(`/students/${deleteStudentId}/delete-ajax/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
-        }
+        },
+        body: JSON.stringify({})
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+    })
     .then(data => {
+        console.log('Delete response:', data);
         if (data.success) {
-            showNotification('Siswa berhasil dihapus', 'success');
+            showNotification('✅ Siswa berhasil dihapus!', 'success', 2000);
             setTimeout(() => {
                 window.location.reload();
-            }, 1500);
+            }, 2000);
         } else {
             throw new Error(data.message || 'Terjadi kesalahan');
         }
     })
     .catch(error => {
-        showNotification(error.message, 'error');
+        console.error('Delete error:', error);
+        showNotification('❌ ' + error.message, 'error', 4000);
         deleteBtn.disabled = false;
         deleteBtn.innerHTML = originalContent;
     });
@@ -1502,16 +1563,17 @@ function showNotification(message, type = 'info', duration = 5000) {
         display: flex;
         align-items: center;
         gap: 12px;
-        font-weight: 600;
-        animation: slideInRight 0.3s ease-out;
+        font-weight: 700;
         max-width: 400px;
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
     `;
     
     notification.innerHTML = `
-        <i class="fas ${icons[type]} text-xl"></i>
-        <span>${message}</span>
-        <button onclick="this.parentElement.remove()" style="margin-left: auto; background: rgba(255,255,255,0.2); border: none; color: white; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-times text-sm"></i>
+        <i class="fas ${icons[type]} text-xl flex-shrink-0"></i>
+        <span class="flex-1">${message}</span>
+        <button onclick="this.parentElement.remove()" style="margin-left: auto; background: rgba(255,255,255,0.2); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; font-size: 16px;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+            <i class="fas fa-times"></i>
         </button>
     `;
     
@@ -1540,26 +1602,12 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// ==================== SMOOTH SCROLL ====================
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
-// ==================== INITIALIZE ====================
+// ==================== PAGE LOAD ====================
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-hide notifications after page load
+    // Initialize with any Django messages
     {% if messages %}
     {% for message in messages %}
-    showNotification('{{ message }}', '{{ message.tags }}');
+    showNotification('{{ message }}', '{{ message.tags }}', 5000);
     {% endfor %}
     {% endif %}
     
@@ -1579,3 +1627,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
+

@@ -3,7 +3,8 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from datetime import date, datetime
 import re
-from .models import Student, Prestasi
+from students.models import Student, StudentAchievement, AchievementType
+
 
 class StudentForm(forms.ModelForm):
     """Enhanced student form with comprehensive validation"""
@@ -75,15 +76,13 @@ class StudentForm(forms.ModelForm):
         if len(name) > 200:
             raise ValidationError('Nama terlalu panjang (maksimal 200 karakter)')
         
-        # Check for valid characters (letters, spaces, dots, apostrophes)
         if not re.match(r"^[a-zA-Z\s.\']+$", name):
             raise ValidationError('Nama hanya boleh berisi huruf, spasi, titik, dan apostrof')
         
-        # Check for minimum word count
         if len(name.split()) < 2:
             raise ValidationError('Nama harus minimal 2 kata')
         
-        return name.title()  # Convert to proper case
+        return name.title()
     
     def clean_nisn(self):
         nisn = self.cleaned_data.get('nisn', '').strip()
@@ -97,7 +96,6 @@ class StudentForm(forms.ModelForm):
         if len(nisn) != 10:
             raise ValidationError('NISN harus terdiri dari 10 digit')
         
-        # Check for uniqueness (excluding current instance if updating)
         queryset = Student.objects.filter(nisn=nisn)
         if self.instance and self.instance.pk:
             queryset = queryset.exclude(pk=self.instance.pk)
@@ -113,7 +111,6 @@ class StudentForm(forms.ModelForm):
         if not student_class:
             raise ValidationError('Kelas tidak boleh kosong')
         
-        # Validate class format (7A, 8B, 9C, etc.)
         if not re.match(r'^[789][A-Z]$', student_class):
             raise ValidationError('Format kelas tidak valid (gunakan format: 7A, 8B, 9C)')
         
@@ -125,11 +122,9 @@ class StudentForm(forms.ModelForm):
         if not birth_date:
             raise ValidationError('Tanggal lahir tidak boleh kosong')
         
-        # Check if date is not in the future
         if birth_date > date.today():
             raise ValidationError('Tanggal lahir tidak boleh di masa depan')
         
-        # Check reasonable age range (10-25 years)
         today = date.today()
         age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
         
@@ -154,14 +149,11 @@ class StudentForm(forms.ModelForm):
         phone = self.cleaned_data.get('phone', '').strip()
         
         if phone:
-            # Remove common formatting characters
             phone = re.sub(r'[\s\-\(\)\+]', '', phone)
             
-            # Check if it's a valid Indonesian phone number
             if not re.match(r'^(08|628|\+628)[0-9]{8,12}$', phone):
                 raise ValidationError('Format nomor HP tidak valid (gunakan format: 08xxxxxxxxx)')
             
-            # Normalize to 08xx format
             if phone.startswith('+628'):
                 phone = '08' + phone[4:]
             elif phone.startswith('628'):
@@ -173,14 +165,11 @@ class StudentForm(forms.ModelForm):
         parent_phone = self.cleaned_data.get('parent_phone', '').strip()
         
         if parent_phone:
-            # Remove common formatting characters
             parent_phone = re.sub(r'[\s\-\(\)\+]', '', parent_phone)
             
-            # Check if it's a valid Indonesian phone number
             if not re.match(r'^(08|628|\+628)[0-9]{8,12}$', parent_phone):
                 raise ValidationError('Format nomor HP orang tua tidak valid (gunakan format: 08xxxxxxxxx)')
             
-            # Normalize to 08xx format
             if parent_phone.startswith('+628'):
                 parent_phone = '08' + parent_phone[4:]
             elif parent_phone.startswith('628'):
@@ -188,88 +177,78 @@ class StudentForm(forms.ModelForm):
         
         return parent_phone
 
-class PrestasiForm(forms.ModelForm):
-    """Enhanced prestasi form"""
+
+# ==================== STUDENT ACHIEVEMENT FORM ====================
+
+class StudentAchievementForm(forms.ModelForm):
+    """Form untuk input prestasi siswa"""
     
     class Meta:
-        model = Prestasi
-        fields = ['jenis', 'nama', 'tingkat', 'peringkat', 'tahun', 'keterangan', 'sertifikat', 'bonus_score']
+        model = StudentAchievement
+        fields = ['achievement_type', 'level', 'rank', 'year', 'certificate', 'notes']
         widgets = {
-            'jenis': forms.Select(attrs={
+            'achievement_type': forms.Select(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all'
             }),
-            'nama': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all',
-                'placeholder': 'Nama prestasi'
-            }),
-            'tingkat': forms.Select(attrs={
+            'level': forms.Select(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all'
             }),
-            'peringkat': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all',
-                'placeholder': 'Contoh: Juara 1, Harapan 2'
+            'rank': forms.Select(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all'
             }),
-            'tahun': forms.NumberInput(attrs={
+            'year': forms.NumberInput(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all',
                 'min': '2020',
                 'max': datetime.now().year,
                 'value': datetime.now().year
             }),
-            'keterangan': forms.Textarea(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all',
-                'rows': 3,
-                'placeholder': 'Keterangan tambahan (opsional)'
-            }),
-            'sertifikat': forms.FileInput(attrs={
+            'certificate': forms.FileInput(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all',
                 'accept': '.pdf,.jpg,.jpeg,.png'
             }),
-            'bonus_score': forms.NumberInput(attrs={
+            'notes': forms.Textarea(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all',
-                'min': '0',
-                'max': '100',
-                'value': '0'
+                'rows': 3,
+                'placeholder': 'Catatan tambahan (opsional)'
             }),
         }
     
-    def clean_nama(self):
-        nama = self.cleaned_data.get('nama', '').strip()
+    def clean_achievement_type(self):
+        achievement_type = self.cleaned_data.get('achievement_type')
         
-        if not nama:
-            raise ValidationError('Nama prestasi tidak boleh kosong')
+        if not achievement_type:
+            raise ValidationError('Pilih jenis prestasi')
         
-        if len(nama) < 3:
-            raise ValidationError('Nama prestasi terlalu pendek (minimal 3 karakter)')
+        if not achievement_type.is_active:
+            raise ValidationError('Jenis prestasi ini tidak aktif')
         
-        if len(nama) > 200:
-            raise ValidationError('Nama prestasi terlalu panjang (maksimal 200 karakter)')
-        
-        return nama.title()
+        return achievement_type
     
-    def clean_tahun(self):
-        tahun = self.cleaned_data.get('tahun')
+    def clean_year(self):
+        year = self.cleaned_data.get('year')
         current_year = datetime.now().year
         
-        if tahun and (tahun < 2020 or tahun > current_year):
+        if year and (year < 2020 or year > current_year):
             raise ValidationError(f'Tahun prestasi harus antara 2020 - {current_year}')
         
-        return tahun
+        return year
     
-    def clean_sertifikat(self):
-        sertifikat = self.cleaned_data.get('sertifikat')
+    def clean_certificate(self):
+        certificate = self.cleaned_data.get('certificate')
         
-        if sertifikat:
+        if certificate:
             # Check file size (5MB limit)
-            if sertifikat.size > 5 * 1024 * 1024:
+            if certificate.size > 5 * 1024 * 1024:
                 raise ValidationError('Ukuran file terlalu besar (maksimal 5MB)')
             
             # Check file extension
             allowed_extensions = ['.pdf', '.jpg', '.jpeg', '.png']
-            file_extension = sertifikat.name.lower().split('.')[-1]
+            file_extension = certificate.name.lower().split('.')[-1]
             if f'.{file_extension}' not in allowed_extensions:
                 raise ValidationError('Format file tidak didukung (gunakan: PDF, JPG, PNG)')
         
-        return sertifikat
+        return certificate
+
 
 class StudentBatchImportForm(forms.Form):
     """Enhanced batch import form"""

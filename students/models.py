@@ -142,68 +142,204 @@ class Student(BaseModel):
         return f"{self.name} ({self.student_class})"
 
 
-class Prestasi(BaseModel):
-    """Model untuk prestasi siswa"""
-    JENIS_CHOICES = [
-        ('akademik', 'Prestasi Akademik'),
-        ('olahraga', 'Prestasi Olahraga'),
-        ('seni', 'Prestasi Seni'),
-        ('organisasi', 'Prestasi Organisasi'),
-        ('teknologi', 'Prestasi Teknologi'),
-        ('keagamaan', 'Prestasi Keagamaan'),
+class AchievementType(models.Model):
+    CATEGORY_CHOICES = [
+        ('academic', '🎓 Akademik'),
+        ('non_academic', '🎨 Non-Akademik'),
+        ('other', 'Lainnya')
     ]
     
-    TINGKAT_CHOICES = [
-        ('sekolah', 'Tingkat Sekolah'),
-        ('kecamatan', 'Tingkat Kecamatan'),
-        ('kabupaten', 'Tingkat Kabupaten'),
-        ('provinsi', 'Tingkat Provinsi'),
-        ('nasional', 'Tingkat Nasional'),
-        ('internasional', 'Tingkat Internasional'),
+    RMIB_CHOICES = [
+        ('outdoor', 'Outdoor'),
+        ('mechanical', 'Mechanical'),
+        ('computational', 'Computational'),
+        ('scientific', 'Scientific'),
+        ('personal_contact', 'Personal Contact'),
+        ('aesthetic', 'Aesthetic'),
+        ('literary', 'Literary'),
+        ('musical', 'Musical'),
+        ('social_service', 'Social Service'),
+        ('clerical', 'Clerical'),
+        ('practical', 'Practical'),
+        ('medical', 'Medical'),
     ]
     
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='prestasi')
-    jenis = models.CharField(max_length=20, choices=JENIS_CHOICES)
-    nama = models.CharField(max_length=200)
-    tingkat = models.CharField(max_length=20, choices=TINGKAT_CHOICES)
-    peringkat = models.CharField(max_length=20)
-    tahun = models.IntegerField()
-    keterangan = models.TextField(blank=True)
-    sertifikat = models.FileField(upload_to='sertifikat_prestasi/', blank=True)
-    bonus_score = models.IntegerField(default=0)
+    # Basic Info
+    name = models.CharField(max_length=200, unique=True)
+    code = models.CharField(max_length=50, unique=True, blank=True, null=True)  # Auto-generate
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
+    description = models.TextField(blank=True)
     
-    def get_tingkat_display_color(self):
-        """Get color class for tingkat display"""
-        colors = {
-            'sekolah': 'text-blue-600',
-            'kecamatan': 'text-green-600', 
-            'kabupaten': 'text-yellow-600',
-            'provinsi': 'text-orange-600',
-            'nasional': 'text-red-600',
-            'internasional': 'text-purple-600',
-        }
-        return colors.get(self.tingkat, 'text-gray-600')
+    # RMIB Mapping
+    rmib_primary = models.CharField(
+        max_length=50, 
+        choices=RMIB_CHOICES, 
+        blank=True, 
+        null=True,
+        help_text='Kategori RMIB utama'
+    )
+    rmib_secondary = models.CharField(
+        max_length=50, 
+        choices=RMIB_CHOICES, 
+        blank=True,  # CHANGE NULL TO BLANK ONLY
+        null=True,
+        help_text='Kategori RMIB sekunder'
+    )
     
-    def get_jenis_icon(self):
-        """Get icon for jenis prestasi"""
-        icons = {
-            'akademik': 'fas fa-graduation-cap',
-            'olahraga': 'fas fa-running',
-            'seni': 'fas fa-paint-brush',
-            'organisasi': 'fas fa-users',
-            'teknologi': 'fas fa-laptop-code',
-            'keagamaan': 'fas fa-pray',
-        }
-        return icons.get(self.jenis, 'fas fa-trophy')
+    # Status
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        ordering = ['-tahun', 'tingkat', 'nama']
-        verbose_name = 'Prestasi'
-        verbose_name_plural = 'Prestasi'
+        ordering = ['category', 'name']
+        verbose_name_plural = 'Achievement Types'
     
     def __str__(self):
-        return f"{self.student.name} - {self.nama}"
+        return f"{self.name} ({self.get_category_display()})"
+    
+    def save(self, *args, **kwargs):
+        # Auto-generate code if empty
+        if not self.code:
+            # Create code from name: Matematika -> MAT
+            words = self.name.split()
+            code = ''.join([word[0].upper() for word in words])[:10]
+            counter = 1
+            original_code = code
+            while AchievementType.objects.filter(code=code).exclude(pk=self.pk).exists():
+                code = f"{original_code}{counter}"
+                counter += 1
+            self.code = code
+        
+        super().save(*args, **kwargs)
 
+
+class StudentAchievement(BaseModel):
+    """Prestasi siswa (formerly Prestasi)"""
+    LEVEL_CHOICES = [
+        ('sekolah', 'Sekolah'),
+        ('kecamatan', 'Kecamatan'),
+        ('kabupaten', 'Kabupaten/Kota'),
+        ('provinsi', 'Provinsi'),
+        ('nasional', 'Nasional'),
+        ('internasional', 'Internasional'),
+    ]
+    
+    RANK_CHOICES = [
+        ('juara_1', 'Juara 1'),
+        ('juara_2', 'Juara 2'),
+        ('juara_3', 'Juara 3'),
+        ('harapan', 'Juara Harapan/Finalis'),
+    ]
+    
+    # Poin matrix
+    POINTS_MATRIX = {
+        'internasional': {'juara_1': 100, 'juara_2': 90, 'juara_3': 80, 'harapan': 70},
+        'nasional': {'juara_1': 80, 'juara_2': 70, 'juara_3': 60, 'harapan': 50},
+        'provinsi': {'juara_1': 60, 'juara_2': 50, 'juara_3': 40, 'harapan': 30},
+        'kabupaten': {'juara_1': 40, 'juara_2': 35, 'juara_3': 30, 'harapan': 20},
+        'kecamatan': {'juara_1': 20, 'juara_2': 15, 'juara_3': 10, 'harapan': 5},
+        'sekolah': {'juara_1': 10, 'juara_2': 8, 'juara_3': 6, 'harapan': 4},
+    }
+    
+    # Relations
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='achievements')
+    achievement_type = models.ForeignKey(AchievementType, on_delete=models.PROTECT, related_name='student_achievements')
+    
+    # Achievement details
+    level = models.CharField(max_length=20, choices=LEVEL_CHOICES)
+    rank = models.CharField(max_length=20, choices=RANK_CHOICES)
+    year = models.IntegerField(help_text="Tahun prestasi diraih")
+    
+    # Auto-calculated
+    points = models.IntegerField(default=0, help_text="Poin prestasi berdasarkan level & rank")
+    
+    # RMIB contribution (auto-calculated)
+    rmib_contributions = models.JSONField(
+        default=dict, 
+        help_text="Kontribusi ke kategori RMIB, misal: {'scientific': 80, 'computational': 40}"
+    )
+    
+    # Evidence
+    certificate = models.FileField(upload_to='achievements/%Y/', blank=True, help_text="Upload sertifikat/bukti")
+    notes = models.TextField(blank=True, help_text="Catatan tambahan")
+    
+    # Verification
+    is_verified = models.BooleanField(default=False, help_text="Sudah diverifikasi oleh guru/admin")
+    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
+    
+    def calculate_points(self):
+        """Calculate points based on level and rank"""
+        self.points = self.POINTS_MATRIX.get(self.level, {}).get(self.rank, 0)
+        return self.points
+    
+    def calculate_rmib_contributions(self):
+        """Calculate RMIB category contributions"""
+        self.rmib_contributions = {}
+        
+        # Primary category gets full points
+        if self.achievement_type.rmib_primary:
+            self.rmib_contributions[self.achievement_type.rmib_primary] = self.points
+        
+        # Secondary categories get 50% of points
+        if self.achievement_type.rmib_secondary and self.achievement_type.rmib_secondary != '-':
+            secondary_cats = [c.strip() for c in self.achievement_type.rmib_secondary.split(',')]
+            secondary_points = self.points // 2
+            
+            for cat in secondary_cats:
+                if cat and cat != '-':
+                    self.rmib_contributions[cat] = secondary_points
+        
+        return self.rmib_contributions
+    
+    def save(self, *args, **kwargs):
+        """Auto-calculate points and RMIB contributions before saving"""
+        self.calculate_points()
+        self.calculate_rmib_contributions()
+        super().save(*args, **kwargs)
+    
+    def verify(self, user):
+        """Verify this achievement"""
+        self.is_verified = True
+        self.verified_by = user
+        self.verified_at = timezone.now()
+        self.save()
+    
+    def get_level_color(self):
+        """Get color for level badge"""
+        colors = {
+            'sekolah': 'blue',
+            'kecamatan': 'green',
+            'kabupaten': 'yellow',
+            'provinsi': 'orange',
+            'nasional': 'red',
+            'internasional': 'purple',
+        }
+        return colors.get(self.level, 'gray')
+    
+    def get_rank_badge_class(self):
+        """Get badge class for rank"""
+        classes = {
+            'juara_1': 'bg-gradient-to-r from-yellow-400 to-yellow-600',  # Gold
+            'juara_2': 'bg-gradient-to-r from-gray-300 to-gray-500',       # Silver
+            'juara_3': 'bg-gradient-to-r from-orange-400 to-orange-600',   # Bronze
+            'harapan': 'bg-gradient-to-r from-blue-400 to-blue-600',       # Blue
+        }
+        return classes.get(self.rank, 'bg-gray-400')
+    
+    class Meta:
+        ordering = ['-year', '-points', 'achievement_type__name']
+        verbose_name = 'Prestasi Siswa'
+        verbose_name_plural = 'Prestasi Siswa'
+        indexes = [
+            models.Index(fields=['student', '-year']),
+            models.Index(fields=['achievement_type', 'level']),
+            models.Index(fields=['is_verified']),
+        ]
+    
+    def __str__(self):
+        return f"{self.student.name} - {self.achievement_type.name} ({self.get_level_display()})"
 
 class RMIBResult(BaseModel):
     """Model untuk menyimpan hasil tes RMIB"""
@@ -279,7 +415,39 @@ class RMIBResult(BaseModel):
         """Reset status to in_progress for editing"""
         self.status = 'in_progress'
         self.save()
+
+    def get_achievement_contributions(self):
+        """Get total RMIB contributions from student achievements"""
+        contributions = {}
+        
+        for achievement in self.student.achievements.filter(is_verified=True):
+            for category, points in achievement.rmib_contributions.items():
+                contributions[category] = contributions.get(category, 0) + points
+        
+        return contributions
     
+    def get_total_rmib_scores(self):
+        """Get combined RMIB scores (test + achievements)"""
+        test_scores = self.category_scores.copy()
+        achievement_scores = self.get_achievement_contributions()
+        
+        combined_scores = {}
+        all_categories = set(list(test_scores.keys()) + list(achievement_scores.keys()))
+        
+        for category in all_categories:
+            combined_scores[category] = {
+                'test_score': test_scores.get(category, 0),
+                'achievement_score': achievement_scores.get(category, 0),
+                'total_score': test_scores.get(category, 0) + achievement_scores.get(category, 0)
+            }
+        
+        return combined_scores
+    
+    def get_final_ranking(self):
+        """Get final RMIB ranking (test + achievements)"""
+        combined = self.get_total_rmib_scores()
+        return sorted(combined.items(), key=lambda x: x[1]['total_score'], reverse=True)
+
     class Meta:
         ordering = ['-submitted_at']
         verbose_name = 'Hasil RMIB'

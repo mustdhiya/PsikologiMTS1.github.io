@@ -21,11 +21,6 @@
     to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
 .animate-fadeInUp { animation: fadeInUp 0.6s ease-out forwards; }
 .animate-slideInLeft { animation: slideInLeft 0.5s ease-out forwards; }
 .animate-scaleIn { animation: scaleIn 0.4s ease-out forwards; }
@@ -66,14 +61,17 @@
 
 .rank-badge.rank-1 {
     background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    border: 3px solid #fff8dc;
 }
 
 .rank-badge.rank-2 {
     background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+    border: 3px solid #f1f5f9;
 }
 
 .rank-badge.rank-3 {
     background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+    border: 3px solid #fff7ed;
 }
 
 /* ==================== PROGRESS BAR ==================== */
@@ -124,6 +122,11 @@
     border-left-color: #764ba2;
 }
 
+.category-item.rank-1 {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border-left-color: #f59e0b;
+}
+
 /* ==================== ICON CIRCLE ==================== */
 .icon-circle {
     width: 50px;
@@ -151,6 +154,47 @@
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
 }
 
+/* ==================== ACHIEVEMENT CARD ==================== */
+.achievement-card {
+    background: white;
+    border: 2px solid #fbbf24;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+.achievement-card:hover {
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+    transform: translateY(-2px);
+}
+
+.achievement-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* ==================== SCORE TABS ==================== */
+.score-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    background: #f0fdf4;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.score-tab.test { background: #dbeafe; color: #0369a1; }
+.score-tab.achievement { background: #fef3c7; color: #92400e; }
+.score-tab.combined { background: #f0fdf4; color: #15803d; }
+
 /* ==================== PRINT STYLES ==================== */
 @media print {
     .no-print { display: none !important; }
@@ -160,7 +204,6 @@
         page-break-inside: avoid;
     }
     body { background: white; }
-    header { page-break-after: avoid; }
 }
 
 /* ==================== RESPONSIVE ==================== */
@@ -173,7 +216,6 @@
     
     .category-item {
         padding: 14px;
-        flex-wrap: wrap;
     }
     
     .icon-circle {
@@ -188,19 +230,16 @@
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 py-8">
     
-    <!-- ==================== HEADER SECTION ==================== -->
+    <!-- HEADER SECTION -->
     <header class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl p-8 lg:p-12 mb-8 text-white animate-fadeInUp">
         <div class="text-center">
-            <!-- Trophy Icon -->
             <div class="inline-flex items-center justify-center w-20 h-20 lg:w-24 lg:h-24 bg-white/20 backdrop-blur-lg rounded-full shadow-lg mb-4 lg:mb-6">
                 <i class="fas fa-trophy text-4xl lg:text-5xl"></i>
             </div>
             
-            <!-- Title -->
-            <h1 class="text-3xl lg:text-5xl font-bold mb-2">Hasil Tes RMIB</h1>
-            <p class="text-base lg:text-lg text-indigo-100 mb-4 lg:mb-6">Rothwell Miller Interest Blank Assessment</p>
+            <h1 class="text-3xl lg:text-5xl font-bold mb-2">Hasil Tes RMIB & Prestasi</h1>
+            <p class="text-base lg:text-lg text-indigo-100 mb-4 lg:mb-6">Ranking Minat + Analisis Prestasi Karir</p>
             
-            <!-- Student Info -->
             <div class="bg-white/10 backdrop-blur-lg rounded-xl px-6 lg:px-8 py-3 lg:py-4 inline-block">
                 <p class="text-indigo-100 text-xs lg:text-sm">Nama Siswa</p>
                 <p class="text-2xl lg:text-3xl font-bold mb-2">{{ student.name }}</p>
@@ -212,40 +251,76 @@
         </div>
     </header>
 
-    <!-- ==================== SUCCESS MESSAGE ==================== -->
+    <!-- SUCCESS MESSAGE -->
     <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl shadow-lg p-6 mb-8 text-center animate-scaleIn">
         <i class="fas fa-check-circle text-4xl lg:text-5xl mb-3"></i>
         <h2 class="text-xl lg:text-2xl font-bold mb-2">Selamat! Tes Berhasil Diselesaikan</h2>
-        <p class="text-sm lg:text-base text-green-50">Berikut adalah hasil analisis minat dan bakat karir Anda berdasarkan Tes RMIB</p>
+        <p class="text-sm lg:text-base text-green-50">Berikut adalah hasil analisis minat, bakat, dan prestasi karir Anda berdasarkan Tes RMIB</p>
     </div>
 
-    <!-- ==================== TOTAL SCORE HIGHLIGHT ==================== -->
-    <div class="result-card p-6 lg:p-8 mb-8 animate-slideInLeft">
-        <div class="text-center">
-            <p class="text-gray-600 text-base lg:text-lg mb-2">
-                <i class="fas fa-star text-yellow-500 mr-2"></i>Total Skor Anda
-            </p>
-            <div class="text-5xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-2">
-                {{ total_score }}
+    <!-- TOTAL SCORE SECTION -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Test Score -->
+        <div class="result-card p-6 lg:p-8 animate-slideInLeft">
+            <div class="text-center">
+                <div class="inline-block w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white mb-4 shadow-lg">
+                    <i class="fas fa-chart-line text-2xl lg:text-3xl"></i>
+                </div>
+                <p class="text-gray-600 text-sm lg:text-base mb-2">
+                    <i class="fas fa-book mr-1"></i>Skor Tes RMIB
+                </p>
+                <div class="text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-2">
+                    {{ test_score }}
+                </div>
+                <p class="text-xs lg:text-sm text-gray-600">dari maksimal 720 poin</p>
             </div>
-            <p class="text-sm lg:text-base text-gray-600">
-                dari maksimal 720 poin (12 kategori × level 12 × 5)
-            </p>
+        </div>
+
+        <!-- Achievement Score -->
+        <div class="result-card p-6 lg:p-8 animate-slideInLeft delay-100">
+            <div class="text-center">
+                <div class="inline-block w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center text-white mb-4 shadow-lg">
+                    <i class="fas fa-trophy text-2xl lg:text-3xl"></i>
+                </div>
+                <p class="text-gray-600 text-sm lg:text-base mb-2">
+                    <i class="fas fa-star mr-1"></i>Skor Prestasi
+                </p>
+                <div class="text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-orange-600 mb-2">
+                    {{ achievement_score }}
+                </div>
+                <p class="text-xs lg:text-sm text-gray-600">dari {{ achievements|length }} prestasi</p>
+            </div>
+        </div>
+
+        <!-- Combined Score -->
+        <div class="result-card p-6 lg:p-8 animate-slideInLeft delay-200">
+            <div class="text-center">
+                <div class="inline-block w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white mb-4 shadow-lg">
+                    <i class="fas fa-check-double text-2xl lg:text-3xl"></i>
+                </div>
+                <p class="text-gray-600 text-sm lg:text-base mb-2">
+                    <i class="fas fa-sum mr-1"></i>Total Skor
+                </p>
+                <div class="text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600 mb-2">
+                    {{ combined_score }}
+                </div>
+                <p class="text-xs lg:text-sm text-gray-600">Tes + Prestasi</p>
+            </div>
         </div>
     </div>
 
-    <!-- ==================== TOP 3 INTERESTS ==================== -->
-    <div class="result-card p-6 lg:p-8 mb-8 animate-slideInLeft delay-100">
+    <!-- TOP 3 INTERESTS - DENGAN RANKING JELAS -->
+    <div class="result-card p-6 lg:p-8 mb-8 animate-slideInLeft delay-300">
         <h2 class="text-xl lg:text-3xl font-bold text-gray-900 mb-6 flex items-center">
             <i class="fas fa-medal text-yellow-500 mr-3"></i>
             Top 3 Minat Dominan Anda
         </h2>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {% for interest in categories|slice:":3" %}
+            {% for interest in categories|dictsort:"rank"|slice:":3" %}
             <div class="relative group animate-scaleIn delay-{{ forloop.counter }}00">
                 <div class="bg-gradient-to-br from-white to-gray-50 border-2 
-                    {% if forloop.counter == 1 %}border-yellow-400{% elif forloop.counter == 2 %}border-gray-400{% else %}border-orange-400{% endif %} 
+                    {% if interest.rank == 1 %}border-yellow-400{% elif interest.rank == 2 %}border-gray-400{% else %}border-orange-400{% endif %} 
                     rounded-xl p-6 text-center transform transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl">
                     
                     <!-- Rank Badge -->
@@ -256,12 +331,18 @@
                     </div>
 
                     <!-- Category Name -->
-                    <h3 class="text-base lg:text-lg font-bold text-gray-900 mb-2">{{ interest.category_name }}</h3>
+                    <h3 class="text-base lg:text-lg font-bold text-gray-900 mb-3">{{ interest.category_name }}</h3>
 
-                    <!-- Level Display -->
-                    <div class="flex items-center justify-center space-x-2 mb-4">
-                        <span class="text-3xl lg:text-4xl font-bold text-indigo-600">{{ interest.level }}</span>
-                        <span class="text-sm text-gray-500">/12</span>
+                    <!-- Ranking Info -->
+                    <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg p-3 mb-4 border border-yellow-200">
+                        <p class="text-xs text-gray-600 mb-1">Ranking</p>
+                        <p class="text-2xl font-bold text-yellow-600">#{{ interest.rank }}</p>
+                    </div>
+
+                    <!-- Level Info -->
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 mb-4 border border-blue-200">
+                        <p class="text-xs text-gray-600 mb-1">Level Tes</p>
+                        <p class="text-2xl font-bold text-indigo-600">{{ interest.level }}<span class="text-sm text-gray-500">/12</span></p>
                     </div>
 
                     <!-- Score Display -->
@@ -281,18 +362,20 @@
         </div>
     </div>
 
-    <!-- ==================== ALL CATEGORIES RANKING ==================== -->
-    <div class="result-card p-6 lg:p-8 mb-8 animate-slideInLeft delay-200">
+    <!-- ALL CATEGORIES RANKING - ASCENDING ORDER -->
+    <div class="result-card p-6 lg:p-8 mb-8 animate-slideInLeft delay-400">
         <h2 class="text-xl lg:text-3xl font-bold text-gray-900 mb-6 flex items-center">
             <i class="fas fa-list-ol text-blue-600 mr-3"></i>
-            Peringkat Semua Kategori
+            Peringkat Lengkap Semua Kategori
         </h2>
 
         <div class="space-y-3">
-            {% for cat in categories %}
-            <div class="category-item">
+            {% for cat in categories|dictsort:"rank" %}
+            <div class="category-item {% if cat.rank == 1 %}rank-1{% endif %}">
                 <!-- Rank Number -->
-                <div class="text-xl lg:text-2xl font-bold text-indigo-600 w-8 lg:w-10 text-center flex-shrink-0">
+                <div class="text-xl lg:text-2xl font-bold 
+                    {% if cat.rank == 1 %}text-yellow-600{% elif cat.rank == 2 %}text-gray-600{% elif cat.rank == 3 %}text-orange-600{% else %}text-indigo-600{% endif %} 
+                    w-10 text-center flex-shrink-0">
                     #{{ cat.rank }}
                 </div>
 
@@ -304,7 +387,9 @@
                 <!-- Category Info -->
                 <div class="flex-1 min-w-0">
                     <h4 class="font-bold text-gray-900 text-sm lg:text-base">{{ cat.category_name }}</h4>
-                    <p class="text-xs lg:text-sm text-gray-600">Level {{ cat.level }}/12</p>
+                    <p class="text-xs lg:text-sm text-gray-600">
+                        <span class="font-semibold">Ranking #{{ cat.rank }}</span> • Level {{ cat.level }}/12
+                    </p>
                 </div>
 
                 <!-- Score -->
@@ -317,68 +402,197 @@
         </div>
     </div>
 
-    <!-- ==================== ANALYSIS SECTION ==================== -->
+    <!-- ACHIEVEMENTS SECTION -->
+    {% if achievements %}
+    <div class="result-card p-6 lg:p-8 mb-8 animate-slideInLeft delay-500">
+        <h2 class="text-xl lg:text-3xl font-bold text-gray-900 mb-6 flex items-center">
+            <i class="fas fa-award text-yellow-500 mr-3"></i>
+            Prestasi Siswa ({{ achievements|length }} total)
+        </h2>
+
+        {% if achievement_contributions %}
+        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg p-4 lg:p-6 mb-6 border-2 border-yellow-200">
+            <h3 class="font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-chart-pie mr-2 text-yellow-600"></i>
+                Kontribusi Prestasi ke Kategori RMIB
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {% for category, points in achievement_contributions.items %}
+                <div class="bg-white rounded-lg p-4 text-center border border-yellow-200">
+                    <p class="text-xs text-gray-600 mb-1">{{ category|upper }}</p>
+                    <p class="text-2xl font-bold text-yellow-600">+{{ points }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="space-y-4">
+            {% for achievement in achievements %}
+            <div class="achievement-card">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h4 class="font-bold text-gray-900 text-sm lg:text-base">{{ achievement.achievement_type.name }}</h4>
+                            {% if achievement.is_verified %}
+                            <span class="achievement-badge">
+                                <i class="fas fa-check-circle mr-1"></i>Terverifikasi
+                            </span>
+                            {% else %}
+                            <span class="achievement-badge" style="background: #e5e7eb; color: #374151;">
+                                <i class="fas fa-clock mr-1"></i>Pending
+                            </span>
+                            {% endif %}
+                        </div>
+                        <p class="text-xs lg:text-sm text-gray-600 mb-2">
+                            <i class="fas fa-layer-group mr-1 text-blue-600"></i>
+                            {{ achievement.get_level_display }} - {{ achievement.get_rank_display }} ({{ achievement.year }})
+                        </p>
+                        {% if achievement.notes %}
+                        <p class="text-xs text-gray-600 italic">{{ achievement.notes }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <p class="text-2xl lg:text-3xl font-bold text-yellow-600">+{{ achievement.points }}</p>
+                        <p class="text-xs text-gray-500">poin</p>
+                    </div>
+                </div>
+                
+                {% if achievement.rmib_contributions %}
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                    <p class="text-xs font-bold text-gray-700 mb-2">Kontribusi RMIB:</p>
+                    <div class="flex flex-wrap gap-2">
+                        {% for cat, pts in achievement.rmib_contributions.items %}
+                        <span class="score-tab achievement text-xs">
+                            {{ cat|upper }}: +{{ pts }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- COMBINED SCORES BREAKDOWN -->
+    {% if combined_scores %}
+    <div class="result-card p-6 lg:p-8 mb-8 animate-slideInLeft delay-500">
+        <h2 class="text-xl lg:text-3xl font-bold text-gray-900 mb-6 flex items-center">
+            <i class="fas fa-chart-bar text-blue-600 mr-3"></i>
+            Analisis Skor Gabungan per Kategori
+        </h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {% for category, scores in combined_scores.items %}
+            <div class="bg-white border-2 border-gray-200 rounded-lg p-4 lg:p-6 hover:border-blue-400 hover:shadow-lg transition-all">
+                <div class="flex justify-between items-start mb-3">
+                    <h4 class="font-bold text-gray-900 capitalize text-sm lg:text-base">{{ category|title }}</h4>
+                    <p class="text-2xl font-bold text-green-600">{{ scores.total_score }}</p>
+                </div>
+                
+                <div class="space-y-2 mb-3">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">
+                            <i class="fas fa-book mr-1 text-blue-600"></i>Skor Tes
+                        </span>
+                        <span class="font-bold text-blue-600">{{ scores.test_score }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">
+                            <i class="fas fa-trophy mr-1 text-yellow-600"></i>Skor Prestasi
+                        </span>
+                        <span class="font-bold text-yellow-600">+{{ scores.achievement_score }}</span>
+                    </div>
+                </div>
+                
+                <div class="score-bar">
+                    <div class="score-bar-fill" style="background: linear-gradient(90deg, #3b82f6 0%, #fbbf24 100%); width: {% widthratio scores.total_score 1 5 %}%;"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ANALYSIS SECTION -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <!-- Primary Interest Analysis -->
-        <div class="result-card p-6 lg:p-8 animate-slideInLeft delay-300">
+        <div class="result-card p-6 lg:p-8 animate-slideInLeft delay-500">
             <h3 class="text-lg lg:text-xl font-bold text-gray-900 mb-4 flex items-center">
                 <i class="fas fa-star text-yellow-500 mr-2"></i>
                 Minat Utama Anda
             </h3>
             <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg p-6 border-2 border-yellow-200">
                 <p class="text-sm lg:text-base text-gray-600 mb-2">Kategori Dominan:</p>
-                <p class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">{{ primary_interest }}</p>
-                <div class="flex items-center space-x-4">
-                    <div>
-                        <p class="text-xs lg:text-sm text-gray-600">Level</p>
-                        <p class="text-xl lg:text-2xl font-bold text-indigo-600">{{ primary_level }}/12</p>
+                <p class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">{{ primary_interest }}</p>
+                
+                <div class="space-y-3">
+                    <div class="bg-white rounded-lg p-3 border border-yellow-200">
+                        <p class="text-xs text-gray-600 mb-1">Ranking Tertinggi</p>
+                        <p class="text-2xl font-bold text-yellow-600">#1</p>
                     </div>
-                    <div class="text-gray-300 text-2xl lg:text-4xl">•</div>
-                    <div>
-                        <p class="text-xs lg:text-sm text-gray-600">Skor</p>
-                        <p class="text-xl lg:text-2xl font-bold text-green-600">{% widthratio primary_level 1 5 %}</p>
+                    
+                    <div class="bg-white rounded-lg p-3 border border-blue-200">
+                        <p class="text-xs text-gray-600 mb-1">Level Tes</p>
+                        <p class="text-2xl font-bold text-indigo-600">{{ primary_level }}<span class="text-sm text-gray-500">/12</span></p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-3 border border-green-200">
+                        <p class="text-xs text-gray-600 mb-1">Skor Tes</p>
+                        <p class="text-2xl font-bold text-green-600">{% widthratio primary_level 1 5 %}</p>
                     </div>
                 </div>
-                <p class="text-xs text-gray-600 mt-4">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Ini adalah kategori dengan tingkat kesesuaian tertinggi terhadap minat Anda
+
+                <p class="text-xs text-gray-600 mt-4 p-3 bg-white rounded-lg border border-blue-200">
+                    <i class="fas fa-info-circle mr-1 text-blue-600"></i>
+                    Ini adalah kategori dengan tingkat kesesuaian tertinggi terhadap minat dan bakat Anda berdasarkan hasil tes RMIB
                 </p>
             </div>
         </div>
 
         <!-- Score Distribution -->
-        <div class="result-card p-6 lg:p-8 animate-slideInLeft delay-400">
+        <div class="result-card p-6 lg:p-8 animate-slideInLeft delay-500">
             <h3 class="text-lg lg:text-xl font-bold text-gray-900 mb-4 flex items-center">
-                <i class="fas fa-chart-bar text-blue-600 mr-2"></i>
-                Statistik Skor
+                <i class="fas fa-chart-line text-blue-600 mr-2"></i>
+                Statistik Skor Total
             </h3>
             <div class="space-y-4">
-                <div>
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm lg:text-base text-gray-700 font-semibold">Total Skor</span>
-                        <span class="text-xl lg:text-2xl font-bold text-indigo-600">{{ total_score }}</span>
+                        <span class="text-sm lg:text-base text-gray-700 font-semibold flex items-center">
+                            <i class="fas fa-book mr-2 text-blue-600"></i>Skor Tes RMIB
+                        </span>
+                        <span class="text-xl lg:text-2xl font-bold text-blue-600">{{ test_score }}</span>
                     </div>
-                    <div class="text-xs text-gray-500">Jumlah semua level × 5</div>
+                    <div class="text-xs text-gray-600">Hasil jawaban tes minat dari semua kategori</div>
                 </div>
-                <div class="border-t border-gray-200 pt-4">
+
+                <div class="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm lg:text-base text-gray-700 font-semibold">Rata-rata Level</span>
-                        <span class="text-xl lg:text-2xl font-bold text-green-600">{% widthratio total_score 60 1 %}</span>
+                        <span class="text-sm lg:text-base text-gray-700 font-semibold flex items-center">
+                            <i class="fas fa-trophy mr-2 text-yellow-600"></i>Skor Prestasi
+                        </span>
+                        <span class="text-xl lg:text-2xl font-bold text-yellow-600">+{{ achievement_score }}</span>
                     </div>
-                    <div class="text-xs text-gray-500">Total skor ÷ 60</div>
+                    <div class="text-xs text-gray-600">Dari {{ achievements|length }} prestasi terverifikasi</div>
                 </div>
-                <div class="border-t border-gray-200 pt-4">
+
+                <div class="bg-green-50 border-2 border-green-200 rounded-lg p-4">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm lg:text-base text-gray-700 font-semibold">Skor Tertinggi</span>
-                        <span class="text-xl lg:text-2xl font-bold text-yellow-600">{{ categories.0.score }}</span>
+                        <span class="text-sm lg:text-base text-gray-700 font-semibold flex items-center">
+                            <i class="fas fa-check-double mr-2 text-green-600"></i>Total Skor Akhir
+                        </span>
+                        <span class="text-xl lg:text-2xl font-bold text-green-600">{{ combined_score }}</span>
                     </div>
-                    <div class="text-xs text-gray-500">{{ categories.0.category_name }}</div>
+                    <div class="text-xs text-gray-600">Skor tes + prestasi gabungan</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ==================== INFO & NOTES ==================== -->
+    <!-- INFO BOXES -->
     <div class="space-y-4 mb-8">
         <div class="info-box animate-slideInLeft delay-500">
             <div class="flex items-start space-x-3">
@@ -386,8 +600,8 @@
                 <div>
                     <p class="font-bold text-gray-900 text-sm lg:text-base">Tips Menggunakan Hasil Tes</p>
                     <p class="text-xs lg:text-sm text-gray-700 mt-1">
-                        Hasil tes RMIB ini menunjukkan tingkat kesesuaian minat Anda untuk setiap bidang karir. 
-                        Gunakan hasil ini sebagai panduan dalam memilih jurusan dan karir di masa depan. 
+                        Hasil tes RMIB ini menunjukkan <strong>ranking minat</strong> (urutan 1-12) dan <strong>level kemampuan</strong> (1-12) untuk setiap bidang karir. 
+                        Ranking #1 adalah minat utama Anda dengan skor tertinggi. Gunakan hasil ini sebagai panduan dalam memilih jurusan dan karir di masa depan. 
                         Diskusikan dengan guru BK atau orang tua untuk menggali lebih dalam.
                     </p>
                 </div>
@@ -405,13 +619,21 @@
                 </div>
             </div>
         </div>
+
+        {% if rmib_result.status == 'edited' %}
+        <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4">
+            <p class="text-sm text-blue-700 flex items-center">
+                <i class="fas fa-info-circle mr-2"></i>
+                <strong>Hasil Ter-edit:</strong> Terakhir diperbarui pada {{ rmib_result.edited_at|date:"d F Y, H:i" }} WIB
+            </p>
+        </div>
+        {% endif %}
     </div>
 
-    <!-- ==================== ACTION BUTTONS ==================== -->
+    <!-- ACTION BUTTONS -->
     <div class="flex flex-wrap justify-center gap-3 lg:gap-4 no-print mb-8">
-        <!-- Edit Button - NEW -->
         <a href="{% url 'students:rmib_edit_confirmation' student.pk %}" 
-        class="inline-flex items-center px-6 lg:px-8 py-2.5 lg:py-3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white text-sm lg:text-base font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+           class="inline-flex items-center px-6 lg:px-8 py-2.5 lg:py-3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white text-sm lg:text-base font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
             <i class="fas fa-edit mr-2"></i>
             Edit Hasil
         </a>
@@ -423,30 +645,19 @@
         </button>
         
         <a href="{% url 'students:detail' student.pk %}" 
-        class="inline-flex items-center px-6 lg:px-8 py-2.5 lg:py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm lg:text-base font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+           class="inline-flex items-center px-6 lg:px-8 py-2.5 lg:py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm lg:text-base font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
             <i class="fas fa-user mr-2"></i>
             Profil Siswa
         </a>
         
         <a href="{% url 'students:list' %}" 
-        class="inline-flex items-center px-6 lg:px-8 py-2.5 lg:py-3 bg-gray-600 hover:bg-gray-700 text-white text-sm lg:text-base font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+           class="inline-flex items-center px-6 lg:px-8 py-2.5 lg:py-3 bg-gray-600 hover:bg-gray-700 text-white text-sm lg:text-base font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
             <i class="fas fa-list mr-2"></i>
             Daftar Siswa
         </a>
     </div>
 
-    <!-- Edit Status Info - NEW -->
-    {% if rmib_result.status == 'edited' %}
-    <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4 mb-4">
-        <p class="text-sm text-blue-700">
-            <i class="fas fa-info-circle mr-2"></i>
-            <strong>Hasil Ter-edit:</strong> Terakhir diperbarui pada {{ rmib_result.edited_at|date:"d F Y, H:i" }} WIB
-        </p>
-    </div>
-    {% endif %}
-
-
-    <!-- ==================== FOOTER NOTE ==================== -->
+    <!-- FOOTER -->
     <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl p-6 text-center">
         <p class="text-gray-700 text-xs lg:text-sm">
             <i class="fas fa-shield-alt text-indigo-600 mr-2"></i>
@@ -462,14 +673,14 @@
 
 {% block extra_js %}
 <script>
-    // Console log untuk verification
     console.log('✅ RMIB Result Page Loaded');
-    console.log('📊 Total Score:', {{ total_score }});
+    console.log('📊 Test Score:', {{ test_score }});
+    console.log('🏆 Achievement Score:', {{ achievement_score }});
+    console.log('📈 Combined Score:', {{ combined_score }});
     console.log('👤 Student:', '{{ student.name|escapejs }}');
     console.log('📝 Primary Interest:', '{{ primary_interest|escapejs }}');
-    console.log('🎯 Primary Level:', {{ primary_level }});
+    console.log('🎯 Primary Ranking:', 1);
     
-    // Auto-scroll to top on load
     window.scrollTo({ top: 0, behavior: 'smooth' });
 </script>
 {% endblock %}

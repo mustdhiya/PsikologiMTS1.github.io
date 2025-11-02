@@ -11,125 +11,388 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideInRight {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-}
+.fade-in { animation: fadeInUp 0.6s ease-out; }
 
-.fade-in { animation: fadeInUp 0.6s ease-in-out; }
-.slide-in-right { animation: slideInRight 0.4s ease-out; }
-.scale-in { animation: scaleIn 0.4s ease-out; }
-
-/* ==================== LEVEL SLIDER ==================== */
-.level-slider {
-    appearance: none;
-    width: 100%;
-    height: 8px;
-    border-radius: 5px;
-    background: linear-gradient(to right, #ef4444, #f97316, #eab308, #10b981, #3b82f6, #8b5cf6);
-    outline: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-}
-
-.level-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: white;
-    cursor: pointer;
-    border: 3px solid #3b82f6;
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-    transition: all 0.2s ease;
-}
-
-.level-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
-}
-
-.level-slider::-moz-range-thumb {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: white;
-    cursor: pointer;
-    border: 3px solid #3b82f6;
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-    transition: all 0.2s ease;
-}
-
-.level-slider::-moz-range-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+/* ==================== LAYOUT ==================== */
+.ranking-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+    align-items: start;
 }
 
 /* ==================== CATEGORY CARD ==================== */
 .category-card {
-    transition: all 0.3s ease;
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
     border: 2px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .category-card:hover {
-    border-color: #3b82f6;
-    transform: translateY(-2px);
+    border-color: #667eea;
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.15);
+    transform: translateY(-4px);
+}
+
+.category-card.filled {
+    border-color: #10b981;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, white 100%);
+}
+
+/* ==================== HEADER ==================== */
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.category-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.category-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.category-info h3 {
+    font-size: 15px;
+    font-weight: 900;
+    color: #111827;
+    margin: 0 0 3px 0;
+    line-height: 1.3;
+}
+
+.category-info p {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ==================== INPUT SECTION ==================== */
+.input-section {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    margin-top: auto;
+}
+
+.input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.rank-input {
+    width: 100%;
+    padding: 12px 10px;
+    font-size: 16px;
+    font-weight: 700;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    text-align: center;
+    background: #fafafa;
+}
+
+.rank-input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.rank-input::placeholder {
+    color: #cbd5e1;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+.rank-input.error {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.rank-input.filled {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.05);
+}
+
+/* ==================== SCORE BOX ==================== */
+.score-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.score-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.score-value {
+    font-size: 26px;
+    font-weight: 900;
+    color: #10b981;
+    line-height: 1;
+}
+
+.score-value.empty {
+    color: #cbd5e1;
+}
+
+/* ==================== ERROR MESSAGE ==================== */
+.error-message {
+    font-size: 11px;
+    color: #ef4444;
+    font-weight: 600;
+    margin-top: 6px;
+    display: none;
+    line-height: 1.3;
+}
+
+.error-message.show {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+/* ==================== PROGRESS STATS ==================== */
+.progress-bar-container {
+    background: linear-gradient(135deg, #f0f9ff 0%, #f0fdf4 100%);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+}
+
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.stat-box {
+    text-align: center;
+    padding: 12px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+/* ==================== TABS ==================== */
+.tab-btn {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-btn:hover {
+    background: #f3f4f6;
+}
+
+.tab-btn.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+}
+
+.tab-content {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.tab-content.hidden {
+    display: none;
+}
+
+/* ==================== ACHIEVEMENT FORM ==================== */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* ==================== ACHIEVEMENT LIST ==================== */
+.achievement-item {
+    background: white;
+    border-left: 4px solid #fbbf24;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.achievement-item:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* ==================== LEVEL DISPLAY ==================== */
-.level-display {
-    font-size: 2.5rem;
-    font-weight: bold;
-    text-align: center;
-    color: #3b82f6;
-    min-width: 80px;
+.achievement-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 8px;
 }
 
-.level-label {
-    font-size: 0.85rem;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.achievement-item-title {
+    font-weight: 900;
+    color: #111827;
+    font-size: 15px;
 }
 
-.score-display {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #10b981;
+.achievement-item-points {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 900;
+    font-size: 18px;
 }
 
-/* ==================== TOAST ==================== */
-.toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 9999;
-    min-width: 300px;
-    max-width: 500px;
-    animation: slideInRight 0.4s ease-out;
+.achievement-item-meta {
+    font-size: 12px;
+    color: #6b7280;
 }
 
-/* ==================== MODAL OVERLAY ==================== */
-.modal-overlay {
-    backdrop-filter: blur(4px);
-    animation: fadeInUp 0.3s ease-in-out;
+/* ==================== GLASS EFFECT ==================== */
+.glass {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* ==================== LOADING SPINNER ==================== */
-.spinner {
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #3b82f6;
+/* ==================== BUTTONS ==================== */
+.btn-modern {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.5s, height 0.5s;
+}
+
+.btn-modern:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ==================== SPINNER ==================== */
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
@@ -137,206 +400,306 @@
     100% { transform: rotate(360deg); }
 }
 
-/* ==================== DISABLED STATE ==================== */
-.btn-disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .ranking-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .input-section {
+        flex-direction: column;
+    }
+    
+    .score-box {
+        order: -1;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 10px 16px;
+    }
+    
+    .score-label {
+        margin-bottom: 0;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .progress-stats {
+        grid-template-columns: 1fr;
+    }
 }
 
-/* ==================== CATEGORY COLORS ==================== */
-.bg-category-outdoor { background-color: #10b981; }
-.bg-category-mechanical { background-color: #3b82f6; }
-.bg-category-computational { background-color: #8b5cf6; }
-.bg-category-scientific { background-color: #6366f1; }
-.bg-category-personal_contact { background-color: #ec4899; }
-.bg-category-aesthetic { background-color: #f97316; }
-.bg-category-literary { background-color: #14b8a6; }
-.bg-category-musical { background-color: #ef4444; }
-.bg-category-social_service { background-color: #f59e0b; }
-.bg-category-clerical { background-color: #6b7280; }
-.bg-category-practical { background-color: #eab308; }
-.bg-category-medical { background-color: #dc2626; }
-
-/* ==================== PROGRESS BAR ==================== */
-.progress-bar { transition: width 0.3s ease; }
-
-/* ==================== SCROLLBAR ==================== */
-.custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-/* ==================== CATEGORY BADGE ==================== */
-.category-badge {
-    transition: all 0.3s ease;
-    border: 2px solid #e5e7eb;
-}
-
-.category-badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-color: #3b82f6;
-}
-
-.category-badge.completed {
-    background-color: #d1fae5;
-    border-color: #10b981;
+@media (min-width: 1200px) {
+    .ranking-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- CSRF Token -->
 {% csrf_token %}
 
-<div class="max-w-6xl mx-auto px-4 py-8">
-    <!-- Header Section -->
-    <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg p-6 mb-6 text-white fade-in">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold mb-2">
-                    <i class="fas fa-chart-line mr-2"></i>Tes RMIB - Level Minat Karir
-                </h1>
-                <p class="text-blue-100">
-                    <i class="fas fa-user mr-2"></i>{{ student.name }} ({{ student.nisn }})
-                </p>
-                <p class="text-blue-100 text-sm mt-1">
-                    <i class="fas fa-school mr-2"></i>{{ student.student_class }}
-                </p>
-            </div>
-            <div class="text-right">
-                <div class="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-                    <p class="text-sm text-blue-100">Total Kategori</p>
-                    <p class="text-3xl font-bold">12</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Instructions Panel -->
-    <div id="instructionsPanel" class="bg-white rounded-lg shadow-lg p-8 mb-6 scale-in">
-        <div class="flex items-start space-x-4">
-            <div class="flex-shrink-0">
-                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-info-circle text-blue-600 text-2xl"></i>
-                </div>
-            </div>
-            <div class="flex-1">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">
-                    <i class="fas fa-book-open mr-2"></i>Petunjuk Pengerjaan Tes RMIB
-                </h2>
-                <div class="space-y-3">
-                    <div class="flex items-start space-x-3">
-                        <i class="fas fa-check-circle text-green-500 mt-1"></i>
-                        <p class="text-gray-700">Anda akan menilai <strong>12 kategori pekerjaan</strong> sesuai tingkat kesesuaian minat Anda.</p>
-                    </div>
-                    <div class="flex items-start space-x-3">
-                        <i class="fas fa-sliders-h text-blue-500 mt-1"></i>
-                        <p class="text-gray-700">Untuk setiap kategori, pilih <strong>level dari 1 (Sangat Tidak Sesuai)</strong> sampai <strong>12 (Sangat Sesuai)</strong>.</p>
-                    </div>
-                    <div class="flex items-start space-x-3">
-                        <i class="fas fa-calculator text-purple-500 mt-1"></i>
-                        <p class="text-gray-700">Setiap level mewakili <strong>kelipatan 5 poin</strong> (1=5 poin, 2=10 poin, ... 12=60 poin). Total skor = jumlah semua level × 5.</p>
-                    </div>
-                    <div class="flex items-start space-x-3">
-                        <i class="fas fa-save text-purple-500 mt-1"></i>
-                        <p class="text-gray-700">Progress Anda akan <strong>tersimpan otomatis</strong> setiap 30 detik. Anda dapat melanjutkan kapan saja.</p>
-                    </div>
-                    <div class="flex items-start space-x-3">
-                        <i class="fas fa-clock text-red-500 mt-1"></i>
-                        <p class="text-gray-700">Waktu pengerjaan <strong>Tidak terbatas</strong>. Kerjakan dengan tenang dan jujur sesuai minat Anda.</p>
-                    </div>
-                </div>
-
-                <!-- Tip Box -->
-                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-lightbulb text-yellow-400"></i>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+        
+        <!-- HEADER -->
+        <div class="glass rounded-3xl shadow-2xl p-8 mb-8 fade-in">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+                <div class="text-center lg:text-left">
+                    <div class="inline-flex items-center gap-3 mb-4">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white shadow-lg">
+                            <i class="fas fa-sort-amount-down text-2xl"></i>
                         </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-yellow-700">
-                                <strong>Tips:</strong> Pilih level berdasarkan <strong>minat pribadi Anda</strong>, bukan berdasarkan gaji, status sosial, atau ekspektasi orang lain.
-                            </p>
+                        <div>
+                            <h1 class="text-3xl lg:text-4xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                Tes RMIB & Input Prestasi
+                            </h1>
+                            <p class="text-sm text-gray-600">Ranking Minat + Prestasi Siswa</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-4 text-sm">
+                        <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
+                            <i class="fas fa-user text-blue-600"></i>
+                            <span class="font-semibold">{{ student.name }}</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
+                            <i class="fas fa-id-card text-purple-600"></i>
+                            <span>{{ student.nisn }}</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
+                            <i class="fas fa-school text-green-600"></i>
+                            <span>{{ student.student_class }}</span>
                         </div>
                     </div>
                 </div>
-
-                {% if has_progress %}
-                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mt-4">
-                    <div class="flex items-center">
-                        <i class="fas fa-history text-blue-500 mr-3"></i>
-                        <p class="text-blue-700"><strong>Progress Ditemukan!</strong> Anda memiliki jawaban yang tersimpan sebelumnya. Klik Mulai Tes untuk melanjutkan.</p>
+                
+                <div class="text-center">
+                    <div class="inline-block bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl p-6 shadow-xl">
+                        <p class="text-white/80 text-sm font-semibold mb-1">Total Skor</p>
+                        <p class="text-5xl font-black text-white" id="totalScoreDisplay">0</p>
+                        <p class="text-white/70 text-xs mt-1">poin</p>
                     </div>
                 </div>
-                {% endif %}
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex justify-center mt-8 space-x-4">
-            <button id="startTestBtn" type="button" 
-                    class="inline-flex items-center px-12 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xl font-bold rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300">
-                <i class="fas fa-play-circle mr-3 text-2xl"></i>
-                <span>{% if has_progress %}Lanjutkan Tes{% else %}Mulai Tes{% endif %}</span>
-            </button>
-            <a href="{% url 'students:list' %}" 
-               class="inline-flex items-center px-8 py-4 bg-gray-200 hover:bg-gray-300 text-gray-800 text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
-                <i class="fas fa-arrow-left mr-2"></i>Kembali
-            </a>
-        </div>
-    </div>
-
-    <!-- Test Interface Hidden Initially -->
-    <div id="testInterface" class="hidden">
-        <!-- Progress Header -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-6 slide-in-right">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <p class="text-sm text-gray-600">
-                        <i class="fas fa-tasks mr-2"></i>Progress Pengerjaan
-                    </p>
-                    <p class="text-2xl font-bold text-blue-600">
-                        <span id="filledCount">0</span>/12 Kategori
-                    </p>
+        <!-- INSTRUCTIONS -->
+        <div id="instructionsPanel" class="glass rounded-3xl shadow-2xl p-8 lg:p-12 mb-8">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-8">
+                    <div class="inline-block w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-4 shadow-xl">
+                        <i class="fas fa-info-circle text-white text-3xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-black text-gray-900 mb-2">Petunjuk Pengerjaan</h2>
+                    <p class="text-gray-600">Isi ranking minat dan prestasi Anda dalam satu tempat</p>
                 </div>
-                <div class="text-right">
-                    <p class="text-sm text-gray-600">Total Skor</p>
-                    <p class="text-3xl font-bold text-green-600" id="totalScore">0 poin</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border-2 border-blue-100">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-list-ol text-blue-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 mb-2">Ranking Minat</h3>
+                                <p class="text-sm text-gray-600">Masukkan ranking 1-12 sesuai minat Anda</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border-2 border-yellow-100">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-yellow-100 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-trophy text-yellow-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 mb-2">Input Prestasi</h3>
+                                <p class="text-sm text-gray-600">Tambahkan prestasi untuk boost skor RMIB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border-2 border-green-100">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-plus text-green-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 mb-2">Skor Tambahan</h3>
+                                <p class="text-sm text-gray-600">Prestasi menambah poin ke kategori RMIB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border-2 border-purple-100">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-save text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 mb-2">Auto-Save</h3>
+                                <p class="text-sm text-gray-600">Semua data tersimpan otomatis setiap 30 detik</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 rounded-2xl p-6 mb-8">
+                    <div class="flex items-start gap-4">
+                        <i class="fas fa-lightbulb text-yellow-600 text-2xl mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-yellow-900 mb-2">Tips Penting</h3>
+                            <p class="text-sm text-yellow-800">Isikan berdasarkan <strong>minat pribadi</strong> dan <strong>prestasi nyata</strong> yang telah diraih.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button id="startTestBtn" type="button" 
+                            class="btn-modern px-12 py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xl font-bold rounded-2xl shadow-2xl transform hover:scale-105 transition-all">
+                        <i class="fas fa-rocket mr-3"></i>Mulai Sekarang
+                    </button>
+                    <a href="{% url 'students:list' %}" 
+                       class="btn-modern px-8 py-5 bg-white hover:bg-gray-50 text-gray-800 text-lg font-bold rounded-2xl shadow-xl transform hover:scale-105 transition-all border-2 border-gray-200">
+                        <i class="fas fa-arrow-left mr-2"></i>Kembali
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- TEST INTERFACE -->
+        <div id="testInterface" class="hidden">
+            <!-- TABS -->
+            <div class="glass rounded-3xl shadow-2xl mb-8 sticky top-0 z-40">
+                <div class="flex border-b-2 border-gray-200">
+                    <button id="tab-ranking" class="tab-btn flex-1 py-4 px-6 text-center font-bold text-lg active" style="color: #667eea; border-bottom-color: #667eea;">
+                        <i class="fas fa-sort-amount-down mr-2"></i>Ranking Minat
+                    </button>
+                    <button id="tab-achievement" class="tab-btn flex-1 py-4 px-6 text-center font-bold text-lg text-gray-500" style="border-bottom-color: transparent;">
+                        <i class="fas fa-trophy mr-2"></i>Input Prestasi
+                    </button>
                 </div>
             </div>
 
-            <!-- Progress Bar -->
-            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                <div id="progressBar" class="progress-bar bg-gradient-to-r from-green-500 to-blue-500 h-4 rounded-full" style="width: 0%;"></div>
+            <!-- ==================== RANKING TAB ==================== -->
+            <div id="content-ranking" class="tab-content">
+                <!-- Progress Info -->
+                <div class="glass rounded-3xl shadow-2xl p-6 mb-8">
+                    <div class="text-center">
+                        <p class="text-sm text-gray-600 mb-2">Sisa Waktu Auto-Save</p>
+                        <p class="text-4xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" id="autoSaveTimer">30</p>
+                        <p class="text-sm text-gray-500">detik</p>
+                    </div>
+                </div>
+
+                <!-- Ranking Container -->
+                <div id="rankingContainer" class="ranking-container mb-8">
+                    <!-- Categories will be loaded here -->
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center mb-4">
+                    <button type="button" onclick="switchTab('achievement')" 
+                            class="btn-modern bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-black py-5 px-20 rounded-2xl shadow-2xl transform hover:scale-105 transition-all text-xl">
+                        <i class="fas fa-arrow-right mr-3"></i>Lanjut ke Input Prestasi
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <!-- Categories Grid -->
-        <div id="categoriesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Categories will be loaded here -->
-        </div>
+            <!-- ==================== ACHIEVEMENT TAB ==================== -->
+            <div id="content-achievement" class="tab-content hidden">
+                <div class="glass rounded-3xl shadow-2xl p-8 mb-8">
+                    <h2 class="text-2xl font-black mb-6 text-gray-900">
+                        <i class="fas fa-plus-circle mr-2 text-yellow-600"></i>Tambah Prestasi
+                    </h2>
 
-        <!-- Submit Button -->
-        <div class="text-center">
-            <button id="submitBtn" 
-                    class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 px-16 rounded-lg shadow-xl transform hover:scale-105 transition-all text-lg btn-disabled">
-                <i class="fas fa-check-circle mr-2"></i>Simpan Hasil Tes
-            </button>
+                    <form id="achievementForm">
+                        <div class="form-grid">
+                            <!-- Jenis Prestasi -->
+                            <div class="form-group">
+                                <label><i class="fas fa-list mr-2 text-blue-600"></i>Jenis Prestasi *</label>
+                                <select id="achievement_type" name="achievement_type" required>
+                                    <option value="">-- Pilih Jenis Prestasi --</option>
+                                </select>
+                            </div>
+
+                            <!-- Tingkat -->
+                            <div class="form-group">
+                                <label><i class="fas fa-layer-group mr-2 text-purple-600"></i>Tingkat Lomba *</label>
+                                <select id="level" name="level" required>
+                                    <option value="">-- Pilih Tingkat --</option>
+                                    <option value="sekolah">Sekolah</option>
+                                    <option value="kecamatan">Kecamatan</option>
+                                    <option value="kabupaten">Kabupaten/Kota</option>
+                                    <option value="provinsi">Provinsi</option>
+                                    <option value="nasional">Nasional</option>
+                                    <option value="internasional">Internasional</option>
+                                </select>
+                            </div>
+
+                            <!-- Peringkat -->
+                            <div class="form-group">
+                                <label><i class="fas fa-medal mr-2 text-yellow-600"></i>Peringkat *</label>
+                                <select id="rank" name="rank" required>
+                                    <option value="">-- Pilih Peringkat --</option>
+                                    <option value="juara_1">Juara 1</option>
+                                    <option value="juara_2">Juara 2</option>
+                                    <option value="juara_3">Juara 3</option>
+                                    <option value="harapan">Juara Harapan/Finalis</option>
+                                </select>
+                            </div>
+
+                            <!-- Tahun -->
+                            <div class="form-group">
+                                <label><i class="fas fa-calendar mr-2 text-green-600"></i>Tahun *</label>
+                                <input type="number" name="year" min="2020" max="2025" value="2025" required>
+                            </div>
+                        </div>
+
+                        <!-- Catatan -->
+                        <div class="form-group mt-4">
+                            <label><i class="fas fa-sticky-note mr-2 text-orange-600"></i>Catatan (Opsional)</label>
+                            <textarea name="notes" rows="3" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
+                        </div>
+
+                        <!-- Poin Preview -->
+                        <div id="pointsPreview" class="mt-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border-2 border-yellow-200 hidden">
+                            <p class="text-sm text-gray-600">Poin yang akan didapat:</p>
+                            <p class="text-3xl font-black text-yellow-600" id="previewPoints">0</p>
+                            <p class="text-xs text-gray-500 mt-1">Kontribusi ke kategori RMIB akan otomatis ditambahkan</p>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="mt-8 flex gap-4">
+                            <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
+                                <i class="fas fa-plus mr-2"></i>Tambah Prestasi
+                            </button>
+                            <button type="reset" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-xl transition-all">
+                                <i class="fas fa-redo mr-2"></i>Bersihkan
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Prestasi List -->
+                    <div class="mt-10">
+                        <h3 class="text-lg font-bold mb-4">Prestasi Tersimpan</h3>
+                        <div id="achievementsContainer" class="space-y-4">
+                            <p class="text-gray-500 text-center py-4">Belum ada prestasi</p>
+                        </div>
+                    </div>
+
+                    <!-- Final Submit -->
+                    <div class="mt-8 pt-6 border-t-2 border-gray-200">
+                        <button id="submitBtn" 
+                                class="w-full btn-modern bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black py-5 px-20 rounded-2xl shadow-2xl transform hover:scale-105 transition-all text-xl">
+                            <i class="fas fa-check-circle mr-3 text-2xl"></i>Selesai & Simpan Semua
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -345,31 +708,29 @@
 <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
 <!-- Loading Modal -->
-<div id="loadingModal" class="hidden fixed inset-0 bg-black bg-opacity-50 modal-overlay flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-8 text-center">
+<div id="loadingModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="glass rounded-3xl p-10 text-center shadow-2xl">
         <div class="spinner mx-auto mb-4"></div>
-        <p class="text-gray-700 font-semibold">Memproses...</p>
+        <p class="text-gray-700 font-bold text-lg">Memproses...</p>
     </div>
 </div>
 
 <!-- Confirmation Modal -->
-<div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden items-center justify-center">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 transform transition-all">
+<div id="confirmationModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="glass rounded-3xl shadow-2xl max-w-md w-full p-8">
         <div class="text-center">
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
-                <i class="fas fa-exclamation-triangle text-yellow-600 text-2xl"></i>
+            <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 mb-6 shadow-xl">
+                <i class="fas fa-exclamation-triangle text-white text-3xl"></i>
             </div>
-            <h3 id="confirmTitle" class="text-2xl font-bold text-gray-900 mb-2">Konfirmasi</h3>
-            <p id="confirmMessage" class="text-gray-600 mb-6">Apakah Anda yakin?</p>
+            <h3 id="confirmTitle" class="text-2xl font-black text-gray-900 mb-3">Konfirmasi</h3>
+            <p id="confirmMessage" class="text-gray-600 mb-8">Apakah Anda yakin?</p>
 
-            <div class="flex space-x-3">
-                <button id="confirmNoBtn" 
-                        class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition duration-300">
+            <div class="flex gap-4">
+                <button id="confirmNoBtn" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-xl">
                     <i class="fas fa-times mr-2"></i>Batal
                 </button>
-                <button id="confirmYesBtn" 
-                        class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
-                    <i class="fas fa-check mr-2"></i>Lanjutkan
+                <button id="confirmYesBtn" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 px-6 rounded-xl">
+                    <i class="fas fa-check mr-2"></i>Ya, Lanjut
                 </button>
             </div>
         </div>
@@ -379,11 +740,13 @@
 
 {% block extra_js %}
 <script>
-    // Pass data dari Django ke JavaScript
+    // Hanya define window properties, JANGAN define RMIB_DATA, RANK_SCORES, dll
     window.RMIB_CATEGORIES = {{ rmib_categories_json|safe }};
     window.STUDENT_ID = {{ student.pk }};
     window.STUDENT_NAME = "{{ student.name|escapejs }}";
-    window.HAS_PROGRESS = {{ has_progress|lower }};
+    window.HAS_PROGRESS = {{ has_progress|yesno:"true,false" }};
+    window.CURRENT_YEAR = new Date().getFullYear();
 </script>
 <script src="{% static 'js/rmib_test.js' %}"></script>
 {% endblock %}
+

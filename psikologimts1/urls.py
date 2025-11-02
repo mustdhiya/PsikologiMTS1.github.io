@@ -25,6 +25,7 @@ urlpatterns = [
     path('students/', include('students.urls')),
     # Comment out yang belum ada viewsnya
     path('accounts/', include('accounts.urls')),
+    
 ]
 
 # Serve media files during development

@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q, Count, Avg
 from django.utils import timezone
 from datetime import datetime, timedelta
-from students.models import Student, Prestasi
+from students.models import Student, StudentAchievement
 from testsystem.models import RMIBScore, RMIBCategory
 import json
 

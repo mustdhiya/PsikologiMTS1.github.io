@@ -1,691 +1,493 @@
-// ==================== RMIB LEVEL-BASED TEST ====================
-// File: static/js/rmib_test_level.js
-// Version: 1.0 - Production Ready
-// Desc: Complete level-based RMIB test implementation
+// ==================== RMIB TEST + ACHIEVEMENT SYSTEM ====================
+// File: static/js/rmib_test.js
 
-'use strict';
-
-// ==================== GLOBAL STATE ====================
+// ==================== GLOBAL DATA ====================
 const RMIB_DATA = {
+    studentId: window.STUDENT_ID || 0,
     categories: window.RMIB_CATEGORIES || {},
-    studentId: window.STUDENT_ID,
-    studentName: window.STUDENT_NAME,
-    hasProgress: window.HAS_PROGRESS
+    hasProgress: window.HAS_PROGRESS || false
 };
 
-let levels = {}; // Store current levels {category_key: level_value}
-let autoSaveInterval = null;
-let confirmCallback = null;
-let listenersInitialized = false;
+const RANK_SCORES = {
+    1: 60, 2: 55, 3: 50, 4: 45, 5: 40, 6: 35,
+    7: 30, 8: 25, 9: 20, 10: 15, 11: 10, 12: 5
+};
 
-console.log('🎯 RMIB Level-Based Test Initialized', {
-    studentId: RMIB_DATA.studentId,
-    studentName: RMIB_DATA.studentName,
-    hasProgress: RMIB_DATA.hasProgress,
-    totalCategories: Object.keys(RMIB_DATA.categories).length
-});
+const POINTS_MATRIX = {
+    internasional: { juara_1: 100, juara_2: 90, juara_3: 80, harapan: 70 },
+    nasional: { juara_1: 80, juara_2: 70, juara_3: 60, harapan: 50 },
+    provinsi: { juara_1: 60, juara_2: 50, juara_3: 40, harapan: 30 },
+    kabupaten: { juara_1: 40, juara_2: 35, juara_3: 30, harapan: 20 },
+    kecamatan: { juara_1: 20, juara_2: 15, juara_3: 10, harapan: 5 },
+    sekolah: { juara_1: 10, juara_2: 8, juara_3: 6, harapan: 4 },
+};
+
+// ==================== GLOBAL STATE ====================
+let rankings = {};
+let achievements = [];
 
 // ==================== UTILITY FUNCTIONS ====================
-
-/**
- * Get CSRF token dari berbagai sumber
- */
 function getCsrfToken() {
-    console.log('🔍 Searching for CSRF token...');
-    
-    // Method 1: From hidden input (most reliable)
-    const tokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
-    if (tokenInput && tokenInput.value) {
-        console.log('✅ CSRF token found in hidden input');
-        return tokenInput.value;
-    }
-    
-    // Method 2: From cookie
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        cookie = cookie.trim();
-        if (cookie.startsWith('csrftoken=')) {
-            const token = decodeURIComponent(cookie.substring(10));
-            console.log('✅ CSRF token found in cookie');
-            return token;
-        }
-    }
-    
-    // Method 3: From meta tag
-    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-    if (csrfMeta && csrfMeta.content) {
-        console.log('✅ CSRF token found in meta tag');
-        return csrfMeta.content;
-    }
-    
-    console.warn('⚠️ CSRF token not found');
-    return null;
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
 }
 
-/**
- * Show toast notification
- */
-function showToast(type, title, message) {
-    const toastContainer = document.getElementById('toastContainer');
-    if (!toastContainer) {
-        console.error('Toast container not found');
-        return;
-    }
+function showToast(type, title, msg) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
     
-    const colorMap = {
-        'success': { bg: 'bg-green-500', icon: 'fa-check-circle' },
-        'error': { bg: 'bg-red-500', icon: 'fa-exclamation-circle' },
-        'warning': { bg: 'bg-yellow-500', icon: 'fa-exclamation-triangle' },
-        'info': { bg: 'bg-blue-500', icon: 'fa-info-circle' }
+    const icons = { 
+        success: 'fa-check-circle', 
+        error: 'fa-exclamation-circle', 
+        info: 'fa-info-circle' 
+    };
+    const colors = { 
+        success: 'from-green-500 to-emerald-600', 
+        error: 'from-red-500 to-rose-600', 
+        info: 'from-blue-500 to-indigo-600' 
     };
     
-    const config = colorMap[type] || colorMap['info'];
-    
     const toast = document.createElement('div');
-    toast.className = `bg-white rounded-lg shadow-lg p-4 border-l-4 ${config.bg} border-opacity-20 animate-slideInRight`;
+    toast.className = 'glass rounded-2xl shadow-2xl p-4 mb-3';
     toast.innerHTML = `
-        <div class="flex items-start space-x-3">
-            <i class="fas ${config.icon} text-lg" style="color: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#3b82f6'};"></i>
-            <div class="flex-1">
-                <p class="font-bold text-gray-800">${title}</p>
-                <p class="text-sm text-gray-600">${message}</p>
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br ${colors[type]} flex items-center justify-center text-white shadow-lg">
+                <i class="fas ${icons[type]}"></i>
             </div>
-            <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times"></i>
-            </button>
+            <div class="flex-1">
+                <p class="font-bold text-gray-900 text-sm">${title}</p>
+                <p class="text-xs text-gray-600">${msg}</p>
+            </div>
         </div>
     `;
-    
-    toastContainer.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-    }, 5000);
-    
-    console.log(`[${type.toUpperCase()}] ${title}: ${message}`);
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
 }
 
-/**
- * Show loading modal
- */
 function showLoading() {
     const modal = document.getElementById('loadingModal');
-    if (modal) {
-        modal.classList.remove('hidden');
-    }
+    if (modal) modal.classList.remove('hidden');
 }
 
-/**
- * Hide loading modal
- */
 function hideLoading() {
     const modal = document.getElementById('loadingModal');
-    if (modal) {
-        modal.classList.add('hidden');
-    }
+    if (modal) modal.classList.add('hidden');
 }
 
-/**
- * Show confirmation modal
- */
-function showConfirmationModal(title, message, callback) {
-    console.log('📋 Showing confirmation:', title);
-    
-    const modal = document.getElementById('confirmationModal');
-    if (!modal) {
-        console.error('Confirmation modal not found');
-        return;
-    }
-    
-    document.getElementById('confirmTitle').textContent = title;
-    document.getElementById('confirmMessage').textContent = message;
-    
-    confirmCallback = callback;
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
-}
+// ==================== RMIB RANKING FUNCTIONS ====================
 
-/**
- * Hide confirmation modal
- */
-function hideConfirmationModal() {
-    const modal = document.getElementById('confirmationModal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
-    }
-    confirmCallback = null;
-}
-
-// ==================== DOM INITIALIZATION ====================
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('📄 DOM Content Loaded');
-    console.log('📊 Categories count:', Object.keys(RMIB_DATA.categories).length);
-    
-    // Initialize event listeners
-    initializeEventListeners();
-});
-
-// ==================== EVENT LISTENERS ====================
-
-function initializeEventListeners() {
-    if (listenersInitialized) {
-        console.log('⚠️ Listeners already initialized');
-        return;
-    }
-    
-    console.log('🔧 Initializing event listeners...');
-    
-    try {
-        // Start test button
-        const startTestBtn = document.getElementById('startTestBtn');
-        if (startTestBtn) {
-            startTestBtn.addEventListener('click', startTest);
-            console.log('✅ Start test button listener attached');
-        }
-        
-        // Submit button
-        const submitBtn = document.getElementById('submitBtn');
-        if (submitBtn) {
-            submitBtn.addEventListener('click', submitTest);
-            console.log('✅ Submit button listener attached');
-        }
-        
-        // Confirmation modal buttons
-        const confirmYesBtn = document.getElementById('confirmYesBtn');
-        const confirmNoBtn = document.getElementById('confirmNoBtn');
-        
-        if (confirmYesBtn) {
-            confirmYesBtn.addEventListener('click', () => {
-                if (confirmCallback && typeof confirmCallback === 'function') {
-                    confirmCallback();
-                }
-                hideConfirmationModal();
-            });
-            console.log('✅ Confirm yes button listener attached');
-        }
-        
-        if (confirmNoBtn) {
-            confirmNoBtn.addEventListener('click', hideConfirmationModal);
-            console.log('✅ Confirm no button listener attached');
-        }
-        
-        listenersInitialized = true;
-        console.log('✅ All event listeners initialized');
-    } catch (error) {
-        console.error('❌ Error initializing listeners:', error);
-    }
-}
-
-// ==================== TEST FLOW ====================
-
-/**
- * Start atau resume test
- */
 async function startTest() {
     try {
-        console.log('🚀 === START TEST ===');
         showLoading();
-        
-        const csrfToken = getCsrfToken();
-        if (!csrfToken) {
-            throw new Error('CSRF token not found');
-        }
-        
-        const response = await fetch(`/students/${RMIB_DATA.studentId}/rmib/start/`, {
+        const res = await fetch(`/students/${RMIB_DATA.studentId}/rmib/start/`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            }
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() }
         });
         
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log('✅ Start response:', data);
-        
+        const data = await res.json();
         if (data.success) {
-            // Hide instructions
-            const instructionsPanel = document.getElementById('instructionsPanel');
-            if (instructionsPanel) {
-                instructionsPanel.classList.add('hidden');
-            }
+            document.getElementById('instructionsPanel')?.classList.add('hidden');
+            document.getElementById('testInterface')?.classList.remove('hidden');
             
-            // Show test interface
-            const testInterface = document.getElementById('testInterface');
-            if (testInterface) {
-                testInterface.classList.remove('hidden');
-                testInterface.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-            
-            // Load existing progress if available
-            if (RMIB_DATA.hasProgress) {
-                console.log('📥 Loading saved progress...');
-                await loadProgress();
-            } else {
-                // Initialize with default level (middle value)
-                console.log('📝 Initializing new levels...');
-                Object.keys(RMIB_DATA.categories).forEach(key => {
-                    levels[key] = 6; // Default middle value
-                });
-            }
-            
-            // Render categories
-            renderCategories();
-            
-            // Start auto-save
+            Object.keys(RMIB_DATA.categories).forEach(key => { rankings[key] = 0; });
+            renderRanking();
             startAutoSave();
+            loadAchievementTypes();
             
             hideLoading();
-            
-            const message = RMIB_DATA.hasProgress 
-                ? 'Progress dimuat. Lanjutkan pengerjaan!' 
-                : 'Mulai memilih level untuk setiap kategori';
-            showToast('success', 'Tes Dimulai', message);
+            showToast('success', 'Tes Dimulai', 'Mulai masukkan ranking untuk setiap kategori');
         } else {
             hideLoading();
-            showToast('error', 'Gagal Memulai', data.message || 'Terjadi kesalahan');
+            showToast('error', 'Gagal', data.message);
         }
-    } catch (error) {
+    } catch (err) {
         hideLoading();
-        console.error('❌ Start test error:', error);
-        showToast('error', 'Error', `Gagal memulai tes: ${error.message}`);
+        showToast('error', 'Error', err.message);
     }
 }
 
-/**
- * Render semua kategori dengan slider
- */
-function renderCategories() {
-    console.log('🎨 Rendering categories...');
-    
-    const container = document.getElementById('categoriesContainer');
-    if (!container) {
-        console.error('Categories container not found');
-        return;
-    }
+function renderRanking() {
+    const container = document.getElementById('rankingContainer');
+    if (!container) return;
     
     container.innerHTML = '';
     
-    const categories = Object.entries(RMIB_DATA.categories);
-    console.log(`📊 Rendering ${categories.length} categories`);
-    
-    categories.forEach(([categoryKey, category]) => {
-        const currentLevel = levels[categoryKey] || 6;
-        const score = currentLevel * 5;
+    Object.entries(RMIB_DATA.categories).forEach(([catKey, cat]) => {
+        const currentRank = rankings[catKey] || 0;
+        const score = currentRank > 0 ? RANK_SCORES[currentRank] : 0;
+        const isFilled = currentRank > 0;
         
         const card = document.createElement('div');
-        card.className = 'category-card bg-white rounded-xl shadow-lg p-6 border-2 border-gray-200 hover:border-blue-400';
+        card.className = `category-card ${isFilled ? 'filled' : ''}`;
         
         card.innerHTML = `
-            <div class="flex items-center space-x-4 mb-5">
-                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-lg">
-                    <i class="fas ${category.icon}"></i>
+            <div class="category-header">
+                <div class="category-icon" style="background: linear-gradient(135deg, ${getGradient(catKey)});">
+                    <i class="fas ${cat.icon}"></i>
                 </div>
-                <div class="flex-1 min-w-0">
-                    <h3 class="font-bold text-gray-900 text-sm truncate">${category.name}</h3>
-                    <p class="text-xs text-gray-600 truncate">${category.description}</p>
+                <div class="category-info">
+                    <h3>${cat.name}</h3>
+                    <p>${cat.description}</p>
                 </div>
             </div>
             
-            <div class="space-y-4">
-                <!-- Level Range Label -->
-                <div class="flex justify-between text-xs text-gray-500 font-semibold">
-                    <span>1</span>
-                    <span class="font-bold text-gray-700">Level</span>
-                    <span>12</span>
+            <div class="input-section">
+                <div class="input-group">
+                    <label class="input-label">Ranking</label>
+                    <input 
+                        type="number" 
+                        min="1" 
+                        max="12" 
+                        placeholder="1-12"
+                        value="${currentRank || ''}"
+                        data-category="${catKey}"
+                        class="rank-input ${isFilled ? 'filled' : ''}"
+                    />
+                    <div class="error-message" data-error="${catKey}"></div>
                 </div>
                 
-                <!-- Slider -->
-                <input type="range" 
-                       min="1" 
-                       max="12" 
-                       value="${currentLevel}"
-                       data-category="${categoryKey}"
-                       class="level-slider w-full cursor-pointer"
-                       oninput="updateLevel('${categoryKey}', this.value)">
-                
-                <!-- Level Scale Info -->
-                <div class="flex justify-between text-xs text-gray-500">
-                    <span>Tidak Sesuai</span>
-                    <span>Sangat Sesuai</span>
-                </div>
-                
-                <!-- Level Display & Score -->
-                <div class="flex justify-between items-center pt-3 border-t border-gray-200">
-                    <div>
-                        <p class="level-label">Level Pilihan</p>
-                        <p class="level-display">${currentLevel}</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="level-label">Poin</p>
-                        <p class="score-display">${score}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="level-label">Max</p>
-                        <p class="text-2xl font-bold text-gray-400">60</p>
-                    </div>
+                <div class="score-box">
+                    <span class="score-label">Poin</span>
+                    <div class="score-value ${!isFilled ? 'empty' : ''}" data-score="${catKey}">${score || '-'}</div>
                 </div>
             </div>
         `;
         
+        const input = card.querySelector('.rank-input');
+        input.addEventListener('input', (e) => handleRankInput(catKey, e.target.value, card));
+        
         container.appendChild(card);
     });
-    
-    console.log('✅ Categories rendered');
-    updateProgress();
 }
 
-/**
- * Update level saat slider berubah
- */
-function updateLevel(categoryKey, value) {
-    const newLevel = parseInt(value);
+function handleRankInput(catKey, value, card) {
+    const errorEl = card.querySelector(`[data-error="${catKey}"]`);
+    const input = card.querySelector('.rank-input');
+    const scoreEl = document.querySelector(`[data-score="${catKey}"]`);
     
-    if (isNaN(newLevel) || newLevel < 1 || newLevel > 12) {
-        console.error('Invalid level value:', value);
+    errorEl?.classList.remove('show');
+    input.classList.remove('error', 'filled');
+    
+    if (value === '') {
+        rankings[catKey] = 0;
+        scoreEl.textContent = '-';
+        scoreEl.classList.add('empty');
+        card.classList.remove('filled');
+        updateProgress();
         return;
     }
     
-    levels[categoryKey] = newLevel;
+    const rank = parseInt(value);
     
-    console.log(`📊 Level updated: ${categoryKey} = ${newLevel} (${newLevel * 5} poin)`);
+    if (isNaN(rank) || rank < 1 || rank > 12) {
+        errorEl.textContent = 'Masukkan angka 1-12';
+        errorEl.classList.add('show');
+        input.classList.add('error');
+        return;
+    }
     
-    // Update display immediately
+    const duplicate = Object.entries(rankings).find(([k, r]) => k !== catKey && r === rank);
+    
+    if (duplicate) {
+        errorEl.textContent = `Ranking ${rank} sudah digunakan`;
+        errorEl.classList.add('show');
+        input.classList.add('error');
+        return;
+    }
+    
+    rankings[catKey] = rank;
+    const score = RANK_SCORES[rank];
+    scoreEl.textContent = score;
+    scoreEl.classList.remove('empty');
+    input.classList.add('filled');
+    card.classList.add('filled');
     updateProgress();
-    
-    // Auto-save (will be triggered by auto-save interval, not here to reduce server calls)
 }
 
-/**
- * Update progress display
- */
 function updateProgress() {
-    const filledCount = Object.keys(levels).filter(key => levels[key] > 0).length;
-    const totalCategories = Object.keys(RMIB_DATA.categories).length;
+    const filled = Object.values(rankings).filter(r => r > 0).length;
+    const totalScore = Object.values(rankings).reduce((s, r) => s + (r > 0 ? RANK_SCORES[r] : 0), 0);
     
-    // Calculate total score
-    let totalScore = 0;
-    Object.values(levels).forEach(level => {
-        if (level && typeof level === 'number') {
-            totalScore += level * 5;
+    const totalScoreEl = document.getElementById('totalScoreDisplay');
+    if (totalScoreEl) totalScoreEl.textContent = totalScore;
+}
+
+function startAutoSave() {
+    let countdown = 30;
+    
+    setInterval(() => {
+        countdown--;
+        const timerEl = document.getElementById('autoSaveTimer');
+        if (timerEl) timerEl.textContent = countdown;
+        if (countdown <= 0) countdown = 30;
+    }, 1000);
+    
+    setInterval(() => {
+        saveProgress();
+    }, 30000);
+}
+
+async function saveProgress() {
+    try {
+        await fetch(`/students/${RMIB_DATA.studentId}/rmib/save/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+            body: JSON.stringify({ levels: rankings })
+        });
+    } catch (error) {
+        console.error('Save error:', error);
+    }
+}
+
+function getGradient(catKey) {
+    const gradients = {
+        outdoor: '#10b981, #059669', 
+        mechanical: '#3b82f6, #1d4ed8', 
+        computational: '#8b5cf6, #6d28d9',
+        scientific: '#6366f1, #4338ca', 
+        personal_contact: '#ec4899, #be185d', 
+        aesthetic: '#f97316, #c2410c',
+        literary: '#14b8a6, #0d9488', 
+        musical: '#ef4444, #b91c1c', 
+        social_service: '#f59e0b, #d97706',
+        clerical: '#6b7280, #374151', 
+        practical: '#eab308, #a16207', 
+        medical: '#dc2626, #991b1b'
+    };
+    return gradients[catKey] || '#667eea, #764ba2';
+}
+
+// ==================== ACHIEVEMENT FUNCTIONS ====================
+
+async function loadAchievementTypes() {
+    try {
+        console.log('🔄 Loading achievement types...');
+        
+        const url = `/students/api/achievement-types/`;
+        console.log('📍 Fetching from:', url);
+        
+        const res = await fetch(url);
+        
+        console.log('📊 Response status:', res.status);
+        console.log('📊 Response headers:', res.headers.get('content-type'));
+        
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error(`Expected JSON but got: ${contentType}`);
+        }
+        
+        const data = await res.json();
+        console.log('✅ Data received:', data.length, 'items');
+        
+        const select = document.getElementById('achievement_type');
+        if (!select) {
+            console.error('❌ Select element not found');
+            return;
+        }
+        
+        select.innerHTML = '<option value="">-- Pilih Jenis Prestasi --</option>';
+        
+        const academic = data.filter(t => t.category === 'academic');
+        const nonAcademic = data.filter(t => t.category === 'non_academic');
+        
+        if (academic.length > 0) {
+            const optgroup1 = document.createElement('optgroup');
+            optgroup1.label = '🎓 Akademik (' + academic.length + ')';
+            academic.forEach(type => {
+                const opt = document.createElement('option');
+                opt.value = type.id;
+                opt.textContent = `${type.name} (${type.rmib_primary || 'N/A'})`;
+                optgroup1.appendChild(opt);
+            });
+            select.appendChild(optgroup1);
+        }
+        
+        if (nonAcademic.length > 0) {
+            const optgroup2 = document.createElement('optgroup');
+            optgroup2.label = '🎨 Non-Akademik (' + nonAcademic.length + ')';
+            nonAcademic.forEach(type => {
+                const opt = document.createElement('option');
+                opt.value = type.id;
+                opt.textContent = `${type.name} (${type.rmib_primary || 'N/A'})`;
+                optgroup2.appendChild(opt);
+            });
+            select.appendChild(optgroup2);
+        }
+        
+        console.log('✅ Dropdown populated!');
+        showToast('success', 'Success', `Loaded ${data.length} achievement types`);
+        
+    } catch (err) {
+        console.error('❌ Error:', err);
+        showToast('error', 'Error Loading Data', err.message);
+    }
+}
+
+function calculateAchievementPoints() {
+    const level = document.getElementById('level')?.value;
+    const rank = document.getElementById('rank')?.value;
+    
+    if (!level || !rank) return;
+    
+    const points = POINTS_MATRIX[level][rank];
+    const previewEl = document.getElementById('previewPoints');
+    const previewContainer = document.getElementById('pointsPreview');
+    
+    if (previewEl) previewEl.textContent = points;
+    if (previewContainer) previewContainer.classList.remove('hidden');
+}
+
+function loadAchievementsList() {
+    const container = document.getElementById('achievementsContainer');
+    if (!container) {
+        console.warn('Container achievementsContainer not found');
+        return;
+    }
+    
+    console.log('📋 Loading achievements list...');
+    console.log('Current achievements array:', achievements);
+    console.log('Total achievements:', achievements.length);
+    
+    container.innerHTML = '';
+    
+    if (achievements.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-4">Belum ada prestasi</p>';
+        return;
+    }
+    
+    achievements.forEach((ach, idx) => {
+        try {
+            const points = POINTS_MATRIX[ach.level][ach.rank];
+            const typeName = ach.achievement_type_name || 'Unknown';
+            
+            const div = document.createElement('div');
+            div.className = 'achievement-item bg-white rounded-lg p-4 mb-3 border-l-4 border-yellow-500 shadow-sm';
+            div.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-gray-900">${typeName}</p>
+                        <p class="text-sm text-gray-600">${ach.level} - ${ach.rank} (${ach.year})</p>
+                        ${ach.notes ? `<p class="text-xs text-gray-500 mt-1">${ach.notes}</p>` : ''}
+                    </div>
+                    <div class="text-right">
+                        <p class="text-2xl font-bold text-yellow-600">+${points}</p>
+                        <p class="text-xs text-gray-500">poin</p>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            console.log(`✅ Achievement ${idx + 1}: ${typeName} (+${points})`);
+        } catch (err) {
+            console.error(`Error rendering achievement ${idx}:`, err);
         }
     });
     
-    const progressPercentage = (filledCount / totalCategories) * 100;
-    
-    // Update display
-    document.getElementById('filledCount').textContent = filledCount;
-    document.getElementById('totalScore').textContent = `${totalScore} poin`;
-    document.getElementById('progressBar').style.width = progressPercentage + '%';
-    
-    console.log(`📈 Progress: ${filledCount}/${totalCategories} (${totalScore} poin)`);
-    
-    // Enable/disable submit button
-    const submitBtn = document.getElementById('submitBtn');
-    if (submitBtn) {
-        if (filledCount === totalCategories) {
-            submitBtn.classList.remove('btn-disabled');
-        } else {
-            submitBtn.classList.add('btn-disabled');
-        }
-    }
+    console.log(`✅ Total ${achievements.length} achievements displayed`);
 }
 
-// ==================== SAVE & LOAD ====================
+// ==================== EVENT LISTENERS ====================
 
-/**
- * Auto-save progress ke server
- */
-async function saveProgress() {
-    try {
-        const csrfToken = getCsrfToken();
+// Achievement form submission
+const achievementForm = document.getElementById('achievementForm');
+if (achievementForm) {
+    achievementForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
         
-        const response = await fetch(`/students/${RMIB_DATA.studentId}/rmib/save/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({ levels: levels })
-        });
+        console.log('=== Achievement Form Submitted ===');
         
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+        try {
+            const formData = new FormData(e.target);
+            const achievementTypeId = formData.get('achievement_type');
+            const level = formData.get('level');
+            const rank = formData.get('rank');
+            const year = formData.get('year');
+            const notes = formData.get('notes') || '';
+            
+            console.log('Form data:', { achievementTypeId, level, rank, year, notes });
+            
+            const res = await fetch(`/students/api/achievement-types/`);
+            if (!res.ok) throw new Error('Failed to fetch achievement types');
+            
+            const types = await res.json();
+            const selectedType = types.find(t => t.id == achievementTypeId);
+            
+            if (!selectedType) {
+                throw new Error('Selected achievement type not found');
+            }
+            
+            const achievementData = {
+                achievement_type_id: achievementTypeId,
+                achievement_type_name: selectedType.name,
+                level: level,
+                rank: rank,
+                year: parseInt(year),
+                notes: notes
+            };
+            
+            achievements.push(achievementData);
+            
+            console.log('✅ Achievement added:', achievementData);
+            console.log('📊 Total achievements:', achievements.length);
+            
+            const points = POINTS_MATRIX[level][rank];
+            showToast('success', 'Prestasi Ditambahkan', `${selectedType.name} (+${points} poin)`);
+            
+            e.target.reset();
+            document.getElementById('pointsPreview')?.classList.add('hidden');
+            
+            loadAchievementsList();
+            
+        } catch (err) {
+            console.error('❌ Error adding achievement:', err);
+            showToast('error', 'Error', err.message);
         }
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('id-ID', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            });
-            console.log(`✅ Progress saved at ${timeStr}`);
-        } else {
-            console.warn('⚠️ Save response not successful:', data.message);
-        }
-    } catch (error) {
-        console.error('❌ Save progress error:', error);
-    }
+    });
 }
 
-/**
- * Load saved progress dari server
- */
-async function loadProgress() {
-    try {
-        console.log('📥 Loading progress...');
-        
-        const csrfToken = getCsrfToken();
-        const response = await fetch(`/students/${RMIB_DATA.studentId}/rmib/load/`, {
-            method: 'GET',
-            headers: { 'X-CSRFToken': csrfToken }
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.success && data.has_progress) {
-            levels = data.levels;
-            console.log('✅ Progress loaded:', levels);
-            return true;
-        } else {
-            console.log('ℹ️ No progress found');
-            return false;
-        }
-    } catch (error) {
-        console.error('❌ Load progress error:', error);
-        return false;
-    }
-}
+// Achievement form change listeners
+document.querySelectorAll('#level, #rank').forEach(el => {
+    el.addEventListener('change', calculateAchievementPoints);
+});
 
-/**
- * Start auto-save interval (setiap 30 detik)
- */
-function startAutoSave() {
-    if (autoSaveInterval) {
-        clearInterval(autoSaveInterval);
-    }
+// Submit button
+document.getElementById('submitBtn')?.addEventListener('click', async () => {
+    const filled = Object.values(rankings).filter(r => r > 0).length;
     
-    autoSaveInterval = setInterval(() => {
-        if (Object.keys(levels).length > 0) {
-            saveProgress();
-        }
-    }, 30000); // 30 seconds
+    console.log(`=== submitBtn clicked ===`);
+    console.log(`Filled rankings: ${filled}/12`);
+    console.log(`Achievements: ${achievements.length}`);
     
-    console.log('⏱️ Auto-save started (every 30 seconds)');
-}
-
-/**
- * Stop auto-save
- */
-function stopAutoSave() {
-    if (autoSaveInterval) {
-        clearInterval(autoSaveInterval);
-        autoSaveInterval = null;
-        console.log('⏹️ Auto-save stopped');
-    }
-}
-
-// ==================== SUBMIT TEST ====================
-
-/**
- * Submit test - show confirmation first
- */
-function submitTest() {
-    const totalCategories = Object.keys(RMIB_DATA.categories).length;
-    const filledCount = Object.keys(levels).filter(key => levels[key] > 0).length;
-    
-    if (filledCount < totalCategories) {
-        showToast('warning', 'Belum Lengkap', 
-            `Anda baru mengisi ${filledCount} dari ${totalCategories} kategori`);
+    if (filled < 12) {
+        showToast('error', 'Belum Lengkap', `Baru ${filled}/12 ranking terisi`);
         return;
     }
     
-    console.log('🔍 All categories filled, showing confirmation');
-    
-    showConfirmationModal(
-        'Kirim Tes?',
-        'Setelah mengirim, Anda tidak dapat mengubah jawaban lagi. Data akan disimpan permanent.',
-        submitFinalResults
-    );
-}
-
-/**
- * Submit final results ke server
- */
-async function submitFinalResults() {
     try {
-        console.log('🚀 === FINAL SUBMIT ===');
         showLoading();
         
-        const csrfToken = getCsrfToken();
+        console.log('📤 Submitting data...');
+        console.log('Rankings:', rankings);
+        console.log('Achievements:', achievements);
         
-        // Validate all categories filled
-        const totalCategories = Object.keys(RMIB_DATA.categories).length;
-        if (Object.keys(levels).length !== totalCategories) {
-            throw new Error(`Data tidak lengkap: ${Object.keys(levels).length}/${totalCategories}`);
-        }
-        
-        // Validate level ranges
-        for (const [category, level] of Object.entries(levels)) {
-            const levelInt = parseInt(level);
-            if (isNaN(levelInt) || levelInt < 1 || levelInt > 12) {
-                throw new Error(`Level invalid untuk ${category}: ${level}`);
-            }
-        }
-        
-        console.log('✅ All validations passed');
-        console.log('📤 Submitting levels:', levels);
-        
-        // Submit to server
-        const response = await fetch(`/students/${RMIB_DATA.studentId}/rmib/submit/`, {
+        const res = await fetch(`/students/${RMIB_DATA.studentId}/rmib/submit/`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({ levels: levels })
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+            body: JSON.stringify({ 
+                levels: rankings, 
+                achievements: achievements 
+            })
         });
         
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log('✅ Submit response:', data);
-        
+        const data = await res.json();
         hideLoading();
+        
+        console.log('Response:', data);
         
         if (data.success) {
-            // Stop auto-save
-            stopAutoSave();
-            
-            // Show success message
-            const message = `Total Skor Anda: ${data.total_score} poin\nMinat Utama: ${data.primary_interest} (Level ${data.primary_level})`;
-            showToast('success', 'Tes Berhasil Diselesaikan!', message);
-            
-            console.log('✅ Test submitted successfully');
-            
-            // Redirect after 2 seconds
-            setTimeout(() => {
-                window.location.href = data.redirect_url || `/students/${RMIB_DATA.studentId}/rmib/result/`;
-            }, 2000);
-        } else {
-            showToast('error', 'Gagal Mengirim', data.message || 'Terjadi kesalahan server');
-            console.error('❌ Submit failed:', data.message);
-        }
-    } catch (error) {
-        hideLoading();
-        console.error('❌ Final submit error:', error);
-        showToast('error', 'Error', `Gagal mengirim tes: ${error.message}`);
-    }
-}
-
-// ==================== PAGE UNLOAD PROTECTION ====================
-
-/**
- * Warn user jika ada unsaved progress
- */
-window.addEventListener('beforeunload', function (e) {
-    const totalCategories = Object.keys(RMIB_DATA.categories).length;
-    const filledCount = Object.keys(levels).filter(key => levels[key] > 0).length;
-    
-    // Hanya warn jika ada progress tapi belum complete
-    if (filledCount > 0 && filledCount < totalCategories) {
-        e.preventDefault();
-        e.returnValue = '';
-        console.log('⚠️ Unsaved progress warning shown');
-    }
-});
-
-/**
- * Submit test - bisa jadi new atau edited
- */
-async function finalSubmit() {
-    try {
-        console.log('🚀 Submitting test...');
-        showLoading();
-        
-        const csrfToken = getCsrfToken();
-        const isEdit = window.location.href.includes('edit');
-        const endpoint = isEdit 
-            ? `/students/${RMIB_DATA.studentId}/rmib/submit-edited/`
-            : `/students/${RMIB_DATA.studentId}/rmib/submit/`;
-        
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({ levels: levels })
-        });
-        
-        const data = await response.json();
-        
-        hideLoading();
-        
-        if (data.success) {
-            stopAutoSave();
-            
-            const message = isEdit 
-                ? `Hasil tes berhasil diperbarui!\nTotal skor baru: ${data.total_score} poin`
-                : `Total skor Anda: ${data.total_score} poin\nMinat utama: ${data.primary_interest} (Level ${data.primary_level})`;
-            
-            showToast('success', 'Berhasil!', message);
-            
+            showToast('success', 'Berhasil!', `Skor: ${data.combined_score} poin`);
             setTimeout(() => {
                 window.location.href = data.redirect_url;
             }, 2000);
@@ -694,15 +496,48 @@ async function finalSubmit() {
         }
     } catch (error) {
         hideLoading();
-        console.error('Submit error:', error);
+        console.error('❌ Submit error:', error);
         showToast('error', 'Error', error.message);
+    }
+});
+
+// Tab switching
+function switchTab(tabName) {
+    if (tabName === 'ranking') {
+        document.getElementById('tab-ranking').style.color = '#667eea';
+        document.getElementById('tab-ranking').style.borderBottomColor = '#667eea';
+        document.getElementById('tab-achievement').style.color = '#6b7280';
+        document.getElementById('tab-achievement').style.borderBottomColor = 'transparent';
+        
+        document.getElementById('content-ranking').classList.remove('hidden');
+        document.getElementById('content-achievement').classList.add('hidden');
+    } else if (tabName === 'achievement') {
+        document.getElementById('tab-achievement').style.color = '#667eea';
+        document.getElementById('tab-achievement').style.borderBottomColor = '#667eea';
+        document.getElementById('tab-ranking').style.color = '#6b7280';
+        document.getElementById('tab-ranking').style.borderBottomColor = 'transparent';
+        
+        document.getElementById('content-ranking').classList.add('hidden');
+        document.getElementById('content-achievement').classList.remove('hidden');
     }
 }
 
+document.getElementById('tab-ranking')?.addEventListener('click', () => switchTab('ranking'));
+document.getElementById('tab-achievement')?.addEventListener('click', () => switchTab('achievement'));
 
-// ==================== LOGGING ====================
+// Start test button
+document.getElementById('startTestBtn')?.addEventListener('click', startTest);
 
-console.log('✅ RMIB Level-Based Test Script Loaded Successfully');
-console.log('📊 Total categories:', Object.keys(RMIB_DATA.categories).length);
-console.log('👤 Student:', RMIB_DATA.studentName, `(ID: ${RMIB_DATA.studentId})`);
-console.log('📝 Has progress:', RMIB_DATA.hasProgress);
+// Confirmation modal
+document.getElementById('confirmYesBtn')?.addEventListener('click', () => {
+    document.getElementById('confirmationModal')?.classList.add('hidden');
+});
+
+document.getElementById('confirmNoBtn')?.addEventListener('click', () => {
+    document.getElementById('confirmationModal')?.classList.add('hidden');
+});
+
+// ==================== INIT ====================
+console.log('✅ RMIB + Achievement System Ready');
+console.log('📊 Student ID:', RMIB_DATA.studentId);
+console.log('📋 Categories:', Object.keys(RMIB_DATA.categories).length);

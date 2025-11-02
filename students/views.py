@@ -23,8 +23,9 @@ import json
 
 from .models import Student
 from .forms import StudentForm
-from .models import Student, Prestasi
-from .forms import StudentForm, PrestasiForm, StudentBatchImportForm
+from students.models import Student, StudentAchievement
+from .models import Student, RMIBResult, StudentAchievement, AchievementType
+
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -42,7 +43,13 @@ class StudentListView(LoginRequiredMixin, ListView):
     paginate_by = 25
     
     def get_queryset(self):
-        queryset = Student.objects.select_related('user').prefetch_related('prestasi').order_by('student_class', 'name')
+        # FIX: Ganti 'prestasi' dengan 'achievements'
+        queryset = Student.objects.select_related(
+            'user',
+            'rmib_result'  # ← Tambah ini juga untuk performance
+        ).prefetch_related(
+            'achievements'  # ← CHANGE: prestasi → achievements
+        ).order_by('student_class', 'name')
         
         # Search functionality
         search = self.request.GET.get('search', '').strip()
@@ -122,6 +129,7 @@ class StudentListView(LoginRequiredMixin, ListView):
         })
         
         return context
+
 class StudentDeleteView(LoginRequiredMixin, IsStaffMixin, DeleteView):
     """Enhanced student delete view with safety checks"""
     model = Student
@@ -137,8 +145,8 @@ class StudentDeleteView(LoginRequiredMixin, IsStaffMixin, DeleteView):
             'page_title': f'Hapus Siswa - {student.name}',
             'breadcrumb_title': 'Hapus Siswa',
             'has_user_account': bool(student.user),
-            'has_prestasi': hasattr(student, 'prestasi') and student.prestasi.exists(),
-            'prestasi_count': student.prestasi.count() if hasattr(student, 'prestasi') else 0,
+            'has_achievements': student.achievements.exists(),  # ← FIX: prestasi → achievements
+            'achievements_count': student.achievements.count(),  # ← FIX
             'has_test_results': student.test_status == 'completed',
         })
         return context
@@ -149,188 +157,174 @@ class StudentDeleteView(LoginRequiredMixin, IsStaffMixin, DeleteView):
         student_nisn = student.nisn
         
         try:
-            with transaction.atomic():
-                # Delete related user account if exists
-                if student.user:
-                    user = student.user
-                    user.delete()
-                    logger.info(f"User account deleted for student: {student_name}")
-                
-                # Delete student (this will cascade to related objects)
-                student.delete()
-                
-                messages.success(
-                    request, 
-                    f'Siswa {student_name} (NISN: {student_nisn}) berhasil dihapus dari sistem!'
-                )
-                logger.info(f"Student deleted: {student_name} (NISN: {student_nisn}) by {request.user.username}")
+            # Break relationship first to avoid cascade issues
+            user_to_delete = None
+            if student.user:
+                user_to_delete = student.user
+                student.user = None
+                student.save()
+            
+            # Delete student
+            student.delete()
+            
+            # Delete user if exists
+            if user_to_delete:
+                try:
+                    user_to_delete.delete()
+                except Exception as e:
+                    logger.warning(f"User delete warning: {str(e)}")
+            
+            messages.success(
+                request, 
+                f'Siswa {student_name} (NISN: {student_nisn}) berhasil dihapus dari sistem!'
+            )
+            logger.info(f"Student deleted: {student_name} (NISN: {student_nisn}) by {request.user.username}")
                 
         except Exception as e:
             logger.error(f"Error deleting student {student_name}: {str(e)}")
             messages.error(request, f'Terjadi kesalahan saat menghapus siswa: {str(e)}')
-            return redirect('students:detail', pk=student.pk)
+            return redirect('students:detail', pk=self.object.pk)
         
         return redirect(self.success_url)
 
 @require_POST
 @login_required
 def bulk_delete_students(request):
-    """Bulk delete multiple students - WORKING SOLUTION"""
-    print("Bulk delete called")  # Debug
-    
+    """Bulk delete multiple students"""
     if not request.user.is_staff:
-        messages.error(request, 'Anda tidak memiliki izin untuk menghapus data')
-        return redirect('students:list')
+        return JsonResponse({
+            'success': False, 
+            'message': 'Tidak memiliki izin'
+        }, status=403)
     
     try:
-        student_ids = request.POST.getlist('student_ids')
-        print(f"Student IDs to delete: {student_ids}")  # Debug
+        import json
+        data = json.loads(request.body)
+        student_ids = data.get('student_ids', [])
         
         if not student_ids:
-            messages.error(request, 'Tidak ada siswa yang dipilih untuk dihapus')
-            return redirect('students:list')
+            return JsonResponse({
+                'success': False,
+                'message': 'Tidak ada siswa yang dipilih'
+            }, status=400)
         
+        # Validate IDs
         try:
-            student_ids = [int(sid) for sid in student_ids if sid.isdigit()]
-        except ValueError:
-            messages.error(request, 'ID siswa tidak valid')
-            return redirect('students:list')
-        
-        if not student_ids:
-            messages.error(request, 'ID siswa tidak valid')
-            return redirect('students:list')
+            student_ids = [int(sid) for sid in student_ids]
+        except (ValueError, TypeError):
+            return JsonResponse({
+                'success': False,
+                'message': 'ID siswa tidak valid'
+            }, status=400)
         
         students = Student.objects.filter(id__in=student_ids)
         total_count = students.count()
         
         if total_count == 0:
-            messages.error(request, 'Siswa yang dipilih tidak ditemukan')
-            return redirect('students:list')
+            return JsonResponse({
+                'success': False,
+                'message': 'Siswa tidak ditemukan'
+            }, status=404)
         
-        # Get student data for logging
-        student_data = list(students.values('id', 'name', 'nisn', 'user_id'))
-        student_names = [s['name'] for s in student_data]
-        print(f"Deleting students: {student_names}")  # Debug
-        
-        # FIXED: Delete without atomic transaction to avoid cascade issues
         deleted_count = 0
-        deleted_names = []
         failed_names = []
         
-        for student_info in student_data:
+        for student in students:
             try:
-                student = Student.objects.get(id=student_info['id'])
                 student_name = student.name
+                user_to_delete = student.user if student.user else None
                 
-                # METHOD 1: Change relationship before delete
-                user_to_delete = None
+                # Break relationship
                 if student.user:
-                    user_to_delete = student.user
-                    # Break the relationship first
                     student.user = None
                     student.save()
-                    print(f"Cleared user relationship for: {student_name}")
                 
-                # Delete student first (this will not cascade to user anymore)
+                # Delete student
                 student.delete()
-                print(f"Student deleted: {student_name}")
                 
-                # Now safely delete the user
+                # Delete user
                 if user_to_delete:
                     try:
-                        # Delete user without CASCADE issues
                         user_to_delete.delete()
-                        print(f"User deleted for: {student_name}")
-                    except Exception as user_error:
-                        print(f"Warning - user delete failed for {student_name}: {user_error}")
+                    except Exception as e:
+                        logger.warning(f"User delete failed: {e}")
                 
                 deleted_count += 1
-                deleted_names.append(student_name)
+                logger.info(f"Student deleted: {student_name}")
                 
-            except Student.DoesNotExist:
-                print(f"Student {student_info['id']} not found")
-                continue
-            except Exception as student_error:
-                print(f"Error deleting student {student_info.get('name', student_info['id'])}: {student_error}")
-                failed_names.append(student_info.get('name', f"ID:{student_info['id']}"))
-                continue
+            except Exception as e:
+                logger.error(f"Delete error: {e}")
+                failed_names.append(student.name)
         
-        # Provide comprehensive feedback
-        if deleted_count > 0:
-            messages.success(
-                request, 
-                f'✅ {deleted_count} siswa berhasil dihapus dari sistem!'
-            )
-            logger.info(f"Bulk delete success: {deleted_count}/{total_count} students deleted by {request.user.username}")
+        return JsonResponse({
+            'success': True,
+            'message': f'{deleted_count} siswa berhasil dihapus',
+            'deleted_count': deleted_count,
+            'failed_count': len(failed_names)
+        })
         
-        if failed_names:
-            messages.warning(
-                request,
-                f'⚠️ {len(failed_names)} siswa gagal dihapus: {", ".join(failed_names[:5])}'
-            )
-        
-        print(f"Final result: {deleted_count}/{total_count} students deleted")
-        return redirect('students:list')
-        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'message': 'Format data tidak valid'
+        }, status=400)
     except Exception as e:
-        logger.error(f"Bulk delete error: {str(e)}")
-        print(f"Bulk delete error: {str(e)}")  # Debug
-        messages.error(request, f'Terjadi kesalahan saat menghapus siswa: {str(e)}')
-        return redirect('students:list')
+        logger.error(f"Bulk delete error: {e}")
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        }, status=500)
 
 @require_POST
 @login_required
 def delete_student_ajax(request, pk):
-    """AJAX endpoint for deleting student - WORKING SOLUTION"""
-    print(f"AJAX delete called for student ID: {pk}")  # Debug
-    
+    """AJAX delete single student"""
     if not request.user.is_staff:
-        return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
+        return JsonResponse({
+            'success': False,
+            'message': 'Tidak memiliki izin'
+        }, status=403)
     
     try:
         student = get_object_or_404(Student, pk=pk)
         student_name = student.name
         student_nisn = student.nisn
+        user_to_delete = student.user if student.user else None
         
-        print(f"Attempting to delete student: {student_name}")  # Debug
-        
-        # FIXED: Break user relationship first to avoid cascade issues
-        user_to_delete = None
+        # Break relationship
         if student.user:
-            user_to_delete = student.user
-            # Break the relationship
             student.user = None
             student.save()
-            print(f"Cleared user relationship for: {student_name}")
         
-        # Delete student (no more cascade issues)
+        # Delete student
         student.delete()
-        print(f"Student deleted: {student_name}")
         
-        # Delete user separately if exists
+        # Delete user
         if user_to_delete:
             try:
                 user_to_delete.delete()
-                print(f"User account deleted for: {student_name}")
-            except Exception as user_error:
-                print(f"Warning - user delete failed: {user_error}")
+            except Exception as e:
+                logger.warning(f"User delete failed: {e}")
         
-        logger.info(f"Student deleted via AJAX: {student_name} (NISN: {student_nisn}) by {request.user.username}")
+        logger.info(f"Student deleted: {student_name} by {request.user.username}")
         
         return JsonResponse({
             'success': True,
-            'message': f'Siswa {student_name} berhasil dihapus!',
-            'redirect_url': str(reverse('students:list'))
+            'message': f'✅ Siswa {student_name} berhasil dihapus!',
+            'redirect_url': reverse('students:list')
         })
         
+    except Http404:
+        return JsonResponse({
+            'success': False,
+            'message': 'Siswa tidak ditemukan'
+        }, status=404)
     except Exception as e:
-        logger.error(f"AJAX delete error: {str(e)}")
-        print(f"Delete error: {str(e)}")  # Debug
+        logger.error(f"Delete error: {e}")
         return JsonResponse({
             'success': False,
             'message': f'Terjadi kesalahan: {str(e)}'
         }, status=500)
-
 
 class StudentCreateView(LoginRequiredMixin, IsStaffMixin, CreateView):
     """Enhanced student creation view with validation"""
@@ -374,33 +368,31 @@ class StudentCreateView(LoginRequiredMixin, IsStaffMixin, CreateView):
             messages.error(self.request, 'Terjadi kesalahan saat menyimpan data siswa')
             return self.form_invalid(form)
 
-class StudentDetailView(LoginRequiredMixin, DetailView):
-    """Enhanced student detail view"""
+class StudentDetailView(DetailView):
     model = Student
     template_name = 'students/detail.html'
     context_object_name = 'student'
     
     def get_queryset(self):
-        return Student.objects.select_related('user').prefetch_related('prestasi')
+        # Prefetch dengan nama relasi yang BENAR
+        return Student.objects.prefetch_related(
+            'achievements',  # ← Benar! (dari related_name di StudentAchievement)
+            'rmib_result'
+        )
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         student = self.object
         
-        context.update({
-            'prestasi_list': student.prestasi.all().order_by('-tahun', 'tingkat'),
-            'has_user_account': bool(student.user),
-            'account_status': 'Aktif' if student.user else 'Tidak Ada',
-            'login_attempts': student.login_attempts,
-            'is_locked': student.is_locked,
-            'last_login': student.user.last_login if student.user else None,
-        })
+        # Add RMIB data
+        context['rmib_result'] = student.rmib_result if hasattr(student, 'rmib_result') else None
+        context['has_rmib'] = hasattr(student, 'rmib_result') and student.rmib_result.status == 'completed'
         
-        # Test status info
-        if student.test_status == 'completed' and student.test_date:
-            context['test_completed_date'] = student.test_date
+        # Add achievements
+        context['achievements'] = student.achievements.all().order_by('-year', '-points')
         
         return context
+
 
 class StudentUpdateView(LoginRequiredMixin, IsStaffMixin, UpdateView):
     """Enhanced student update view"""
@@ -750,13 +742,26 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
             if not row.strip():
                 continue
             
-            cols = row.split(delimiter)
+            # FIX: Handle quoted fields properly
+            import csv as csv_module
+            try:
+                # Use CSV reader to properly parse quoted fields
+                parsed_cols = list(csv_module.reader([row], delimiter=delimiter))
+                if parsed_cols:
+                    cols = parsed_cols[0]
+                else:
+                    cols = row.split(delimiter)
+            except:
+                cols = row.split(delimiter)
+            
+            # Count non-empty columns
             actual_cols_count = len([col for col in cols if col.strip()])
             
-            if actual_cols_count != expected_columns_count:
+            # FIXED: Allow slight variance in column count (for optional fields)
+            if actual_cols_count < expected_columns_count - 1:  # Allow 1 missing column
                 errors.append(
-                    f'Baris {i + 1}: Jumlah kolom tidak sesuai '
-                    f'(ditemukan {actual_cols_count}, diperlukan {expected_columns_count})'
+                    f'Baris {i + 1}: Jumlah kolom kurang '
+                    f'(ditemukan {actual_cols_count}, diperlukan minimal {expected_columns_count - 1})'
                 )
             
             # Basic NISN validation (assuming NISN is in position based on header)
@@ -774,7 +779,8 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
             except (IndexError, ValueError):
                 pass  # Skip if can't validate NISN
         
-        return errors[:3]  # Return max 3 errors
+        return errors[:3] if errors else []  # Return empty list if no errors
+
 
     def process_csv_file(self, file):
         """Enhanced CSV processing with better column mapping"""
@@ -813,7 +819,7 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
             
             csv_reader = csv.DictReader(io.StringIO(content_str), delimiter=delimiter)
             
-            # Normalize and map fieldnames
+            # Normalize dan map fieldnames
             if csv_reader.fieldnames:
                 fieldname_mapping = {}
                 normalized_fieldnames = []
@@ -834,65 +840,74 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
             # Track processed NISNs
             processed_nisns = set()
             
-            with transaction.atomic():
-                for row_num, row in enumerate(csv_reader, start=2):
-                    result['total_processed'] += 1
+            # FIXED: Remove transaction.atomic() - Process each row independently
+            for row_num, row in enumerate(csv_reader, start=2):
+                result['total_processed'] += 1
+                
+                try:
+                    # Map row data using field mapping
+                    mapped_row = {}
+                    for normalized_field, original_field in fieldname_mapping.items():
+                        if normalized_field in ['nama', 'nisn', 'kelas', 'jenis_kelamin', 'tanggal_lahir']:
+                            mapped_row[normalized_field] = row.get(original_field, '').strip()
                     
+                    cleaned_data = self.clean_row_data_mapped(mapped_row, row_num)
+                    
+                    if not cleaned_data['valid']:
+                        result['errors'] += len(cleaned_data['errors'])
+                        result['error_details'].extend(cleaned_data['errors'])
+                        continue
+                    
+                    data = cleaned_data['data']
+                    
+                    if data['nisn'] in processed_nisns:
+                        result['duplicates'] += 1
+                        result['error_details'].append(
+                            f"Baris {row_num}: NISN {data['nisn']} duplikat dalam file"
+                        )
+                        continue
+                    
+                    processed_nisns.add(data['nisn'])
+                    
+                    # Check existing student
+                    if Student.objects.filter(nisn=data['nisn']).exists():
+                        result['duplicates'] += 1
+                        result['error_details'].append(
+                            f"Baris {row_num}: NISN {data['nisn']} sudah ada dalam sistem"
+                        )
+                        continue
+                    
+                    # FIXED: Create student OUTSIDE atomic block
+                    student = Student.objects.create(**data)
+                    
+                    # Try to create user account - SEPARATE transaction
                     try:
-                        # Map row data using field mapping
-                        mapped_row = {}
-                        for normalized_field, original_field in fieldname_mapping.items():
-                            if normalized_field in ['nama', 'nisn', 'kelas', 'jenis_kelamin', 'tanggal_lahir']:
-                                mapped_row[normalized_field] = row.get(original_field, '').strip()
-                        
-                        cleaned_data = self.clean_row_data_mapped(mapped_row, row_num)
-                        
-                        if not cleaned_data['valid']:
-                            result['errors'] += len(cleaned_data['errors'])
-                            result['error_details'].extend(cleaned_data['errors'])
-                            continue
-                        
-                        data = cleaned_data['data']
-                        
-                        if data['nisn'] in processed_nisns:
-                            result['duplicates'] += 1
-                            result['error_details'].append(
-                                f"Baris {row_num}: NISN {data['nisn']} duplikat dalam file"
-                            )
-                            continue
-                        
-                        processed_nisns.add(data['nisn'])
-                        
-                        if Student.objects.filter(nisn=data['nisn']).exists():
-                            result['duplicates'] += 1
-                            result['error_details'].append(
-                                f"Baris {row_num}: NISN {data['nisn']} sudah ada dalam sistem"
-                            )
-                            continue
-                        
-                        student = Student.objects.create(**data)
-                        
-                        try:
+                        # Check if user already exists
+                        if not User.objects.filter(username=data['nisn']).exists():
                             user, password = student.create_user_account()
-                        except Exception as e:
-                            logger.warning(f"Failed to create user account for {student.name}: {str(e)}")
-                            # Student is still created, just without user account
-                        
-                        result['successful'] += 1
-                        
+                        else:
+                            logger.warning(f"User account already exists for NISN: {data['nisn']}")
                     except IntegrityError as e:
-                        result['errors'] += 1
-                        error_msg = f"Baris {row_num}: Data tidak valid (kemungkinan NISN duplikat)"
-                        result['error_details'].append(error_msg)
-                        logger.warning(f"IntegrityError: {error_msg} - {str(e)}")
-                        
+                        logger.warning(f"Failed to create user for {student.name}: User duplicate - {str(e)}")
                     except Exception as e:
-                        result['errors'] += 1
-                        error_msg = f"Baris {row_num}: {str(e)}"
-                        result['error_details'].append(error_msg)
-                        logger.error(f"Row processing error: {error_msg}")
+                        logger.warning(f"Failed to create user account for {student.name}: {str(e)}")
+                        # Student still created, user creation just failed
+                    
+                    result['successful'] += 1
+                    
+                except IntegrityError as e:
+                    result['errors'] += 1
+                    error_msg = f"Baris {row_num}: Data tidak valid (kemungkinan NISN duplikat) - {str(e)}"
+                    result['error_details'].append(error_msg)
+                    logger.warning(f"IntegrityError: {error_msg}")
+                    
+                except Exception as e:
+                    result['errors'] += 1
+                    error_msg = f"Baris {row_num}: {str(e)}"
+                    result['error_details'].append(error_msg)
+                    logger.error(f"Row processing error: {error_msg}")
             
-            # Determine success status and message
+            # Determine success status dan message
             if result['successful'] > 0:
                 result['success'] = True
                 result['message'] = f"Import selesai. {result['successful']} siswa berhasil ditambahkan."
@@ -905,7 +920,7 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
             # Log successful import
             if result['successful'] > 0:
                 logger.info(f"Batch import completed: {result['successful']} students created by {self.request.user.username}")
-                
+                    
         except Exception as e:
             logger.error(f"CSV processing error: {str(e)}", exc_info=True)
             result['message'] = f'Terjadi kesalahan saat memproses file CSV: {str(e)}'
@@ -922,18 +937,17 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
             nama = str(row.get('nama', '')).strip()
             nisn = str(row.get('nisn', '')).strip()
             kelas = str(row.get('kelas', '')).strip().upper()
-            jenis_kelamin = str(row.get('jenis_kelamin', '')).strip().upper()
+            jenis_kelamin_raw = str(row.get('jenis_kelamin', '')).strip().upper()
             tanggal_lahir = str(row.get('tanggal_lahir', '')).strip()
             
-            # Validate nama
+            # Validate nama - SIMPLE VERSION (no regex)
             if not nama:
                 errors.append(f"Baris {row_num}: Nama tidak boleh kosong")
             elif len(nama) < 2:
                 errors.append(f"Baris {row_num}: Nama terlalu pendek (minimal 2 karakter)")
             elif len(nama) > 200:
                 errors.append(f"Baris {row_num}: Nama terlalu panjang (maksimal 200 karakter)")
-            elif not re.match(r'^[a-zA-Z\s.\']+$', nama):
-                errors.append(f"Baris {row_num}: Nama hanya boleh berisi huruf, spasi, titik, dan apostrof")
+            # Accept any nama without regex validation
             
             # Validate NISN
             if not nisn:
@@ -949,11 +963,30 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
             elif not re.match(r'^[789][A-Z]$', kelas):
                 errors.append(f"Baris {row_num}: Format kelas tidak valid (harus 7A, 8B, 9C, dll. Ditemukan: {kelas})")
             
-            # Validate jenis kelamin
-            if jenis_kelamin not in ['L', 'P']:
-                errors.append(f"Baris {row_num}: Jenis kelamin harus L atau P (ditemukan: {jenis_kelamin})")
+            # Validate dan mapping jenis kelamin - FIXED!
+            jenis_kelamin_mapping = {
+                'L': 'L',
+                'P': 'P',
+                'LAKI': 'L',
+                'LAKI-LAKI': 'L',
+                'LELAKI': 'L',
+                'MALE': 'L',
+                'M': 'L',
+                'PEREMPUAN': 'P',
+                'WANITA': 'P',
+                'FEMALE': 'P',
+                'F': 'P',
+            }
             
-            # Validate and parse tanggal lahir
+            jenis_kelamin = jenis_kelamin_mapping.get(jenis_kelamin_raw)
+            
+            if not jenis_kelamin:
+                errors.append(
+                    f"Baris {row_num}: Jenis kelamin tidak valid "
+                    f"(gunakan: L/P, LAKI-LAKI, atau PEREMPUAN. Ditemukan: {jenis_kelamin_raw})"
+                )
+            
+            # Validate dan parse tanggal lahir
             birth_date = None
             if not tanggal_lahir:
                 errors.append(f"Baris {row_num}: Tanggal lahir tidak boleh kosong")
@@ -996,7 +1029,7 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
                     'name': nama.title().strip(),
                     'nisn': nisn,
                     'student_class': kelas,
-                    'gender': jenis_kelamin,
+                    'gender': jenis_kelamin,  # Now mapped correctly (L atau P)
                     'birth_date': birth_date,
                     'entry_year': datetime.now().year,
                     'test_status': 'pending',
@@ -1116,14 +1149,16 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from django.db import transaction
-from .models import Student, RMIBResult, Prestasi
+from django.db.models import Q
 import json
 import logging
 from datetime import datetime
 
+from students.models import Student, RMIBResult, StudentAchievement, AchievementType
+
 logger = logging.getLogger(__name__)
 
-# ==================== RMIB CATEGORIES - DEFINE HERE ====================
+# ==================== RMIB CATEGORIES ====================
 RMIB_CATEGORIES = {
     'outdoor': {
         'name': 'Outdoor (Alam Terbuka)',
@@ -1199,23 +1234,18 @@ RMIB_CATEGORIES = {
     }
 }
 
-
 # ==================== RMIB TEST VIEWS ====================
 
 @login_required
 def rmib_test_interface(request, student_pk):
-    """Display RMIB test interface"""
+    """Display RMIB test interface with achievement input"""
     student = get_object_or_404(Student, pk=student_pk)
     
-    # Check if student can take test
     if not student.can_take_test():
         messages.warning(request, 'Siswa ini sudah menyelesaikan tes RMIB.')
         return redirect('students:detail', pk=student_pk)
     
-    # Check if there's existing progress
     has_progress = hasattr(student, 'rmib_result') and student.rmib_result.levels
-    
-    # Convert to JSON for template
     rmib_categories_json = json.dumps(RMIB_CATEGORIES)
     
     context = {
@@ -1223,8 +1253,11 @@ def rmib_test_interface(request, student_pk):
         'rmib_categories': RMIB_CATEGORIES,
         'rmib_categories_json': rmib_categories_json,
         'has_progress': has_progress,
-        'total_categories': len(RMIB_CATEGORIES)
+        'total_categories': len(RMIB_CATEGORIES),
+        'current_year': datetime.now().year
     }
+    
+    logger.info(f"🔍 RMIB Test Interface - Student: {student.name}, Has Progress: {has_progress}")
     
     return render(request, 'students/rmib_test.html', context)
 
@@ -1232,21 +1265,28 @@ def rmib_test_interface(request, student_pk):
 @login_required
 @require_http_methods(["POST"])
 def start_rmib_test(request, student_pk):
-    """Start RMIB test and update student status"""
+    """Start or resume RMIB test"""
     try:
         student = get_object_or_404(Student, pk=student_pk)
         
-        if student.test_status == 'pending':
-            student.test_status = 'in_progress'
-            student.test_date = timezone.now()
-            student.save()
+        rmib_result, created = RMIBResult.objects.get_or_create(
+            student=student,
+            defaults={
+                'submitted_at': timezone.now(),
+                'status': 'in_progress'
+            }
+        )
         
-        logger.info(f"Started RMIB test for student {student.name}")
+        if not created:
+            rmib_result.status = 'in_progress'
+            rmib_result.save()
+        
+        logger.info(f"Starting RMIB test for {student.name} - Created: {created}")
         
         return JsonResponse({
             'success': True,
-            'message': 'Tes RMIB dimulai',
-            'test_date': student.test_date.isoformat() if student.test_date else None
+            'message': 'Tes dimulai' if created else 'Tes dilanjutkan',
+            'has_progress': not created
         })
     except Exception as e:
         logger.error(f"Start test error: {str(e)}")
@@ -1266,7 +1306,6 @@ def save_rmib_progress(request, student_pk):
         
         levels = data.get('levels', {})
         
-        # Get or create RMIB result
         rmib_result, created = RMIBResult.objects.get_or_create(
             student=student,
             defaults={
@@ -1275,7 +1314,6 @@ def save_rmib_progress(request, student_pk):
             }
         )
         
-        # Update levels if not created
         if not created:
             rmib_result.levels = levels
             rmib_result.save()
@@ -1308,7 +1346,7 @@ def load_rmib_progress(request, student_pk):
                 'success': True,
                 'has_progress': True,
                 'levels': student.rmib_result.levels,
-                'saved_at': student.rmib_result.updated_at.isoformat()
+                'saved_at': student.rmib_result.updated_at.isoformat() if student.rmib_result.updated_at else None
             })
         else:
             return JsonResponse({
@@ -1329,15 +1367,17 @@ def load_rmib_progress(request, student_pk):
 @require_http_methods(["POST"])
 @transaction.atomic
 def submit_rmib_test(request, student_pk):
-    """Submit RMIB test - Level-Based"""
+    """Submit RMIB test + Achievements - Integrated"""
     try:
         student = get_object_or_404(Student, pk=student_pk)
         data = json.loads(request.body)
+        
         levels = data.get('levels', {})
+        achievements_data = data.get('achievements', [])
         
-        logger.info(f"Submitting RMIB for student {student_pk}: {len(levels)} levels")
+        logger.info(f"Submitting RMIB + Achievements for {student.name}: {len(levels)} levels, {len(achievements_data)} achievements")
         
-        # Validate - all 12 categories must have levels
+        # Validate levels - all 12 categories must have levels
         if len(levels) != 12:
             return JsonResponse({
                 'success': False,
@@ -1369,20 +1409,64 @@ def submit_rmib_test(request, student_pk):
         rmib_result.levels = levels
         rmib_result.calculate_scores()
         rmib_result.submitted_at = timezone.now()
+        rmib_result.status = 'completed'
         rmib_result.save()
         
-        # Update student status
+        # ==================== PROCESS ACHIEVEMENTS ====================
+        if achievements_data:
+            for ach_data in achievements_data:
+                try:
+                    achievement_type = AchievementType.objects.get(pk=ach_data['achievement_type_id'])
+                    
+                    # Check if already exists
+                    existing = StudentAchievement.objects.filter(
+                        student=student,
+                        achievement_type=achievement_type,
+                        year=int(ach_data['year'])
+                    ).first()
+                    
+                    if not existing:
+                        achievement = StudentAchievement.objects.create(
+                            student=student,
+                            achievement_type=achievement_type,
+                            level=ach_data['level'],
+                            rank=ach_data['rank'],
+                            year=int(ach_data['year']),
+                            notes=ach_data.get('notes', '')
+                        )
+                        
+                        # Auto-verify if submitted by staff
+                        if request.user.is_staff:
+                            achievement.verify(request.user)
+                        
+                        logger.info(f"Created achievement: {achievement_type.name} ({achievement.points} poin)")
+                    
+                except AchievementType.DoesNotExist:
+                    logger.warning(f"Achievement type not found: {ach_data['achievement_type_id']}")
+                except Exception as e:
+                    logger.error(f"Error creating achievement: {str(e)}")
+                    continue
+        
+        # ==================== UPDATE STUDENT STATUS ====================
         student.test_status = 'completed'
         student.test_date = timezone.now()
         student.save(update_fields=['test_status', 'test_date'])
         
-        logger.info(f"✅ RMIB submitted for {student.name}. Total: {rmib_result.total_score} poin")
+        # Calculate totals
+        verified_achievements = StudentAchievement.objects.filter(student=student, is_verified=True)
+        total_achievement_score = sum(ach.points for ach in verified_achievements)
+        test_score = rmib_result.total_score
+        combined = test_score + total_achievement_score
+        
+        logger.info(f"✅ RMIB + Achievements submitted for {student.name}. Test: {test_score} + Achievements: {total_achievement_score} = {combined}")
         
         return JsonResponse({
             'success': True,
-            'message': 'Tes RMIB berhasil diselesaikan!',
+            'message': 'Tes RMIB dan prestasi berhasil diselesaikan!',
             'redirect_url': f'/students/{student_pk}/rmib/result/',
-            'total_score': rmib_result.total_score,
+            'test_score': test_score,
+            'achievement_score': total_achievement_score,
+            'combined_score': combined,
             'primary_interest': rmib_result.primary_interest,
             'primary_level': rmib_result.primary_level
         })
@@ -1401,47 +1485,119 @@ def submit_rmib_test(request, student_pk):
 
 @login_required
 def rmib_result_view(request, student_pk):
-    """Display RMIB results - Level-Based"""
+    """Display RMIB results + Achievements - RANKING #1 = 60 POIN"""
     try:
         student = get_object_or_404(Student, pk=student_pk)
         
-        # Check if completed
         if not hasattr(student, 'rmib_result'):
             messages.warning(request, 'Anda belum menyelesaikan tes RMIB.')
             return redirect('students:rmib_test', student_pk=student_pk)
         
         rmib_result = student.rmib_result
         
-        # Get ranking sorted by level (highest first)
+        if not rmib_result.levels:
+            messages.warning(request, 'Data tes belum tersimpan dengan baik.')
+            return redirect('students:rmib_test', student_pk=student_pk)
+        
+        # ==================== BUILD RANKING (SCORE DESCENDING) ====================
         ranking_data = []
-        for rank, (category_key, level) in enumerate(rmib_result.get_ranking_summary(), 1):
+        
+        for category_key, level in rmib_result.levels.items():
             category_info = RMIB_CATEGORIES.get(category_key, {})
-            score = level * 5
+            level_int = int(level)
+            # SCORE = (13 - LEVEL) * 5
+            # Level 1 = (13-1)*5 = 60 poin (Ranking #1)
+            # Level 12 = (13-12)*5 = 5 poin (Ranking #12)
+            score = (13 - level_int) * 5
             
             ranking_data.append({
-                'rank': rank,
+                'rank': 0,  # Will assign after sort
                 'category_key': category_key,
                 'category_name': category_info.get('name', category_key),
-                'level': level,
+                'level': level_int,
                 'score': score,
-                'icon': category_info.get('icon', 'fas fa-circle')
+                'icon': category_info.get('icon', 'fas fa-circle'),
+                'color': category_info.get('color', 'gray')
             })
         
-        # Get primary interest name
-        primary_interest_info = RMIB_CATEGORIES.get(rmib_result.primary_interest, {})
-        primary_interest_name = primary_interest_info.get('name', rmib_result.primary_interest)
+        # SORT by SCORE DESCENDING (60, 55, 50... = Ranking #1, #2, #3...)
+        ranking_data.sort(key=lambda x: (-x['score'], -x['level']))
         
+        # Assign ranking
+        for idx, item in enumerate(ranking_data, start=1):
+            item['rank'] = idx
+        
+        logger.info(f"📊 Ranking untuk {student.name}:")
+        for item in ranking_data[:3]:
+            logger.info(f"   Rank #{item['rank']}: {item['category_name']} (Level {item['level']}, Score {item['score']})")
+        
+        # Get primary interest (rank #1 = 60 poin)
+        primary_item = ranking_data[0] if ranking_data else None
+        primary_interest_name = primary_item['category_name'] if primary_item else 'N/A'
+        primary_level = primary_item['level'] if primary_item else 0
+        primary_score = primary_item['score'] if primary_item else 0
+        
+        # ==================== GET ACHIEVEMENTS ====================
+        achievements = StudentAchievement.objects.filter(
+            student=student,
+            is_verified=True
+        ).select_related('achievement_type').order_by('-points', '-year')
+        
+        logger.info(f"Found {achievements.count()} verified achievements")
+        
+        # Calculate achievement contributions
+        achievement_contributions = {}
+        total_achievement_score = 0
+        
+        for achievement in achievements:
+            points = achievement.points
+            total_achievement_score += points
+            
+            if hasattr(achievement.achievement_type, 'rmib_primary') and achievement.achievement_type.rmib_primary:
+                primary_cat = str(achievement.achievement_type.rmib_primary).lower()
+                achievement_contributions[primary_cat] = achievement_contributions.get(primary_cat, 0) + points
+            
+            if hasattr(achievement.achievement_type, 'rmib_secondary') and achievement.achievement_type.rmib_secondary:
+                secondary_cat = str(achievement.achievement_type.rmib_secondary).lower()
+                secondary_points = points // 2 if points % 2 == 0 else (points + 1) // 2
+                achievement_contributions[secondary_cat] = achievement_contributions.get(secondary_cat, 0) + secondary_points
+        
+        # ==================== GET COMBINED SCORES ====================
+        combined_scores = {}
+        for item in ranking_data:
+            cat_key = item['category_key']
+            cat_name = item['category_name']
+            test_score = item['score']
+            ach_score = achievement_contributions.get(cat_key, 0)
+            total = test_score + ach_score
+            
+            combined_scores[cat_name] = {
+                'category': cat_name,
+                'test_score': test_score,
+                'achievement_score': ach_score,
+                'total_score': total
+            }
+        
+        test_score_total = sum(item['score'] for item in ranking_data)
+        combined_score_total = test_score_total + total_achievement_score
+        
+        # ==================== BUILD CONTEXT ====================
         context = {
             'student': student,
             'rmib_result': rmib_result,
             'categories': ranking_data,
-            'total_score': rmib_result.total_score,
+            'test_score': test_score_total,
+            'achievement_score': total_achievement_score,
+            'combined_score': combined_score_total,
             'primary_interest': primary_interest_name,
-            'primary_level': rmib_result.primary_level,
-            'prestasi_list': student.prestasi.all()
+            'primary_level': primary_level,
+            'primary_score': primary_score,
+            'achievements': achievements,
+            'achievement_contributions': achievement_contributions,
+            'combined_scores': combined_scores
         }
         
-        logger.info(f"✅ Displaying RMIB result for student {student.name}")
+        logger.info(f"✅ Rank #1: {primary_interest_name} ({primary_score} poin) - Level {primary_level}")
         
         return render(request, 'students/rmib_result.html', context)
     
@@ -1451,29 +1607,10 @@ def rmib_result_view(request, student_pk):
         return redirect('core:dashboard')
 
 
-@login_required
-def export_rmib_pdf(request, student_pk):
-    """Export RMIB result to PDF - placeholder for now"""
-    try:
-        student = get_object_or_404(Student, pk=student_pk)
-        
-        if not hasattr(student, 'rmib_result'):
-            messages.error(request, 'Tidak ada hasil RMIB untuk diekspor.')
-            return redirect('students:detail', pk=student_pk)
-        
-        # For now, redirect to result page
-        # TODO: Implement PDF generation with WeasyPrint or ReportLab
-        messages.info(request, 'Fitur export PDF akan segera tersedia.')
-        return redirect('students:rmib_result', student_pk=student_pk)
-    
-    except Exception as e:
-        logger.error(f"Export PDF error: {str(e)}")
-        messages.error(request, f'Gagal mengekspor: {str(e)}')
-        return redirect('students:detail', pk=student_pk)
-
-# ==================== EDIT & RESTART RMIB ====================
+# ==================== RMIB EDIT FUNCTIONS ====================
 
 @login_required
+@require_http_methods(["GET"])
 def rmib_edit_confirmation(request, student_pk):
     """Show confirmation before editing RMIB"""
     try:
@@ -1485,74 +1622,72 @@ def rmib_edit_confirmation(request, student_pk):
         
         rmib_result = student.rmib_result
         
-        # Check if result is completed
-        if rmib_result.status != 'completed':
-            messages.warning(request, 'Hanya hasil yang sudah diselesaikan yang dapat diedit.')
-            return redirect('students:rmib_result', student_pk=student_pk)
+        # FIX: Set submitted_at if empty
+        if rmib_result.submitted_at is None:
+            rmib_result.submitted_at = timezone.now()
+            rmib_result.save(update_fields=['submitted_at'])
+            logger.info(f"Auto-set submitted_at for {student.name}")
         
-        # Get ranking data for display
-        ranking_data = []
-        for rank, (category_key, level) in enumerate(rmib_result.get_ranking_summary(), 1):
-            category_info = RMIB_CATEGORIES.get(category_key, {})
-            score = level * 5
-            
-            ranking_data.append({
-                'rank': rank,
-                'category_key': category_key,
-                'category_name': category_info.get('name', category_key),
-                'level': level,
-                'score': score
-            })
+        # Check if levels exist
+        if not rmib_result.levels:
+            messages.warning(request, 'Tes belum diselesaikan.')
+            return redirect('students:rmib_test', student_pk=student_pk)
+        
+        # Ensure status is correct
+        if rmib_result.status not in ['completed', 'edited']:
+            rmib_result.status = 'completed'
+            rmib_result.save(update_fields=['status'])
         
         context = {
             'student': student,
-            'rmib_result': rmib_result,
-            'categories': ranking_data,
-            'total_score': rmib_result.total_score,
-            'submitted_at': rmib_result.submitted_at
+            'rmib_result': rmib_result
         }
         
         return render(request, 'students/rmib_edit_confirmation.html', context)
     
     except Exception as e:
-        logger.error(f"Edit confirmation error: {str(e)}")
+        logger.error(f"Edit confirmation error: {str(e)}", exc_info=True)
         messages.error(request, f'Terjadi kesalahan: {str(e)}')
         return redirect('students:detail', pk=student_pk)
 
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(["GET", "POST"])
 def rmib_restart_test(request, student_pk):
-    """Restart RMIB test for editing"""
+    """Restart RMIB test - reset data for editing"""
     try:
         student = get_object_or_404(Student, pk=student_pk)
         
-        if not hasattr(student, 'rmib_result'):
-            return JsonResponse({
-                'success': False,
-                'message': 'Tidak ada hasil RMIB untuk diedit'
-            }, status=400)
+        if hasattr(student, 'rmib_result'):
+            rmib_result = student.rmib_result
+            rmib_result.levels = {}
+            rmib_result.status = 'in_progress'
+            rmib_result.save()
+            
+            # Also update student status
+            student.test_status = 'in_progress'
+            student.save(update_fields=['test_status'])
+            
+            logger.info(f"✅ RMIB restarted for {student.name}")
+            
+            if request.method == 'POST':
+                return JsonResponse({
+                    'success': True,
+                    'message': 'RMIB siap untuk diedit'
+                })
+            else:
+                messages.success(request, 'RMIB direset. Silakan mulai dari awal.')
+                return redirect('students:rmib_test', student_pk=student_pk)
         
-        rmib_result = student.rmib_result
-        
-        # Mark as in_progress for editing
-        rmib_result.reset_for_editing()
-        
-        logger.info(f"Restarting RMIB for student {student.name} (Edit Mode)")
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Tes siap untuk diedit',
-            'redirect_url': f'/students/{student_pk}/rmib/test/',
-            'previous_levels': rmib_result.levels
-        })
+        return redirect('students:detail', pk=student_pk)
     
     except Exception as e:
-        logger.error(f"Restart test error: {str(e)}")
-        return JsonResponse({
-            'success': False,
-            'message': str(e)
-        }, status=500)
+        logger.error(f"Restart error: {str(e)}")
+        if request.method == 'POST':
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)
+        else:
+            messages.error(request, 'Gagal mereset RMIB')
+            return redirect('students:detail', pk=student_pk)
 
 
 @login_required
@@ -1565,97 +1700,142 @@ def submit_rmib_test_edited(request, student_pk):
         data = json.loads(request.body)
         levels = data.get('levels', {})
         
-        logger.info(f"Submitting edited RMIB for student {student_pk}")
+        logger.info(f"Submitting edited RMIB for {student.name}")
         
-        # Validate
         if len(levels) != 12:
-            return JsonResponse({
-                'success': False,
-                'message': f'Semua 12 kategori harus diisi. Diterima: {len(levels)}'
-            }, status=400)
+            return JsonResponse({'success': False, 'message': 'Semua 12 kategori harus diisi'}, status=400)
         
-        # Validate level range
         for category, level in levels.items():
             try:
                 level_int = int(level)
                 if level_int < 1 or level_int > 12:
-                    return JsonResponse({
-                        'success': False,
-                        'message': f'Level harus antara 1-12. Kategori {category}: {level}'
-                    }, status=400)
+                    return JsonResponse({'success': False, 'message': 'Level harus antara 1-12'}, status=400)
             except (ValueError, TypeError):
-                return JsonResponse({
-                    'success': False,
-                    'message': f'Level harus berupa angka. Kategori {category}: {level}'
-                }, status=400)
+                return JsonResponse({'success': False, 'message': 'Level harus berupa angka'}, status=400)
         
-        # Get existing result
-        if not hasattr(student, 'rmib_result'):
-            return JsonResponse({
-                'success': False,
-                'message': 'Hasil RMIB tidak ditemukan'
-            }, status=400)
-        
-        rmib_result = student.rmib_result
-        
-        # Update levels and calculate scores
+        rmib_result = get_object_or_404(RMIBResult, student=student)
         rmib_result.levels = levels
         rmib_result.calculate_scores()
-        rmib_result.status = 'completed'
+        rmib_result.status = 'edited'
         rmib_result.edited_at = timezone.now()
         rmib_result.save()
         
-        logger.info(f"✅ Edited RMIB submitted for {student.name}. New Total: {rmib_result.total_score} poin")
+        student.test_status = 'completed'
+        student.test_date = timezone.now()
+        student.save(update_fields=['test_status', 'test_date'])
+        
+        logger.info(f"✅ Edited RMIB submitted for {student.name}")
         
         return JsonResponse({
             'success': True,
-            'message': 'Hasil tes berhasil diperbarui!',
+            'message': 'Hasil RMIB berhasil diperbarui!',
             'redirect_url': f'/students/{student_pk}/rmib/result/',
-            'total_score': rmib_result.total_score,
-            'edited_at': rmib_result.edited_at.isoformat()
+            'combined_score': rmib_result.total_score
         })
     
     except json.JSONDecodeError:
-        return JsonResponse({
-            'success': False,
-            'message': 'Format data tidak valid'
-        }, status=400)
+        return JsonResponse({'success': False, 'message': 'Format data tidak valid'}, status=400)
     except Exception as e:
         logger.error(f"Submit edited error: {str(e)}", exc_info=True)
-        return JsonResponse({
-            'success': False,
-            'message': str(e)
-        }, status=500)
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(["GET"])
 def rmib_cancel_edit(request, student_pk):
-    """Cancel editing and revert to completed status"""
+    """Cancel edit dan kembali ke hasil"""
     try:
-        student = get_object_or_404(Student, pk=student_pk)
-        
-        if not hasattr(student, 'rmib_result'):
-            return JsonResponse({
-                'success': False,
-                'message': 'Hasil RMIB tidak ditemukan'
-            }, status=400)
-        
-        rmib_result = student.rmib_result
-        rmib_result.status = 'completed'
-        rmib_result.save()
-        
-        logger.info(f"Cancelled edit for student {student.name}")
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Penyuntingan dibatalkan',
-            'redirect_url': f'/students/{student_pk}/rmib/result/'
-        })
-    
+        return redirect('students:rmib_result', student_pk=student_pk)
     except Exception as e:
         logger.error(f"Cancel edit error: {str(e)}")
+        return redirect('students:detail', pk=student_pk)
+
+
+@login_required
+def export_rmib_pdf(request, student_pk):
+    """Export RMIB result as PDF"""
+    try:
+        student = get_object_or_404(Student, pk=student_pk)
+        rmib_result = get_object_or_404(RMIBResult, student=student)
+        
+        html_content = f"""
+        <html>
+        <head>
+            <title>Hasil RMIB - {student.name}</title>
+            <style>
+                body {{ font-family: Arial; margin: 20px; }}
+                h1 {{ color: #333; }}
+                .info {{ background: #f0f0f0; padding: 10px; margin: 10px 0; }}
+                table {{ border-collapse: collapse; width: 100%; }}
+                th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
+                th {{ background-color: #4CAF50; color: white; }}
+            </style>
+        </head>
+        <body>
+            <h1>Hasil Tes RMIB</h1>
+            <div class="info">
+                <p><strong>Nama:</strong> {student.name}</p>
+                <p><strong>NISN:</strong> {student.nisn}</p>
+                <p><strong>Kelas:</strong> {student.student_class}</p>
+                <p><strong>Total Skor:</strong> {rmib_result.total_score}</p>
+            </div>
+            <h2>Ranking Kategori</h2>
+            <table>
+                <tr>
+                    <th>Kategori</th>
+                    <th>Level</th>
+                    <th>Skor</th>
+                </tr>
+        """
+        
+        for cat_key, level in rmib_result.levels.items():
+            score = int(level) * 5
+            html_content += f"<tr><td>{cat_key}</td><td>{level}</td><td>{score}</td></tr>"
+        
+        html_content += """
+            </table>
+        </body>
+        </html>
+        """
+        
+        response = HttpResponse(html_content, content_type='text/html')
+        response['Content-Disposition'] = f'attachment; filename="RMIB_{student.name}.html"'
+        return response
+    
+    except Exception as e:
+        logger.error(f"Export PDF error: {str(e)}")
+        messages.error(request, 'Gagal export hasil')
+        return redirect('students:rmib_result', student_pk=student_pk)
+
+
+# ==================== API ENDPOINTS ====================
+@login_required
+@require_http_methods(["GET"])
+def api_achievement_types(request):
+    """Get all active achievement types with RMIB categories - for form dropdown"""
+    try:
+        types = AchievementType.objects.filter(is_active=True).order_by('category', 'name').values(
+            'id', 'name', 'category', 'description', 'rmib_primary', 'rmib_secondary'
+        )
+        
+        result = []
+        for t in types:
+            result.append({
+                'id': int(t['id']),
+                'name': str(t['name']),
+                'category': str(t['category']),
+                'description': str(t['description'] or ''),
+                'rmib_primary': str(t['rmib_primary']) if t['rmib_primary'] else None,
+                'rmib_secondary': str(t['rmib_secondary']) if t['rmib_secondary'] else None
+            })
+        
+        logger.info(f"✅ API Response: {len(result)} achievement types")
+        
+        return JsonResponse(result, safe=False, status=200)
+        
+    except Exception as e:
+        logger.error(f"❌ API Error: {str(e)}", exc_info=True)
         return JsonResponse({
-            'success': False,
-            'message': str(e)
+            'error': str(e),
+            'status': 'error'
         }, status=500)

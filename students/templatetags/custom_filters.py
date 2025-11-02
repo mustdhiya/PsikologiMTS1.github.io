@@ -21,3 +21,12 @@ def format_category_name(value):
     Usage: {{ category|format_category_name }}
     """
     return value.replace('_', ' ').title()
+
+
+@register.filter
+def multiply(value, arg):
+    """Multiply value by arg"""
+    try:
+        return int(value) * int(arg)
+    except (ValueError, TypeError):
+        return 0
