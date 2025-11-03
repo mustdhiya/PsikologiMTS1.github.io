@@ -2992,3 +2992,353 @@ Traceback (most recent call last):
     raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
 django.template.exceptions.TemplateSyntaxError: Invalid filter: 'mul'
 "GET /students/ HTTP/1.1" 500 315330
+Internal Server Error: /students/207/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\views\generic\detail.py", line 109, in get
+    context = self.get_context_data(object=self.object)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 389, in get_context_data
+    context['user_active'] = student.user.is_active
+                             ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'is_active'
+"GET /students/207/ HTTP/1.1" 500 96441
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1889, in student_certificate_page
+    return render(request, 'students/certificate.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: students/certificate.html
+"GET /students/certificate/ HTTP/1.1" 500 102196
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1889, in student_certificate_page
+    return render(request, 'students/certificate.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: students/certificate.html
+"GET /students/certificate/ HTTP/1.1" 500 102284
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1889, in student_certificate_page
+    return render(request, 'students/certificate.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: students/certificate.html
+"GET /students/certificate/ HTTP/1.1" 500 102407
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1889, in student_certificate_page
+    return render(request, 'students/certificate.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: students/certificate.html
+"GET /students/certificate/ HTTP/1.1" 500 102407
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1889, in student_certificate_page
+    return render(request, 'students/certificate.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: students/certificate.html
+"GET /students/certificate/ HTTP/1.1" 500 102407
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1889, in student_certificate_page
+    return render(request, 'students/certificate.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: students/certificate.html
+"GET /students/certificate/ HTTP/1.1" 500 102407
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1889, in student_certificate_page
+    return render(request, 'students/certificate.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: students/certificate.html
+"GET /students/certificate/ HTTP/1.1" 500 102407
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1889, in student_certificate_page
+    return render(request, 'students/certificate.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: students/certificate.html
+"GET /students/certificate/ HTTP/1.1" 500 102407
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1889, in student_certificate_page
+    return render(request, 'students/certificate.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: students/certificate.html
+"GET /students/certificate/ HTTP/1.1" 500 102407
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1889, in student_certificate_page
+    return render(request, 'students/certificate.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: students/certificate.html
+"GET /students/certificate/ HTTP/1.1" 500 102407
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1889, in student_certificate_page
+    return render(request, 'students/certificate.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: students/certificate.html
+"GET /students/certificate/ HTTP/1.1" 500 102407
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1899, in student_certificate_page
+    ranking_data = build_ranking_data(rmib_result)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 2224, in build_ranking_data
+    for idx, (category_key, level) in enumerate(rankings.items(), 1):
+                                                ^^^^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'items'
+"GET /students/certificate/ HTTP/1.1" 500 89548
+Internal Server Error: /students/certificate/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 1909, in student_certificate_page
+    return render(request, 'students/certificate_view.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\base.py", line 175, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\base.py", line 167, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\base.py", line 966, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\template\defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'view_certificate' with no arguments not found. 1 pattern(s) tried: ['students/certificate/view/(?P<request_id>[0-9]+)/\\Z']
+"GET /students/certificate/ HTTP/1.1" 500 142512

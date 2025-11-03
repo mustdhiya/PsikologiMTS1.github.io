@@ -262,7 +262,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-gray-600 font-semibold">NISN</p>
-                    <p class="text-gray-900 mt-1">{{ student.nisn }}</p>
+                    <p class="text-gray-900 mt-1 font-mono">{{ student.nisn }}</p>
                 </div>
                 <div>
                     <p class="text-xs text-gray-600 font-semibold">Status Tes</p>
@@ -282,7 +282,281 @@
         </div>
     </div>
 
-    <!-- ==================== RMIB TEST SECTION - OPTIMAL ==================== -->
+    <!-- ==================== AUTHENTICATION & ACCOUNT SECTION ==================== -->
+    <section class="bg-white rounded-2xl shadow-lg p-6 lg:p-8 mb-8">
+        <div class="flex items-center justify-between mb-6 pb-4 border-b-2 border-gray-200">
+            <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 flex items-center">
+                <i class="fas fa-lock text-red-600 mr-3"></i>
+                Akun & Autentikasi
+            </h2>
+            <span class="px-4 py-2 rounded-full text-sm font-semibold {% if student.is_locked %}bg-red-500 text-white{% else %}bg-green-500 text-white{% endif %}">
+                {% if student.is_locked %}
+                    <i class="fas fa-lock mr-1"></i>Terkunci
+                {% else %}
+                    <i class="fas fa-unlock-alt mr-1"></i>Aktif
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- User Account Info -->
+            <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4">
+                <p class="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-2">Status Akun Django</p>
+                {% if student.user %}
+                    <p class="text-gray-900 font-semibold mb-3">
+                        <i class="fas fa-check-circle text-green-600 mr-2"></i>Terdaftar
+                    </p>
+                    <div class="space-y-3 text-sm bg-white rounded p-3 border border-blue-200">
+                        <div>
+                            <strong class="text-gray-700">Username:</strong>
+                            <br>
+                            <span class="font-mono bg-gray-100 px-2 py-1 rounded text-xs inline-block mt-1">{{ student.user.username }}</span>
+                        </div>
+                        <div>
+                            <strong class="text-gray-700">Email:</strong>
+                            <br>
+                            <span class="font-mono bg-gray-100 px-2 py-1 rounded text-xs break-all inline-block mt-1">{{ student.user.email }}</span>
+                        </div>
+                        <div>
+                            <strong class="text-gray-700">Nama Lengkap:</strong>
+                            <br>
+                            <span class="text-gray-600">{{ student.user.first_name }} {{ student.user.last_name|default:"" }}</span>
+                        </div>
+                        <div>
+                            <strong class="text-gray-700">Dibuat:</strong>
+                            <br>
+                            <span class="text-gray-600">{{ student.user.date_joined|date:"d M Y, H:i" }} WIB</span>
+                        </div>
+                        <div>
+                            <strong class="text-gray-700">Status Aktif:</strong>
+                            <br>
+                            <span class="text-gray-600">
+                                {% if student.user.is_active %}
+                                <i class="fas fa-check-circle text-green-600 mr-1"></i>Ya
+                                {% else %}
+                                <i class="fas fa-times-circle text-red-600 mr-1"></i>Tidak
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="text-gray-600 italic">
+                        <i class="fas fa-times-circle text-red-600 mr-2"></i>Belum membuat akun
+                    </p>
+                {% endif %}
+            </div>
+
+            <!-- Password Info -->
+            <div class="{% if student.is_locked %}bg-red-50 border-l-4 border-red-500{% elif student.generated_password %}bg-green-50 border-l-4 border-green-500{% else %}bg-yellow-50 border-l-4 border-yellow-500{% endif %} rounded-lg p-4">
+                <p class="text-xs {% if student.is_locked %}text-red-600{% elif student.generated_password %}text-green-600{% else %}text-yellow-600{% endif %} font-semibold uppercase tracking-wide mb-2">
+                    Password Tergenerate
+                </p>
+                {% if student.generated_password %}
+                    <div class="bg-white border-2 {% if student.is_locked %}border-red-300{% else %}border-green-300{% endif %} rounded px-4 py-3 mb-3 font-mono text-lg font-bold text-center tracking-wider break-all">
+                        <span id="passwordDisplay">{{ student.generated_password }}</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-3">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        {% if student.password_changed %}
+                        <strong>✓ Password sudah diubah oleh siswa</strong>
+                        {% else %}
+                        <strong>⚠ Siswa belum mengubah password default</strong>
+                        {% endif %}
+                    </p>
+                    <div class="flex gap-2">
+                        <button onclick="copyPassword()" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded transition-colors">
+                            <i class="fas fa-copy mr-1"></i>Copy
+                        </button>
+                        <button onclick="resetPasswordConfirm()" class="flex-1 px-3 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-bold rounded transition-colors">
+                            <i class="fas fa-redo mr-1"></i>Reset
+                        </button>
+                    </div>
+                {% else %}
+                    <p class="text-gray-600 italic mb-3">
+                        <i class="fas fa-exclamation-circle mr-1"></i>Belum di-generate
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Login Attempts & Lock Status -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            <!-- Login Attempts -->
+            <div class="{% if student.login_attempts >= 3 %}bg-yellow-50 border-l-4 border-yellow-500{% else %}bg-blue-50 border-l-4 border-blue-500{% endif %} rounded-lg p-4">
+                <p class="text-xs {% if student.login_attempts >= 3 %}text-yellow-600{% else %}text-blue-600{% endif %} font-semibold uppercase tracking-wide mb-2">Percobaan Login Gagal</p>
+                <p class="text-3xl font-bold text-gray-900 mb-2">{{ student.login_attempts }}<span class="text-lg text-gray-600">/5</span></p>
+                <div class="w-full bg-gray-300 rounded-full h-2 overflow-hidden mb-2">
+                    <div class="bg-gradient-to-r {% if student.login_attempts >= 5 %}from-red-500 to-red-600{% elif student.login_attempts >= 3 %}from-yellow-500 to-yellow-600{% else %}from-green-500 to-green-600{% endif %} h-2" style="width: {{ student.login_attempts }}0%"></div>
+                </div>
+                {% if student.login_attempts >= 3 %}
+                <p class="text-xs text-yellow-700"><i class="fas fa-exclamation-triangle mr-1"></i>Mendekati batas kunci</p>
+                {% else %}
+                <p class="text-xs text-blue-700"><i class="fas fa-check-circle mr-1"></i>Status aman</p>
+                {% endif %}
+            </div>
+
+            <!-- Account Lock Status -->
+            <div class="{% if student.is_locked %}bg-red-50 border-l-4 border-red-500{% else %}bg-green-50 border-l-4 border-green-500{% endif %} rounded-lg p-4">
+                <p class="text-xs {% if student.is_locked %}text-red-600{% else %}text-green-600{% endif %} font-semibold uppercase tracking-wide mb-2">Status Akun</p>
+                <p class="text-lg font-bold text-gray-900 mb-3">
+                    {% if student.is_locked %}
+                    <i class="fas fa-lock text-red-600 mr-2"></i>
+                    <span class="text-red-700">Terkunci</span>
+                    {% else %}
+                    <i class="fas fa-unlock-alt text-green-600 mr-2"></i>
+                    <span class="text-green-700">Aktif</span>
+                    {% endif %}
+                </p>
+                <p class="text-xs text-gray-600 mb-2">
+                    {% if student.is_locked %}
+                    <i class="fas fa-exclamation-triangle text-red-600 mr-1"></i>Akun terkunci karena banyak percobaan login gagal
+                    {% else %}
+                    <i class="fas fa-check-circle text-green-600 mr-1"></i>Akun berfungsi normal
+                    {% endif %}
+                </p>
+                {% if student.is_locked %}
+                <button onclick="unlockAccountConfirm()" class="w-full px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded transition-colors">
+                    <i class="fas fa-unlock mr-1"></i>Buka Kunci
+                </button>
+                {% endif %}
+            </div>
+
+            <!-- Last Login Attempt -->
+            <div class="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-4">
+                <p class="text-xs text-purple-600 font-semibold uppercase tracking-wide mb-2">Percobaan Terakhir</p>
+                {% if student.last_login_attempt %}
+                <p class="text-sm font-semibold text-gray-900">{{ student.last_login_attempt|date:"d M Y" }}</p>
+                <p class="text-sm text-gray-600">Pukul {{ student.last_login_attempt|date:"H:i" }} WIB</p>
+                <p class="text-xs text-purple-600 mt-2">
+                    <i class="fas fa-history mr-1"></i>
+                    {% with days_ago=student.last_login_attempt|timesince %}
+                    {{ days_ago }} yang lalu
+                    {% endwith %}
+                </p>
+                {% else %}
+                <p class="text-sm text-gray-600 italic">
+                    <i class="fas fa-inbox mr-1"></i>Belum ada
+                </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Additional Account Information -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+            <!-- Password Status -->
+            <div class="{% if student.password_changed %}bg-green-50 border-l-4 border-green-500{% else %}bg-orange-50 border-l-4 border-orange-500{% endif %} rounded-lg p-4">
+                <p class="text-xs {% if student.password_changed %}text-green-600{% else %}text-orange-600{% endif %} font-semibold uppercase tracking-wide mb-2">Status Password</p>
+                <p class="text-lg font-bold text-gray-900 mb-2">
+                    {% if student.password_changed %}
+                    <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                    <span class="text-green-700">Sudah Diubah</span>
+                    {% else %}
+                    <i class="fas fa-exclamation-circle text-orange-600 mr-2"></i>
+                    <span class="text-orange-700">Masih Default</span>
+                    {% endif %}
+                </p>
+                <p class="text-xs text-gray-600">
+                    {% if student.password_changed %}
+                    Siswa telah mengubah password default mereka
+                    {% else %}
+                    Siswa belum mengubah password yang dibuat sistem
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Account Created Duration -->
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 rounded-lg p-4">
+                <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wide mb-2">Durasi Akun</p>
+                <p class="text-lg font-bold text-gray-900 mb-2">
+                    {% if student.user %}
+                        {% with days_created=student.user.date_joined|timesince %}
+                        <i class="fas fa-calendar-check text-indigo-600 mr-2"></i>
+                        {{ days_created }} yang lalu
+                        {% endwith %}
+                    {% else %}
+                        <i class="fas fa-times-circle text-red-600 mr-2"></i>Belum ada akun
+                    {% endif %}
+                </p>
+                <p class="text-xs text-gray-600">
+                    {% if student.user %}
+                    Akun dibuat sejak {{ student.user.date_joined|date:"d F Y" }}
+                    {% else %}
+                    Akun django belum dibuat untuk siswa ini
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Account Actions -->
+        <div class="flex flex-wrap gap-3 pt-4 border-t-2 border-gray-200">
+            {% if student.user %}
+            <button onclick="resetPasswordConfirm()" class="px-6 py-2.5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm">
+                <i class="fas fa-redo mr-2"></i>Reset Password
+            </button>
+            {% endif %}
+            
+            {% if student.is_locked %}
+            <button onclick="unlockAccountConfirm()" class="px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm">
+                <i class="fas fa-unlock mr-2"></i>Buka Kunci Akun
+            </button>
+            {% endif %}
+
+            <a href="{% url 'students:update' student.pk %}" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm">
+                <i class="fas fa-edit mr-2"></i>Edit Data
+            </a>
+        </div>
+    </section>
+
+    <!-- ==================== SYSTEM INFO SECTION ==================== -->
+    <section class="bg-white rounded-2xl shadow-lg p-6 lg:p-8 mb-8">
+        <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6 flex items-center">
+            <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+            Informasi Sistem
+        </h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Created Info -->
+            <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4">
+                <p class="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Tanggal Ditambahkan</p>
+                <p class="text-lg font-bold text-gray-900">{{ student.created_at|date:"d F Y" }}</p>
+                <p class="text-sm text-gray-600">Pukul {{ student.created_at|date:"H:i" }} WIB</p>
+            </div>
+
+            <!-- Updated Info -->
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 rounded-lg p-4">
+                <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wide mb-1">Terakhir Diubah</p>
+                <p class="text-lg font-bold text-gray-900">{{ student.updated_at|date:"d F Y" }}</p>
+                <p class="text-sm text-gray-600">Pukul {{ student.updated_at|date:"H:i" }} WIB</p>
+            </div>
+
+            <!-- Test Date -->
+            <div class="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-4">
+                <p class="text-xs text-purple-600 font-semibold uppercase tracking-wide mb-1">Waktu Mulai Tes</p>
+                {% if student.test_date %}
+                <p class="text-lg font-bold text-gray-900">{{ student.test_date|date:"d F Y" }}</p>
+                <p class="text-sm text-gray-600">Pukul {{ student.test_date|date:"H:i" }} WIB</p>
+                {% else %}
+                <p class="text-sm text-gray-600 italic">Belum ada</p>
+                {% endif %}
+            </div>
+
+            <!-- Password Changed Status -->
+            <div class="{% if student.password_changed %}bg-green-50 border-l-4 border-green-500{% else %}bg-red-50 border-l-4 border-red-500{% endif %} rounded-lg p-4">
+                <p class="text-xs {% if student.password_changed %}text-green-600{% else %}text-red-600{% endif %} font-semibold uppercase tracking-wide mb-1">Status Password</p>
+                {% if student.password_changed %}
+                <p class="text-lg font-bold text-green-700">
+                    <i class="fas fa-check-circle mr-2"></i>Sudah Diubah
+                </p>
+                {% else %}
+                <p class="text-lg font-bold text-red-700">
+                    <i class="fas fa-exclamation-circle mr-2"></i>Masih Default
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== RMIB TEST SECTION ==================== -->
     <section class="bg-white rounded-2xl shadow-lg p-6 lg:p-8 mb-6">
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 flex items-center">
@@ -305,7 +579,7 @@
                         Siswa belum memulai tes RMIB. Klik tombol di bawah untuk memulai tes minat dan bakat.
                     </p>
                     <a href="{% url 'students:rmib_test' student.pk %}" 
-                    class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                    class="inline-flex items-center px-6 py-2.5 btn-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
                         <i class="fas fa-play-circle mr-2"></i>
                         Mulai Tes RMIB
                     </a>
@@ -322,13 +596,11 @@
                     <p class="text-blue-800 mb-4">
                         Siswa sedang mengerjakan tes RMIB. Progress otomatis tersimpan setiap 30 detik.
                     </p>
-                    <div class="space-y-2">
-                        <a href="{% url 'students:rmib_test' student.pk %}" 
-                        class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
-                            <i class="fas fa-play-circle mr-2"></i>
-                            Lanjutkan Tes
-                        </a>
-                    </div>
+                    <a href="{% url 'students:rmib_test' student.pk %}" 
+                    class="inline-flex items-center px-6 py-2.5 btn-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                        <i class="fas fa-play-circle mr-2"></i>
+                        Lanjutkan Tes
+                    </a>
                 </div>
             </div>
         </div>
@@ -364,7 +636,7 @@
             <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-4 border-2 border-yellow-200">
                 <p class="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">Minat Utama</p>
                 <p class="text-2xl font-bold text-amber-700">Level {{ student.rmib_result.primary_level }}</p>
-                <p class="text-xs text-amber-600 mt-1">{{ student.rmib_result.primary_score|default:0 }} poin</p>
+                <p class="text-xs text-amber-600 mt-1">{{ student.rmib_result.primary_level|multiply:5 }} poin</p>
             </div>
 
             <!-- Secondary Interest -->
@@ -372,7 +644,7 @@
             <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border-2 border-purple-200">
                 <p class="text-xs font-semibold text-purple-600 uppercase tracking-wide mb-1">Minat Kedua</p>
                 <p class="text-2xl font-bold text-purple-700">Level {{ student.rmib_result.secondary_level }}</p>
-                <p class="text-xs text-purple-600 mt-1">{{ student.rmib_result.secondary_score|default:0 }} poin</p>
+                <p class="text-xs text-purple-600 mt-1">{{ student.rmib_result.secondary_level|multiply:5 }} poin</p>
             </div>
             {% endif %}
 
@@ -381,7 +653,7 @@
             <div class="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-4 border-2 border-pink-200">
                 <p class="text-xs font-semibold text-pink-600 uppercase tracking-wide mb-1">Minat Ketiga</p>
                 <p class="text-2xl font-bold text-pink-700">Level {{ student.rmib_result.tertiary_level }}</p>
-                <p class="text-xs text-pink-600 mt-1">{{ student.rmib_result.tertiary_score|default:0 }} poin</p>
+                <p class="text-xs text-pink-600 mt-1">{{ student.rmib_result.tertiary_level|multiply:5 }} poin</p>
             </div>
             {% endif %}
         </div>
@@ -478,21 +750,21 @@
         <div class="flex flex-wrap gap-3 justify-start">
             <!-- View Results -->
             <a href="{% url 'students:rmib_result' student.pk %}" 
-            class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm lg:text-base">
+            class="inline-flex items-center px-6 py-2.5 btn-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm lg:text-base">
                 <i class="fas fa-eye mr-2"></i>
                 Lihat Detail
             </a>
 
             <!-- Edit Results -->
             <a href="{% url 'students:rmib_edit_confirmation' student.pk %}" 
-            class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm lg:text-base">
+            class="inline-flex items-center px-6 py-2.5 btn-warning text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm lg:text-base">
                 <i class="fas fa-edit mr-2"></i>
                 Edit Hasil
             </a>
 
             <!-- Download Report -->
             <button onclick="alert('Fitur download report akan segera tersedia')" 
-                    class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm lg:text-base">
+                    class="inline-flex items-center px-6 py-2.5 btn-success text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm lg:text-base">
                 <i class="fas fa-download mr-2"></i>
                 Download
             </button>
@@ -530,7 +802,7 @@
         </div>
     </section>
 
-    <!-- ==================== RMIB RESULT SECTION - CLEAN & OPTIMAL ==================== -->
+    <!-- ==================== RMIB RESULT SECTION ==================== -->
     {% if student.rmib_result %}
     <section class="bg-white rounded-2xl shadow-lg p-6 lg:p-8 mb-6">
         <!-- Header -->
@@ -744,14 +1016,14 @@
         <div class="flex flex-wrap gap-3 justify-start">
             <!-- View Full Results -->
             <a href="{% url 'students:rmib_result' student.pk %}" 
-            class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm">
+            class="inline-flex items-center px-6 py-2.5 btn-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm">
                 <i class="fas fa-eye mr-2"></i>
                 Lihat Detail Lengkap
             </a>
 
             <!-- Edit Results -->
             <a href="{% url 'students:rmib_edit_confirmation' student.pk %}" 
-            class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm">
+            class="inline-flex items-center px-6 py-2.5 btn-warning text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm">
                 <i class="fas fa-edit mr-2"></i>
                 Edit Hasil
             </a>
@@ -765,7 +1037,7 @@
 
             <!-- Download (Placeholder) -->
             <button onclick="alert('Fitur download akan segera tersedia')"
-                    class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm">
+                    class="inline-flex items-center px-6 py-2.5 btn-success text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm">
                 <i class="fas fa-download mr-2"></i>
                 Download
             </button>
@@ -789,7 +1061,7 @@
             
             <div class="flex justify-center gap-4">
                 <a href="{% url 'students:rmib_test' student.pk %}" 
-                class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                class="inline-flex items-center px-8 py-3 btn-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
                     <i class="fas fa-play-circle mr-2"></i>
                     Mulai Tes RMIB
                 </a>
@@ -798,48 +1070,103 @@
     </section>
     {% endif %}
 
-
-     <!-- ==================== PRESTASI SECTION ==================== -->
-    {% if student.prestasi.all %}
-    <div class="detail-card p-6 animate-slideInLeft" style="animation-delay: 0.4s;">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+    <!-- ==================== ACHIEVEMENTS SECTION ==================== -->
+    {% if student.achievements.all %}
+    <section class="bg-white rounded-2xl shadow-lg p-6 lg:p-8 mb-8">
+        <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6 flex items-center">
             <i class="fas fa-trophy text-yellow-500 mr-3"></i>
-            Prestasi ({{ student.prestasi.count }})
+            Prestasi ({{ student.achievements.count }})
         </h2>
 
         <div class="space-y-4">
-            {% for prestasi in student.prestasi.all %}
-            <div class="border-l-4 border-indigo-500 bg-gradient-to-r from-indigo-50 to-white p-4 rounded-lg">
+            {% for achievement in student.achievements.all %}
+            <div class="border-l-4 border-indigo-500 bg-gradient-to-r from-indigo-50 to-white p-4 rounded-lg hover:shadow-md transition-all duration-300">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
-                        <div class="flex items-center gap-3">
-                            <i class="fas {{ prestasi.get_jenis_icon }} text-lg {{ prestasi.get_tingkat_display_color }}"></i>
-                            <div>
-                                <h4 class="font-bold text-gray-900">{{ prestasi.nama }}</h4>
-                                <p class="text-sm text-gray-600">{{ prestasi.get_jenis_display }} • {{ prestasi.get_tingkat_display }}</p>
-                            </div>
-                        </div>
+                        <h4 class="font-bold text-gray-900">{{ achievement.achievement_type.name }}</h4>
+                        <p class="text-sm text-gray-600">{{ achievement.get_level_display }} • {{ achievement.get_rank_display }}</p>
                     </div>
                     <div class="text-right">
-                        <p class="font-bold text-gray-900">{{ prestasi.peringkat }}</p>
-                        <p class="text-sm text-gray-600">{{ prestasi.tahun }}</p>
+                        <p class="font-bold text-gray-900">{{ achievement.points }} poin</p>
+                        <p class="text-sm text-gray-600">{{ achievement.year }}</p>
                     </div>
                 </div>
-                {% if prestasi.keterangan %}
-                <p class="text-sm text-gray-700 mt-2 pl-9">{{ prestasi.keterangan }}</p>
+                {% if achievement.notes %}
+                <p class="text-sm text-gray-700 mt-2 ml-4">{{ achievement.notes }}</p>
+                {% endif %}
+                {% if achievement.certificate %}
+                <div class="mt-2 ml-4">
+                    <a href="{{ achievement.certificate.url }}" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 font-semibold">
+                        <i class="fas fa-file-pdf mr-1"></i>Lihat Sertifikat
+                    </a>
+                </div>
                 {% endif %}
             </div>
             {% endfor %}
         </div>
-    </div>
+    </section>
     {% endif %}
 
 </div>
 
 <script>
-    function downloadRMIBReport() {
-        alert('Fitur download report akan segera tersedia.');
-        // TODO: Implement PDF download
+    function copyPassword() {
+        const passwordElement = document.getElementById('passwordDisplay');
+        const text = passwordElement.textContent.trim();
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Password berhasil disalin ke clipboard');
+        }).catch(() => {
+            alert('Gagal menyalin password');
+        });
+    }
+
+    function resetPasswordConfirm() {
+        if (confirm('Apakah Anda yakin ingin mereset password siswa ini? Password akan direset ke nilai default.')) {
+            fetch("{% url 'students:reset_password' student.pk %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Password berhasil direset!\nPassword baru: ' + data.new_password);
+                    location.reload();
+                } else {
+                    alert('Gagal mereset password: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Terjadi kesalahan: ' + error);
+            });
+        }
+    }
+
+    function unlockAccountConfirm() {
+        if (confirm('Apakah Anda yakin ingin membuka kunci akun siswa ini?')) {
+            fetch("{% url 'students:unlock_account' student.pk %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Gagal membuka akun: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Terjadi kesalahan: ' + error);
+            });
+        }
     }
 </script>
+
 {% endblock %}

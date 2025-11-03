@@ -340,6 +340,25 @@ class StudentAchievement(BaseModel):
     
     def __str__(self):
         return f"{self.student.name} - {self.achievement_type.name} ({self.get_level_display()})"
+def get_password_display(self):
+    """Get password display - masked for security"""
+    if self.generated_password:
+        return f"***{self.generated_password[-3:]}" if len(self.generated_password) > 3 else "***"
+    return "Belum di-generate"
+
+def get_account_status(self):
+    """Get account status display"""
+    if not self.user:
+        return "Belum membuat akun"
+    if self.is_locked:
+        return "Akun Terkunci"
+    return "Aktif"
+
+def get_login_attempt_warning(self):
+    """Check if login attempts are high"""
+    if self.login_attempts >= 3:
+        return True
+    return False
 
 class RMIBResult(BaseModel):
     """Model untuk menyimpan hasil tes RMIB"""
@@ -455,3 +474,89 @@ class RMIBResult(BaseModel):
     
     def __str__(self):
         return f"RMIB Result - {self.student.name} ({self.status})"
+
+
+
+class CertificateRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending - Menunggu Generate'),
+        ('generated', 'Generated - Siap Download'),
+        ('downloaded', 'Downloaded - Sudah Diunduh'),
+        ('expired', 'Expired - Kadaluarsa'),
+    ]
+    
+    TEMPLATE_CHOICES = [
+        ('certificate', 'Sertifikat Hasil RMIB'),
+        ('summary', 'Lembar Ringkasan Minat'),
+        ('parent', 'Laporan Orang Tua'),
+    ]
+    
+    # Relations
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='certificate_requests')
+    
+    # Certificate Details
+    template_type = models.CharField(max_length=20, choices=TEMPLATE_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    
+    # Timestamps
+    requested_at = models.DateTimeField(auto_now_add=True)
+    generated_at = models.DateTimeField(null=True, blank=True)
+    downloaded_at = models.DateTimeField(null=True, blank=True)
+    expired_at = models.DateTimeField(null=True, blank=True)  # ← NEW
+    
+    # File Storage
+    file_path = models.CharField(max_length=255, blank=True)
+    file_size = models.IntegerField(default=0, help_text="Ukuran file dalam bytes")  # ← NEW
+    
+    # Additional Info
+    notes = models.TextField(blank=True, help_text="Catatan khusus dari admin")  # ← NEW
+    download_count = models.IntegerField(default=0)  # ← NEW: Track berapa kali diunduh
+    
+    class Meta:
+        ordering = ['-requested_at']
+        verbose_name = 'Certificate Request'
+        verbose_name_plural = 'Certificate Requests'
+    
+    def __str__(self):
+        return f"{self.student.name} - {self.get_template_type_display()} ({self.status})"
+    
+    # ← NEW: Methods untuk workflow
+    def mark_as_generated(self, file_path, file_size=0):
+        """Tandai sebagai generated dengan path file"""
+        from django.utils import timezone
+        self.status = 'generated'
+        self.generated_at = timezone.now()
+        self.file_path = file_path
+        self.file_size = file_size
+        self.save()
+    
+    def mark_as_downloaded(self):
+        """Tandai sebagai downloaded"""
+        from django.utils import timezone
+        self.status = 'downloaded'
+        self.downloaded_at = timezone.now()
+        self.download_count += 1
+        self.save()
+    
+    def mark_as_expired(self):
+        """Tandai sebagai expired"""
+        from django.utils import timezone
+        self.status = 'expired'
+        self.expired_at = timezone.now()
+        self.save()
+    
+    def is_download_allowed(self):
+        """Check if download is allowed"""
+        if self.status not in ['generated', 'downloaded']:
+            return False
+        
+        # Check if expired (e.g., 30 days after generated)
+        from datetime import timedelta
+        from django.utils import timezone
+        if self.generated_at:
+            expiry_date = self.generated_at + timedelta(days=30)
+            if timezone.now() > expiry_date:
+                self.mark_as_expired()
+                return False
+        
+        return True

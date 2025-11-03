@@ -1,26 +1,29 @@
 from django.urls import path
 from . import views
-from django.shortcuts import redirect
-
 
 app_name = 'accounts'
 
 urlpatterns = [
-    # Student login (main login page)
+    # Student Login
     path('login/', views.StudentLoginView.as_view(), name='login'),
     
-    # Admin login (separate if needed)
+    # Admin Login
     path('admin-login/', views.AdminLoginView.as_view(), name='admin_login'),
     
     # Logout
     path('logout/', views.student_logout, name='logout'),
     
-    # Profile
-    path('profile/', views.profile_view, name='profile'),
-    
-    # Dashboard redirect
+    # Dashboard
     path('dashboard/', views.DashboardRedirectView.as_view(), name='dashboard'),
     
-    # Password reset (for admin use)
-    path('reset-password/<int:student_id>/', views.reset_student_password, name='reset_password'),
+    # Profile
+    path('profile/', views.student_profile_view, name='profile'),
+    
+    # Password Reset (Admin)
+    path('student/<int:student_id>/reset-password/', 
+         views.reset_student_password, 
+         name='reset_student_password'),
+    
+    # Test
+    path('test-auth/', views.test_auth_view, name='test_auth'),
 ]

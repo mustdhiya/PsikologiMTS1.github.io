@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sertifikat Prestasi RMIB - {{ student.name }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@300;400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            padding: 60px 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23ff6b6b' fill-opacity='0.03'%3E%3Ccircle cx='25' cy='25' r='2'/%3E%3Ccircle cx='75' cy='75' r='2'/%3E%3Ccircle cx='50' cy='10' r='1.5'/%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .certificate {
+            background: linear-gradient(135deg, #ffffff 0%, #fff8f0 50%, #fef5e7 100%);
+            border-radius: 35px;
+            padding: 70px 60px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #ffd700;
+        }
+
+        .certificate::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -40%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(ellipse, rgba(255, 215, 0, 0.08) 0%, transparent 70%);
+            animation: float-bg 20s ease-in-out infinite;
+        }
+
+        .certificate::after {
+            content: '';
+            position: absolute;
+            bottom: -25%;
+            left: -25%;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(ellipse, rgba(255, 193, 7, 0.06) 0%, transparent 70%);
+            animation: float-bg 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float-bg {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.1) translateY(20px); }
+        }
+
+        .cert-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .cert-header {
+            margin-bottom: 40px;
+        }
+
+        .school-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 95px;
+            height: 95px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            color: white;
+            font-size: 42px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.35);
+            animation: pulse-badge 2.5s ease-in-out infinite;
+            position: relative;
+        }
+
+        .school-badge::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border-radius: 50%;
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); box-shadow: 0 15px 35px rgba(102, 126, 234, 0.35); }
+            50% { transform: scale(1.08); box-shadow: 0 20px 50px rgba(102, 126, 234, 0.5); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .school-name {
+            font-size: 13px;
+            letter-spacing: 2.5px;
+            color: #667eea;
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .cert-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 56px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 12px 0;
+            letter-spacing: -1px;
+            animation: glow-text 4s ease-in-out infinite;
+        }
+
+        @keyframes glow-text {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.3)); }
+            50% { filter: drop-shadow(0 0 20px rgba(240, 147, 251, 0.5)); }
+        }
+
+        .cert-subtitle {
+            font-size: 15px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 28px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .divider {
+            width: 380px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, #ffd700 25%, #ffed4e 50%, #ffd700 75%, transparent 100%);
+            margin: 35px auto;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            animation: sparkle-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes sparkle-pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.6; }
+        }
+
+        .presented-to {
+            font-size: 13px;
+            color: #667eea;
+            margin: 28px 0 12px 0;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .student-name {
+            font-size: 46px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 18px 0;
+            border-bottom: 4px solid #ffd700;
+            padding-bottom: 14px;
+            letter-spacing: -0.8px;
+            position: relative;
+        }
+
+        .student-name::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 5%;
+            width: 90%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            border-radius: 2px;
+        }
+
+        .student-info {
+            font-size: 13px;
+            color: #777;
+            margin: 20px 0;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .achievement-section {
+            margin: 50px 0;
+        }
+
+        .achievement-intro {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 28px;
+            line-height: 1.8;
+            font-weight: 500;
+            max-width: 850px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 28px;
+            margin: 35px 0;
+        }
+
+        .achievement-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(240, 147, 251, 0.08) 100%);
+            border: 2px solid #667eea;
+            border-radius: 22px;
+            padding: 32px 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+        }
+
+        .achievement-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent 25%, rgba(255, 215, 0, 0.1) 50%, transparent 75%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.25);
+            border-color: #ffd700;
+        }
+
+        .achievement-card:hover::before {
+            opacity: 1;
+            animation: shimmer-effect 0.8s ease-in-out;
+        }
+
+        @keyframes shimmer-effect {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .achievement-icon {
+            font-size: 36px;
+            color: #667eea;
+            margin-bottom: 14px;
+            display: block;
+            animation: float-icon 3s ease-in-out infinite;
+        }
+
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .achievement-label {
+            font-size: 11px;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .achievement-value {
+            font-size: 34px;
+            font-weight: 900;
+            color: #1f2937;
+            margin: 12px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .achievement-detail {
+            font-size: 13px;
+            color: #777;
+            font-weight: 600;
+        }
+
+        .message-box {
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.4) 0%, rgba(254, 224, 138, 0.3) 100%);
+            border: 2px dashed #ffd700;
+            border-radius: 20px;
+            padding: 28px;
+            margin: 35px 0;
+            font-size: 14px;
+            color: #92400e;
+            line-height: 1.9;
+            text-align: center;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .message-box::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border-radius: 50%;
+            animation: float-star 3s ease-in-out infinite;
+        }
+
+        @keyframes float-star {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            50% { transform: translateY(-12px) rotate(180deg); opacity: 0.7; }
+        }
+
+        .rankings-section {
+            margin: 55px 0;
+            text-align: left;
+        }
+
+        .rankings-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 22px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+        .rankings-container {
+            overflow-x: auto;
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+        }
+
+        .rankings-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .rankings-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 14px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .rankings-table td {
+            padding: 15px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .rankings-table tr:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.05), rgba(240, 147, 251, 0.05));
+            padding: 2px 0;
+        }
+
+        .rank-badge {
+            font-weight: 800;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 45px;
+        }
+
+        .rank-name {
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .rank-score {
+            text-align: center;
+            font-weight: 800;
+            color: #10b981;
+            font-size: 14px;
+        }
+
+        .cert-footer {
+            margin-top: 55px;
+            text-align: center;
+        }
+
+        .signature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 55px;
+            margin-top: 45px;
+        }
+
+        .signature-line {
+            border-top: 2px solid #ffd700;
+            padding-top: 14px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #555;
+            letter-spacing: 0.5px;
+            line-height: 1.8;
+        }
+
+        .footer-text {
+            font-size: 11px;
+            color: #999;
+            margin-top: 28px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 12px 26px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: #667eea;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            border-color: transparent;
+        }
+
+        .nav-btn:hover::before {
+            opacity: 1;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 42px;
+            font-size: 14px;
+            font-weight: 800;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 22px 55px rgba(102, 126, 234, 0.45);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            box-shadow: 0 15px 40px rgba(240, 147, 251, 0.35);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 22px 55px rgba(240, 147, 251, 0.45);
+        }
+
+        .btn-back {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-back:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-5px);
+            border-color: transparent;
+        }
+
+        @media print {
+            body { background: white !important; padding: 0 !important; }
+            .nav-buttons, .buttons { display: none !important; }
+            .certificate { box-shadow: none !important; border-radius: 0 !important; padding: 50px 40px !important; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 40px 15px; }
+            .certificate { padding: 50px 35px; border-radius: 25px; }
+            .cert-title { font-size: 40px; }
+            .student-name { font-size: 32px; }
+            .achievement-grid { grid-template-columns: 1fr; gap: 20px; }
+            .signature-grid { grid-template-columns: 1fr; gap: 30px; }
+            .nav-buttons, .buttons { flex-direction: column; }
+            .nav-btn, .btn { width: 100%; justify-content: center; }
+        }
+
+        @media (max-width: 480px) {
+            .certificate { padding: 40px 25px; }
+            .school-badge { width: 80px; height: 80px; font-size: 32px; }
+            .cert-title { font-size: 32px; }
+            .student-name { font-size: 26px; }
+            .achievement-value { font-size: 26px; }
+            .rankings-table th, .rankings-table td { padding: 10px 8px; font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-buttons">
+            <a href="{% url 'students:view_summary' %}" class="nav-btn">
+                <i class="fas fa-chart-pie"></i> Ringkasan
+            </a>
+            <a href="{% url 'students:view_parent_report' %}" class="nav-btn">
+                <i class="fas fa-heart"></i> Laporan Ortu
+            </a>
+            <a href="{% url 'students:certificate_page' %}" class="nav-btn">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+        </div>
+
+        <div class="certificate">
+            <div class="cert-content">
+                <div class="cert-header">
+                    <div class="school-badge">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="school-name">MTs Muhammadiyah 1 Samarinda</div>
+                    <div class="cert-title">SERTIFIKAT PRESTASI</div>
+                    <div class="cert-subtitle">Penghargaan Istimewa Penyelesaian Tes RMIB</div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="presented-to">Dengan Penuh Kebanggaan Dipersembahkan Kepada</div>
+                <div class="student-name">{{ student.name }}</div>
+                <div class="student-info">
+                    <i class="fas fa-id-card" style="color: #667eea;"></i> NISN: {{ student.nisn }} | 
+                    <i class="fas fa-graduation-cap" style="color: #667eea;"></i> Kelas: {{ student.student_class }}
+                </div>
+
+                <div class="achievement-section">
+                    <div class="achievement-intro">
+                        Selamat! Kamu telah menyelesaikan Tes Ranking Minat dan Bakat (RMIB) dengan prestasi luar biasa. 
+                        Sertifikat ini membuktikan dedikasimu yang hebat dalam menemukan bakat dan minat terbaikmu.
+                    </div>
+
+                    <div class="achievement-grid">
+                        <div class="achievement-card">
+                            <i class="fas fa-star achievement-icon"></i>
+                            <div class="achievement-label">Minat Teratas</div>
+                            <div class="achievement-value">{{ primary_interest.category_name|default:"Unggul" }}</div>
+                            <div class="achievement-detail">Ranking 1 dari 12 Bidang</div>
+                        </div>
+                        <div class="achievement-card">
+                            <i class="fas fa-trophy achievement-icon"></i>
+                            <div class="achievement-label">Total Prestasi</div>
+                            <div class="achievement-value">{{ rmib_result.total_score }}</div>
+                            <div class="achievement-detail">Poin dari 720 Maksimal</div>
+                        </div>
+                        <div class="achievement-card">
+                            <i class="fas fa-fire achievement-icon"></i>
+                            <div class="achievement-label">Level Tertinggi</div>
+                            <div class="achievement-value">{{ primary_interest.level }}/12</div>
+                            <div class="achievement-detail">Level di Bidang Favorit</div>
+                        </div>
+                        <div class="achievement-card">
+                            <i class="fas fa-calendar-check achievement-icon"></i>
+                            <div class="achievement-label">Tanggal Pencapaian</div>
+                            <div class="achievement-value">{{ request_date|date:"d M Y" }}</div>
+                            <div class="achievement-detail">Momen Istimewamu!</div>
+                        </div>
+                    </div>
+
+                    <div class="message-box">
+                        Wah! Kamu sudah menemukan bakat hebatmu. Gunakan sertifikat ini sebagai langkah awal menuju karir impian 
+                        yang menyenangkan. Teruslah belajar dan mengeksplorasi minatmu. Tim RMIB bangga padamu!
+                    </div>
+                </div>
+
+                {% if ranking_data %}
+                <div class="rankings-section">
+                    <div class="rankings-title">Peringkat Lengkap 12 Bidang Minatmu</div>
+                    <div class="rankings-container">
+                        <table class="rankings-table">
+                            <thead>
+                                <tr>
+                                    <th>Peringkat</th>
+                                    <th>Bidang Minat</th>
+                                    <th>Skor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in ranking_data %}
+                                <tr>
+                                    <td class="rank-badge">
+                                        {% if item.rank == 1 %}<i class="fas fa-crown" style="color: gold;"></i>{% elif item.rank == 2 %}<i class="fas fa-award" style="color: silver;"></i>{% elif item.rank == 3 %}<i class="fas fa-medal" style="color: #cd7f32;"></i>{% endif %}
+                                        #{{ item.rank }}
+                                    </td>
+                                    <td class="rank-name">{{ item.category_name }}</td>
+                                    <td class="rank-score">{{ item.score }} poin</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="cert-footer">
+                    <div class="signature-grid">
+                        <div class="signature-line">
+                            <i class="fas fa-signature" style="color: #667eea;"></i><br>
+                            Kepala Sekolah<br>
+                            MTs Muhammadiyah 1 Samarinda
+                        </div>
+                        <div class="signature-line">
+                            <i class="fas fa-calendar-alt" style="color: #667eea;"></i><br>
+                            Tanggal Pencapaian<br>
+                            {{ request_date|date:"d F Y, H:i" }} WIB
+                        </div>
+                    </div>
+                    <div class="footer-text">
+                        Sertifikat Prestasi Resmi RMIB | ID: RMIB-{{ student.nisn }}-2025<br>
+                        Dikeluarkan oleh Sistem RMIB MTs Muhammadiyah 1 Samarinda
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="fas fa-print"></i> Cetak & Simpan PDF
+            </button>
+            <a href="{% url 'students:view_summary' %}" class="btn btn-secondary">
+                <i class="fas fa-rocket"></i> Lihat Ringkasan
+            </a>
+            <a href="{% url 'students:certificate_page' %}" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+        </div>
+    </div>
+</body>
+</html>

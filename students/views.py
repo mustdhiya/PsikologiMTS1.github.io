@@ -3,6 +3,7 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.urls import reverse_lazy, reverse
 from django.db.models import Q, Count, Avg
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
@@ -390,7 +391,16 @@ class StudentDetailView(DetailView):
         
         # Add achievements
         context['achievements'] = student.achievements.all().order_by('-year', '-points')
-        
+        print(f"\n=== DEBUG STUDENT DETAIL ===")
+        print(f"Student ID: {student.id}")
+        print(f"Student Name: {student.name}")
+        print(f"Student User: {student.user}")
+        print(f"Student Generated Password: {student.generated_password}")
+        if student.user:
+            print(f"User Username: {student.user.username}")
+            print(f"User Email: {student.user.email}")
+        print(f"========================\n")
+
         return context
 
 
@@ -1839,3 +1849,510 @@ def api_achievement_types(request):
             'error': str(e),
             'status': 'error'
         }, status=500)
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse, FileResponse
+from django.views.decorators.http import require_http_methods
+from django.utils import timezone
+from datetime import timedelta
+import json
+import logging
+from accounts.views import StudentRequiredMixin
+from students.models import Student, RMIBResult, CertificateRequest
+
+
+logger = logging.getLogger(__name__)
+
+# RMIB Categories mapping - Sesuaikan dengan kategori Anda
+RMIB_CATEGORIES = {
+    'pemimpin': {'name': 'Kepemimpinan', 'icon': 'fas fa-crown'},
+    'sosial': {'name': 'Sosial', 'icon': 'fas fa-people-group'},
+    'perlindungan': {'name': 'Perlindungan Sosial', 'icon': 'fas fa-shield'},
+    'bisnis': {'name': 'Bisnis', 'icon': 'fas fa-briefcase'},
+    'sastra': {'name': 'Sastra', 'icon': 'fas fa-book'},
+    'seni': {'name': 'Seni', 'icon': 'fas fa-palette'},
+    'musik': {'name': 'Musik', 'icon': 'fas fa-music'},
+    'layanan': {'name': 'Layanan Umum', 'icon': 'fas fa-handshake'},
+    'teknik': {'name': 'Teknik', 'icon': 'fas fa-gears'},
+    'pertanian': {'name': 'Pertanian', 'icon': 'fas fa-leaf'},
+    'matematika': {'name': 'Matematika', 'icon': 'fas fa-calculator'},
+    'alam': {'name': 'Ilmu Alam', 'icon': 'fas fa-flask'},
+}
+
+
+# ==================== STUDENT CERTIFICATE PAGE ====================
+
+@login_required
+def student_certificate_page(request):
+    """Halaman certificate untuk siswa"""
+    try:
+        student = Student.objects.get(user=request.user)
+    except Student.DoesNotExist:
+        messages.error(request, 'Data siswa tidak ditemukan.')
+        return redirect('accounts:login')
+    
+    # Cek apakah sudah ada hasil RMIB
+    try:
+        rmib_result = RMIBResult.objects.get(student=student)
+        # Ada hasil RMIB - tampilkan certificate dashboard
+        ranking_data = build_ranking_data(rmib_result)
+        
+        context = {
+            'student': student,
+            'rmib_result': rmib_result,
+            'ranking_data': ranking_data,
+            'primary_interest': ranking_data[0] if ranking_data else None,
+            'page_title': 'Sertifikat RMIB',
+            'has_result': True
+        }
+        return render(request, 'students/certificate_view.html', context)
+    except RMIBResult.DoesNotExist:
+        # Belum ada hasil RMIB - tampilkan halaman waiting
+        context = {
+            'student': student,
+            'page_title': 'Menunggu Hasil RMIB',
+            'has_result': False
+        }
+        return render(request, 'students/waiting_rmib.html', context)
+
+
+# ==================== VIEW CERTIFICATE ====================
+@login_required
+def view_certificate(request):
+    """Lihat sertifikat detail - tanpa parameter"""
+    try:
+        student = Student.objects.get(user=request.user)
+        rmib_result = RMIBResult.objects.get(student=student)
+        
+        ranking_data = build_ranking_data(rmib_result)
+        primary_interest = ranking_data[0] if ranking_data else None
+        
+        context = {
+            'student': student,
+            'rmib_result': rmib_result,
+            'ranking_data': ranking_data,
+            'primary_interest': primary_interest,
+            'request_date': rmib_result.submitted_at,
+        }
+        
+        logger.info(f"Certificate viewed: {student.name}")
+        return render(request, 'students/certificate_view.html', context)
+        
+    except (Student.DoesNotExist, RMIBResult.DoesNotExist):
+        messages.error(request, 'Data sertifikat tidak ditemukan.')
+        return redirect('students:certificate_page')
+    except Exception as e:
+        logger.error(f"View certificate error: {str(e)}")
+        messages.error(request, f'Terjadi kesalahan: {str(e)}')
+        return redirect('students:certificate_page')
+
+
+
+
+
+@login_required
+def view_parent_report(request):
+    """Lihat laporan orang tua - FIXED"""
+    try:
+        student = Student.objects.get(user=request.user)
+        rmib_result = RMIBResult.objects.get(student=student)
+        
+        # Build ranking data
+        ranking_data = build_ranking_data(rmib_result)
+        primary_interest = ranking_data[0] if ranking_data else {
+            'category_name': 'Belum Tersedia',
+            'level': 0,
+            'score': 0,
+            'rank': 0
+        }
+        
+        context = {
+            'student': student,
+            'rmib_result': rmib_result,
+            'ranking_data': ranking_data,
+            'primary_interest': primary_interest,
+            'request_date': rmib_result.submitted_at or timezone.now(),
+        }
+        
+        logger.info(f"Parent report context: ranking_data={len(ranking_data)}, primary={primary_interest}")
+        return render(request, 'students/parent_report_view.html', context)
+        
+    except (Student.DoesNotExist, RMIBResult.DoesNotExist):
+        messages.error(request, 'Data laporan tidak ditemukan.')
+        return redirect('students:certificate_page')
+    except Exception as e:
+        logger.error(f"View parent report error: {str(e)}", exc_info=True)
+        messages.error(request, f'Terjadi kesalahan: {str(e)}')
+        return redirect('students:certificate_page')
+
+
+@login_required
+def view_summary(request):
+    """Lihat ringkasan - FIXED"""
+    try:
+        student = Student.objects.get(user=request.user)
+        rmib_result = RMIBResult.objects.get(student=student)
+        
+        # Build ranking data
+        ranking_data = build_ranking_data(rmib_result)
+        primary_interest = ranking_data[0] if ranking_data else {
+            'category_name': 'N/A',
+            'level': 0,
+            'score': 0,
+            'rank': 0
+        }
+        
+        # Calculate percentage
+        persentase = int((rmib_result.total_score / 720) * 100) if rmib_result.total_score else 0
+        
+        context = {
+            'student': student,
+            'rmib_result': rmib_result,
+            'ranking_data': ranking_data,
+            'primary_interest': primary_interest,
+            'persentase': persentase,
+            'request_date': rmib_result.submitted_at or timezone.now(),
+        }
+        
+        logger.info(f"Summary context: ranking_data={len(ranking_data)}, persentase={persentase}")
+        return render(request, 'students/summary_view.html', context)
+        
+    except (Student.DoesNotExist, RMIBResult.DoesNotExist):
+        messages.error(request, 'Data ringkasan tidak ditemukan.')
+        return redirect('students:certificate_page')
+    except Exception as e:
+        logger.error(f"View summary error: {str(e)}", exc_info=True)
+        messages.error(request, f'Terjadi kesalahan: {str(e)}')
+        return redirect('students:certificate_page')
+
+
+@login_required
+def view_certificate(request):
+    """Lihat sertifikat - FIXED"""
+    try:
+        student = Student.objects.get(user=request.user)
+        rmib_result = RMIBResult.objects.get(student=student)
+        
+        # Build ranking data
+        ranking_data = build_ranking_data(rmib_result)
+        primary_interest = ranking_data[0] if ranking_data else {
+            'category_name': 'N/A',
+            'level': 0,
+            'score': 0,
+            'rank': 1
+        }
+        
+        context = {
+            'student': student,
+            'rmib_result': rmib_result,
+            'ranking_data': ranking_data,
+            'primary_interest': primary_interest,
+            'request_date': rmib_result.submitted_at or timezone.now(),
+            'request_id': 1,
+        }
+        
+        logger.info(f"Certificate context: ranking_data={len(ranking_data)}")
+        return render(request, 'students/certificate_view.html', context)
+        
+    except (Student.DoesNotExist, RMIBResult.DoesNotExist):
+        messages.error(request, 'Data sertifikat tidak ditemukan.')
+        return redirect('students:certificate_page')
+    except Exception as e:
+        logger.error(f"View certificate error: {str(e)}", exc_info=True)
+        messages.error(request, f'Terjadi kesalahan: {str(e)}')
+        return redirect('students:certificate_page')
+
+
+# ==================== REQUEST CERTIFICATE ====================
+
+@login_required
+@require_http_methods(["POST"])
+def request_certificate(request, template_type):
+    """Student request certificate"""
+    try:
+        # Validate template type
+        valid_types = ['certificate', 'summary', 'parent']
+        if template_type not in valid_types:
+            return JsonResponse({
+                'success': False, 
+                'message': 'Template tidak valid'
+            }, status=400)
+        
+        # Get student
+        student = Student.objects.get(user=request.user)
+        
+        # Check if student has RMIB result
+        try:
+            rmib_result = RMIBResult.objects.get(student=student)
+        except RMIBResult.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'Anda belum menyelesaikan tes RMIB'
+            }, status=400)
+        
+        # Check if already has pending request
+        pending = CertificateRequest.objects.filter(
+            student=student,
+            status='pending'
+        ).first()
+        
+        if pending:
+            return JsonResponse({
+                'success': False,
+                'message': f'Anda masih memiliki permintaan sertifikat yang sedang diproses'
+            }, status=400)
+        
+        # Create new request
+        cert_request = CertificateRequest.objects.create(
+            student=student,
+            template_type=template_type,
+            status='generated'  # Auto-generate untuk student
+        )
+        
+        # Set generated time
+        cert_request.generated_at = timezone.now()
+        cert_request.save()
+        
+        logger.info(f"Certificate request created: {student.name} - {template_type}")
+        
+        # Redirect ke view yang sesuai
+        redirect_url = f'/students/certificate/{template_type}/'
+        if template_type == 'certificate':
+            redirect_url = f'/students/certificate/view/{cert_request.id}/'
+        elif template_type == 'summary':
+            redirect_url = '/students/certificate/summary/'
+        elif template_type == 'parent':
+            redirect_url = '/students/certificate/parent-report/'
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Sertifikat {template_type} siap ditampilkan',
+            'request_id': cert_request.id,
+            'redirect_url': redirect_url
+        })
+    
+    except Student.DoesNotExist:
+        return JsonResponse({
+            'success': False, 
+            'message': 'Data siswa tidak ditemukan'
+        }, status=400)
+    except Exception as e:
+        logger.error(f"Request certificate error: {str(e)}")
+        return JsonResponse({
+            'success': False, 
+            'message': str(e)
+        }, status=500)
+
+
+# ==================== DOWNLOAD CERTIFICATE ====================
+
+@login_required
+@require_http_methods(["POST"])
+def download_certificate_pdf(request, request_id):
+    """Download certificate as PDF"""
+    try:
+        student = Student.objects.get(user=request.user)
+        cert_request = get_object_or_404(CertificateRequest, id=request_id, student=student)
+        
+        if cert_request.status not in ['generated', 'downloaded']:
+            return JsonResponse({
+                'success': False, 
+                'message': 'Sertifikat belum siap untuk diunduh'
+            }, status=400)
+        
+        # Mark as downloaded
+        cert_request.downloaded_at = timezone.now()
+        cert_request.status = 'downloaded'
+        cert_request.save()
+        
+        # Generate PDF name
+        pdf_filename = f"RMIB_{student.name}_{cert_request.template_type}_{timezone.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        
+        logger.info(f"Certificate downloaded: {student.name} - {pdf_filename}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Sertifikat siap diunduh',
+            'filename': pdf_filename
+        })
+    
+    except Exception as e:
+        logger.error(f"Download certificate error: {str(e)}")
+        return JsonResponse({
+            'success': False, 
+            'message': str(e)
+        }, status=500)
+
+
+# ==================== CANCEL CERTIFICATE ====================
+
+@login_required
+@require_http_methods(["POST"])
+def cancel_certificate_request(request, request_id):
+    """Cancel pending certificate request"""
+    try:
+        student = Student.objects.get(user=request.user)
+        cert_request = get_object_or_404(CertificateRequest, id=request_id, student=student)
+        
+        if cert_request.status != 'pending':
+            return JsonResponse({
+                'success': False, 
+                'message': 'Hanya permintaan yang pending dapat dibatalkan'
+            }, status=400)
+        
+        # Delete request
+        template_type = cert_request.template_type
+        cert_request.delete()
+        
+        logger.info(f"Certificate request cancelled: {student.name} - {template_type}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Permintaan sertifikat {template_type} telah dibatalkan'
+        })
+    
+    except Exception as e:
+        logger.error(f"Cancel certificate error: {str(e)}")
+        return JsonResponse({
+            'success': False, 
+            'message': str(e)
+        }, status=500)
+
+
+# ==================== GET CERTIFICATE STATUS ====================
+
+@login_required
+@require_http_methods(["GET"])
+def get_certificate_status(request, request_id):
+    """Get certificate request status (for AJAX polling)"""
+    try:
+        student = Student.objects.get(user=request.user)
+        cert_request = get_object_or_404(CertificateRequest, id=request_id, student=student)
+        
+        return JsonResponse({
+            'success': True,
+            'status': cert_request.status,
+            'template_type': cert_request.template_type,
+            'requested_at': cert_request.requested_at.isoformat(),
+            'generated_at': cert_request.generated_at.isoformat() if cert_request.generated_at else None,
+            'downloaded_at': cert_request.downloaded_at.isoformat() if cert_request.downloaded_at else None,
+        })
+    
+    except Exception as e:
+        logger.error(f"Get status error: {str(e)}")
+        return JsonResponse({
+            'success': False, 
+            'message': str(e)
+        }, status=500)
+
+
+# ==================== HELPER FUNCTIONS ====================
+
+RMIB_CATEGORIES = {
+    'outdoor': {'name': 'Outdoor', 'icon': 'fas fa-tree'},
+    'mechanical': {'name': 'Mekanik', 'icon': 'fas fa-wrench'},
+    'computational': {'name': 'Komputasional', 'icon': 'fas fa-laptop'},
+    'scientific': {'name': 'Ilmiah', 'icon': 'fas fa-flask'},
+    'personal_contact': {'name': 'Kontak Personal', 'icon': 'fas fa-handshake'},
+    'aesthetic': {'name': 'Estetika', 'icon': 'fas fa-palette'},
+    'literary': {'name': 'Sastra', 'icon': 'fas fa-book'},
+    'musical': {'name': 'Musik', 'icon': 'fas fa-music'},
+    'social_service': {'name': 'Layanan Sosial', 'icon': 'fas fa-heart'},
+    'clerical': {'name': 'Klerikal', 'icon': 'fas fa-file-alt'},
+    'practical': {'name': 'Praktis', 'icon': 'fas fa-tools'},
+    'medical': {'name': 'Medis', 'icon': 'fas fa-stethoscope'},
+}
+
+
+def build_ranking_data(rmib_result):
+    """
+    Build ranking data dari RMIB result - FINAL FIXED VERSION
+    Handles list of tuples from get_ranking_summary() dan levels dict
+    """
+    ranking_data = []
+    
+    try:
+        logger.info(f"Building ranking data for: {rmib_result.student.name}")
+        
+        # METHOD 1: Gunakan get_ranking_summary() yang return list of tuples
+        if hasattr(rmib_result, 'get_ranking_summary'):
+            rankings = rmib_result.get_ranking_summary()
+            logger.info(f"Rankings type: {type(rankings)}, length: {len(rankings) if rankings else 0}")
+            
+            # Jika return list of tuples: [('medical', 12), ('practical', 11), ...]
+            if isinstance(rankings, list) and rankings:
+                for idx, item in enumerate(rankings, 1):
+                    if isinstance(item, tuple) and len(item) == 2:
+                        category_key, level = item
+                    elif isinstance(item, dict):
+                        category_key = item.get('category', 'unknown')
+                        level = item.get('level', 0)
+                    else:
+                        continue
+                    
+                    category_info = RMIB_CATEGORIES.get(category_key, {})
+                    level_int = int(level) if level else 0
+                    score = level_int * 5  # Skor = Level * 5
+                    
+                    ranking_data.append({
+                        'rank': idx,
+                        'category_key': category_key,
+                        'category_name': category_info.get('name', category_key.replace('_', ' ').title()),
+                        'level': level_int,
+                        'score': score,
+                        'icon': category_info.get('icon', 'fas fa-circle'),
+                    })
+                    
+                    logger.info(f"Added ranking: {category_key} - Level {level_int}, Score {score}")
+        
+        # METHOD 2: Fallback ke levels dict jika get_ranking_summary tidak ada atau kosong
+        if not ranking_data and hasattr(rmib_result, 'levels') and rmib_result.levels:
+            levels_data = rmib_result.levels
+            logger.info(f"Fallback to levels: {levels_data}")
+            
+            # Sort by level descending
+            sorted_levels = sorted(levels_data.items(), key=lambda x: -x[1])
+            
+            for idx, (category_key, level) in enumerate(sorted_levels, 1):
+                category_info = RMIB_CATEGORIES.get(category_key, {})
+                level_int = int(level) if level else 0
+                score = level_int * 5
+                
+                ranking_data.append({
+                    'rank': idx,
+                    'category_key': category_key,
+                    'category_name': category_info.get('name', category_key.replace('_', ' ').title()),
+                    'level': level_int,
+                    'score': score,
+                    'icon': category_info.get('icon', 'fas fa-circle'),
+                })
+        
+        # Jika masih kosong, log warning
+        if not ranking_data:
+            logger.warning(f"No ranking data found for {rmib_result.student.name}")
+        
+        logger.info(f"Successfully built {len(ranking_data)} ranking items")
+        return ranking_data
+    
+    except Exception as e:
+        logger.error(f"Error building ranking data: {str(e)}", exc_info=True)
+        return []
+
+
+
+def get_primary_interest(ranking_data):
+    """Get primary (first) interest dari ranking data"""
+    return ranking_data[0] if ranking_data else None
+
+
+def get_interest_description(category_key):
+    """Get description untuk kategori interest"""
+    descriptions = {
+        'pemimpin': 'Anda memiliki potensi kepemimpinan yang kuat dan cocok untuk posisi managerial.',
+        'sosial': 'Anda memiliki minat sosial yang tinggi dan cocok untuk pekerjaan yang melibatkan orang lain.',
+        'seni': 'Anda memiliki kreativitas seni yang tinggi dan cocok untuk bidang seni dan desain.',
+        'teknik': 'Anda memiliki minat teknis yang tinggi dan cocok untuk bidang engineering dan teknologi.',
+        'bisnis': 'Anda memiliki kemampuan bisnis yang baik dan cocok untuk entrepreneur atau manajemen bisnis.',
+    }
+    return descriptions.get(category_key, 'Anda memiliki potensi yang unik pada bidang ini.')

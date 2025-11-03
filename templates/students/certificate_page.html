@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sertifikat Tes RMIB - {{ student.name }}{% endblock %}
+
+{% block content %}
+<div style="padding: 40px; max-width: 1200px; margin: 0 auto;">
+    
+    <!-- HEADER -->
+    <div style="margin-bottom: 40px; border-bottom: 2px solid #ccc; padding-bottom: 20px;">
+        <h1 style="font-size: 32px; font-weight: bold; margin: 0; color: #333;">Dashboard Sertifikat RMIB</h1>
+        <p style="color: #666; margin: 5px 0;">Halo, {{ student.name }}! Kelola sertifikat hasil tes Anda di sini.</p>
+    </div>
+
+    <!-- STATUS ALERT -->
+    {% if not rmib_result %}
+    <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+        <p style="margin: 0; color: #92400e;">
+            <strong>⚠️ Anda belum menyelesaikan tes RMIB.</strong> Selesaikan tes terlebih dahulu untuk membuat sertifikat.
+        </p>
+    </div>
+    {% endif %}
+
+    {% if has_pending_request %}
+    <div style="background: #dbeafe; border: 1px solid #93c5fd; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+        <p style="margin: 0; color: #0369a1;">
+            <strong>⏳ Sertifikat sedang diproses.</strong> {{ latest_request.template_type }} akan segera siap untuk diunduh.
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- MAIN GRID -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
+        
+        <!-- LEFT COLUMN: TEST INFO -->
+        <div>
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 25px;">
+                <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #333;">Informasi Tes</h2>
+                
+                {% if rmib_result %}
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 12px; color: #666; margin: 0;">Nama Siswa</p>
+                    <p style="font-size: 16px; font-weight: bold; color: #000; margin: 5px 0;">{{ student.name }}</p>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 12px; color: #666; margin: 0;">NISN</p>
+                    <p style="font-size: 16px; font-weight: bold; color: #000; margin: 5px 0;">{{ student.nisn }}</p>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 12px; color: #666; margin: 0;">Kelas</p>
+                    <p style="font-size: 16px; font-weight: bold; color: #000; margin: 5px 0;">{{ student.student_class }}</p>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 12px; color: #666; margin: 0;">Tanggal Tes</p>
+                    <p style="font-size: 16px; font-weight: bold; color: #000; margin: 5px 0;">{{ test_date|date:"d F Y, H:i" }} WIB</p>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 12px; color: #666; margin: 0;">Skor Total</p>
+                    <p style="font-size: 20px; font-weight: bold; color: #059669; margin: 5px 0;">{{ total_score }} poin</p>
+                </div>
+
+                {% if primary_interest %}
+                <div style="margin-bottom: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+                    <p style="font-size: 12px; color: #666; margin: 0;">Minat Utama</p>
+                    <p style="font-size: 16px; font-weight: bold; color: #0369a1; margin: 5px 0;">
+                        #{{ primary_interest.rank }} - {{ primary_interest.category_name }}
+                    </p>
+                </div>
+                {% endif %}
+                {% else %}
+                <p style="color: #999; text-align: center; padding: 20px 0;">Data tes belum tersedia</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: CERTIFICATE OPTIONS -->
+        <div>
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 25px;">
+                <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #333;">Buat Sertifikat</h2>
+                
+                {% if rmib_result %}
+                
+                <!-- CERTIFICATE OPTION -->
+                <div style="margin-bottom: 15px;">
+                    <div style="background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 15px;">
+                        <h3 style="font-size: 14px; font-weight: bold; margin: 0 0 8px 0; color: #333;">📄 Sertifikat Resmi</h3>
+                        <p style="font-size: 12px; color: #666; margin: 0 0 12px 0;">Sertifikat resmi dari hasil tes RMIB Anda</p>
+                        
+                        {% if can_request %}
+                        <button onclick="requestCertificate('certificate')" style="background: #0369a1; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold;">
+                            Buat Sertifikat
+                        </button>
+                        {% else %}
+                        <button disabled style="background: #ccc; color: #666; border: none; padding: 8px 16px; border-radius: 6px; cursor: not-allowed; font-size: 13px;">
+                            Sedang Diproses
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- SUMMARY OPTION -->
+                <div style="margin-bottom: 15px;">
+                    <div style="background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 15px;">
+                        <h3 style="font-size: 14px; font-weight: bold; margin: 0 0 8px 0; color: #333;">📊 Ringkasan Hasil</h3>
+                        <p style="font-size: 12px; color: #666; margin: 0 0 12px 0;">Ringkasan lengkap hasil tes dan ranking minat Anda</p>
+                        
+                        {% if can_request %}
+                        <button onclick="requestCertificate('summary')" style="background: #059669; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold;">
+                            Buat Ringkasan
+                        </button>
+                        {% else %}
+                        <button disabled style="background: #ccc; color: #666; border: none; padding: 8px 16px; border-radius: 6px; cursor: not-allowed; font-size: 13px;">
+                            Sedang Diproses
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- PARENT REPORT OPTION -->
+                <div style="margin-bottom: 15px;">
+                    <div style="background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 15px;">
+                        <h3 style="font-size: 14px; font-weight: bold; margin: 0 0 8px 0; color: #333;">👨‍👩‍👧 Laporan Orang Tua</h3>
+                        <p style="font-size: 12px; color: #666; margin: 0 0 12px 0;">Laporan khusus untuk dibagikan kepada orang tua Anda</p>
+                        
+                        {% if can_request %}
+                        <button onclick="requestCertificate('parent')" style="background: #d97706; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold;">
+                            Buat Laporan
+                        </button>
+                        {% else %}
+                        <button disabled style="background: #ccc; color: #666; border: none; padding: 8px 16px; border-radius: 6px; cursor: not-allowed; font-size: 13px;">
+                            Sedang Diproses
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% else %}
+                <p style="color: #999; text-align: center; padding: 20px 0;">Selesaikan tes RMIB terlebih dahulu</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- HISTORY SECTION -->
+    {% if certificate_requests %}
+    <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 25px;">
+        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #333;">Riwayat Permintaan</h2>
+        
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f3f4f6; border-bottom: 2px solid #d1d5db;">
+                    <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Jenis</th>
+                    <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Status</th>
+                    <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Tanggal Permintaan</th>
+                    <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in certificate_requests %}
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 12px; color: #333;">
+                        {% if request.template_type == 'certificate' %}
+                            📄 Sertifikat
+                        {% elif request.template_type == 'summary' %}
+                            📊 Ringkasan
+                        {% else %}
+                            👨‍👩‍👧 Laporan Orang Tua
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px;">
+                        {% if request.status == 'pending' %}
+                            <span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;">⏳ Pending</span>
+                        {% elif request.status == 'generated' %}
+                            <span style="background: #dbeafe; color: #0369a1; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;">✅ Siap</span>
+                        {% elif request.status == 'downloaded' %}
+                            <span style="background: #dcfce7; color: #15803d; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;">📥 Diunduh</span>
+                        {% else %}
+                            <span style="background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;">❌ Kadaluarsa</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px; color: #666; font-size: 12px;">
+                        {{ request.requested_at|date:"d M Y, H:i" }}
+                    </td>
+                    <td style="padding: 12px;">
+                        {% if request.status == 'generated' or request.status == 'downloaded' %}
+                            <a href="{% url 'students:view_certificate' request.id %}" style="background: #0369a1; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; display: inline-block;">
+                                Lihat
+                            </a>
+                            <button onclick="downloadCertificate({{ request.id }})" style="background: #059669; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: 5px;">
+                                Unduh
+                            </button>
+                        {% elif request.status == 'pending' %}
+                            <button onclick="cancelRequest({{ request.id }})" style="background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                                Batalkan
+                            </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+function requestCertificate(templateType) {
+    if (!confirm(`Buat permintaan sertifikat ${templateType}?`)) return;
+    
+    fetch(`/students/certificate/request/${templateType}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(err => alert('Error: ' + err));
+}
+
+function cancelRequest(requestId) {
+    if (!confirm('Batalkan permintaan ini?')) return;
+    
+    fetch(`/students/certificate/cancel/${requestId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(err => alert('Error: ' + err));
+}
+
+function downloadCertificate(requestId) {
+    fetch(`/students/certificate/download/${requestId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            // Create temporary download link
+            const link = document.createElement('a');
+            link.href = `data:application/octet-stream;base64,aGVsbG8=`; // Dummy data
+            link.download = data.filename;
+            link.click();
+            alert('Sertifikat telah ditandai sebagai diunduh');
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(err => alert('Error: ' + err));
+}
+
+// Polling untuk status pending
+function pollCertificateStatus() {
+    const latestRequest = {{ latest_request.id|default:"null" }};
+    if (!latestRequest || '{{ latest_request.status }}' !== 'pending') return;
+    
+    setInterval(() => {
+        fetch(`/students/certificate/status/${latestRequest}/`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'generated') {
+                alert('Sertifikat Anda sudah siap!');
+                location.reload();
+            }
+        });
+    }, 5000); // Check setiap 5 detik
+}
+
+pollCertificateStatus();
+</script>
+
+{% endblock %}
