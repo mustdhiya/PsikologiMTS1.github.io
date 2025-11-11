@@ -34,9 +34,14 @@ urlpatterns = [
     path('<int:student_pk>/rmib/submit-edited/', views.submit_rmib_test_edited, name='rmib_submit_edited'),
     path('<int:student_pk>/rmib/cancel-edit/', views.rmib_cancel_edit, name='rmib_cancel_edit'),
     
+    # ==================== RMIB BATCH IMPORT ====================
+    path('rmib-batch-import/', views.RMIBBatchImportView.as_view(), name='rmib_batch_import'),
+    path('rmib-template-download/', views.download_rmib_template, name='download_rmib_template'),
+
     # ==================== API ENDPOINTS ====================
     path('api/achievement-types/', views.api_achievement_types, name='api_achievement_types'),
-    
+    path('api/rmib/autosave/<int:student_id>/', views.rmib_autosave_api, name='rmib_autosave_api'),
+
     # ==================== LEGACY COMPATIBILITY ====================
     path('add/', views.StudentCreateView.as_view()),
     path('import/', views.BatchImportView.as_view()),

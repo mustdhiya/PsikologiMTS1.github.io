@@ -816,6 +816,10 @@
                         <i class="fas fa-file-import"></i>
                         <span>Import Batch</span>
                     </a>
+                    <a href="{% url 'students:rmib_batch_import' %}" class="btn-modern btn-outline bg-white/10 backdrop-blur-lg text-white border-white/30 hover:bg-white/20 hover:border-white/50 shadow-lg">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Import Batch RMIB</span>
+                    </a>
                     {% endif %}
                     <a href="{% url 'students:create' %}" class="btn-modern btn-success shadow-lg hover:shadow-xl">
                         <i class="fas fa-user-plus"></i>
@@ -826,6 +830,7 @@
         </div>
     </div>
 </header>
+
 
 <!-- STATS CARDS -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10 pb-8">

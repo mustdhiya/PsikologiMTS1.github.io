@@ -740,12 +740,20 @@
 
 {% block extra_js %}
 <script>
-    // Hanya define window properties, JANGAN define RMIB_DATA, RANK_SCORES, dll
+    // ✅ FIXED: Pastikan student.pk valid
     window.RMIB_CATEGORIES = {{ rmib_categories_json|safe }};
-    window.STUDENT_ID = {{ student.pk }};
+    window.STUDENT_ID = {{ student.pk|default:0 }};  // ← PENTING!
     window.STUDENT_NAME = "{{ student.name|escapejs }}";
     window.HAS_PROGRESS = {{ has_progress|yesno:"true,false" }};
+    window.EXISTING_LEVELS = {{ existing_levels|default:"{}" }};
+    window.EXISTING_SCORES = {{ existing_scores|default:"{}" }};
+    window.EXISTING_ACHIEVEMENTS = {{ existing_achievements|default:"[]" }};
     window.CURRENT_YEAR = new Date().getFullYear();
+    
+    // ✅ DEBUG: Log untuk cek
+    console.log('STUDENT_ID:', window.STUDENT_ID);
+    console.log('HAS_PROGRESS:', window.HAS_PROGRESS);
+    
 </script>
 <script src="{% static 'js/rmib_test.js' %}"></script>
 {% endblock %}

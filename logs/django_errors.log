@@ -3342,3 +3342,67 @@ Traceback (most recent call last):
     raise NoReverseMatch(msg)
 django.urls.exceptions.NoReverseMatch: Reverse for 'view_certificate' with no arguments not found. 1 pattern(s) tried: ['students/certificate/view/(?P<request_id>[0-9]+)/\\Z']
 "GET /students/certificate/ HTTP/1.1" 500 142512
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /students/0/rmib/start/
+"POST /students/0/rmib/start/ HTTP/1.1" 500 68

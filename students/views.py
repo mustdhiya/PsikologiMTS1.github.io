@@ -2356,3 +2356,703 @@ def get_interest_description(category_key):
         'bisnis': 'Anda memiliki kemampuan bisnis yang baik dan cocok untuk entrepreneur atau manajemen bisnis.',
     }
     return descriptions.get(category_key, 'Anda memiliki potensi yang unik pada bidang ini.')
+
+# ==================== RMIB BATCH IMPORT (OPTIMIZED) ====================
+
+@method_decorator(csrf_protect, name='dispatch')
+class RMIBBatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
+    """Batch Import RMIB Results - OPTIMIZED VERSION"""
+    template_name = 'students/rmib_batch_import.html'
+    
+    # RMIB Column Mapping (CSV header → model field)
+    RMIB_COLUMN_MAP = {
+        'Out': 'outdoor',
+        'Me': 'mechanical',
+        'COMP': 'computational',
+        'Sci': 'scientific',
+        'Prs': 'personal_contact',
+        'Aesth': 'aesthetic',
+        'Lit': 'literary',
+        'Mus': 'musical',
+        'S.S': 'social_service',
+        'Cler': 'clerical',
+        'Prac': 'practical',
+        'Med': 'medical'
+    }
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Batch Import Hasil RMIB',
+            'breadcrumb_title': 'Import RMIB Batch',
+            'max_file_size': '10MB',
+            'max_records': 2000,
+            'rmib_categories': list(self.RMIB_COLUMN_MAP.keys()),
+            'required_columns': [
+                'NISN', 'Nama', 'Kelas', 'Jenis Kelamin', 'Tanggal Lahir',
+                'Out', 'Me', 'COMP', 'Sci', 'Prs', 'Aesth', 'Lit', 'Mus', 'S.S', 'Cler', 'Prac', 'Med'
+            ],
+        })
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        """Handle upload - support AJAX & form"""
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return self.handle_ajax_upload(request)
+        return self.handle_form_upload(request)
+    
+    def handle_ajax_upload(self, request):
+        """AJAX upload with detailed JSON response"""
+        try:
+            if 'csv_file' not in request.FILES:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'File CSV tidak ditemukan',
+                    'error_code': 'no_file'
+                }, status=400)
+            
+            csv_file = request.FILES['csv_file']
+            
+            # Validate
+            validation = self.validate_file(csv_file)
+            if not validation['valid']:
+                return JsonResponse({
+                    'success': False,
+                    'message': validation['message'],
+                    'errors': validation.get('errors', []),
+                    'error_code': 'validation_failed'
+                }, status=400)
+            
+            # Process
+            result = self.process_csv(csv_file)
+            
+            if result['success']:
+                return JsonResponse({
+                    'success': True,
+                    'message': result['message'],
+                    'results': {
+                        'total_processed': result['total_processed'],
+                        'students_created': result['students_created'],
+                        'students_updated': result['students_updated'],
+                        'rmib_created': result['rmib_created'],
+                        'rmib_updated': result['rmib_updated'],
+                        'rmib_skipped': result['rmib_skipped'],
+                        'errors': result['errors'],
+                        'error_details': result['error_details'][:15],
+                    },
+                    'redirect_url': reverse_lazy('students:list')
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'message': result['message'],
+                    'errors': result.get('error_details', [])[:15],
+                    'error_code': 'processing_failed'
+                }, status=422)
+                
+        except Exception as e:
+            logger.error(f"AJAX upload error: {str(e)}", exc_info=True)
+            return JsonResponse({
+                'success': False,
+                'message': f'Terjadi kesalahan server: {str(e)}',
+                'error_code': 'server_error'
+            }, status=500)
+    
+    def handle_form_upload(self, request):
+        """Traditional form upload with redirect"""
+        if 'csv_file' not in request.FILES:
+            messages.error(request, 'Silakan pilih file CSV')
+            return redirect('students:rmib_batch_import')
+        
+        csv_file = request.FILES['csv_file']
+        
+        validation = self.validate_file(csv_file)
+        if not validation['valid']:
+            messages.error(request, validation['message'])
+            for error in validation.get('errors', [])[:5]:
+                messages.warning(request, error)
+            return redirect('students:rmib_batch_import')
+        
+        result = self.process_csv(csv_file)
+        
+        if result['success']:
+            messages.success(request, result['message'])
+            if result['rmib_skipped'] > 0:
+                messages.info(request, f"{result['rmib_skipped']} siswa sudah selesai RMIB (diabaikan).")
+            if result['errors'] > 0:
+                messages.warning(request, f"{result['errors']} baris gagal diproses.")
+        else:
+            messages.error(request, result['message'])
+            for error in result.get('error_details', [])[:5]:
+                messages.warning(request, error)
+        
+        return redirect('students:list')
+    
+    def validate_file(self, file):
+        """Comprehensive file validation"""
+        try:
+            # Extension check
+            if not file.name.lower().endswith('.csv'):
+                return {
+                    'valid': False,
+                    'message': 'File harus berformat CSV (.csv)',
+                    'error_code': 'invalid_extension'
+                }
+            
+            # Size check
+            if file.size > 10 * 1024 * 1024:
+                return {
+                    'valid': False,
+                    'message': f'File terlalu besar ({file.size // 1024 // 1024}MB). Maksimal 10MB',
+                    'error_code': 'file_too_large'
+                }
+            
+            if file.size == 0:
+                return {
+                    'valid': False,
+                    'message': 'File kosong',
+                    'error_code': 'empty_file'
+                }
+            
+            # Read content
+            file.seek(0)
+            try:
+                content = file.read().decode('utf-8-sig')
+            except UnicodeDecodeError:
+                file.seek(0)
+                try:
+                    content = file.read().decode('latin-1')
+                except UnicodeDecodeError:
+                    return {
+                        'valid': False,
+                        'message': 'Encoding file tidak didukung. Gunakan UTF-8',
+                        'error_code': 'encoding_error'
+                    }
+            
+            file.seek(0)
+            
+            if not content.strip():
+                return {
+                    'valid': False,
+                    'message': 'File kosong atau hanya berisi whitespace',
+                    'error_code': 'empty_content'
+                }
+            
+            lines = content.strip().split('\n')
+            if len(lines) < 2:
+                return {
+                    'valid': False,
+                    'message': 'File harus memiliki header dan minimal 1 baris data',
+                    'error_code': 'insufficient_rows'
+                }
+            
+            # Check header
+            header = lines[0].strip()
+            delimiter = self.detect_delimiter(header)
+            
+            # Required columns
+            required_student = ['NISN', 'Nama', 'Kelas']
+            required_rmib = list(self.RMIB_COLUMN_MAP.keys())
+            
+            missing = []
+            for col in required_student + required_rmib:
+                if col not in header:
+                    missing.append(col)
+            
+            if missing:
+                return {
+                    'valid': False,
+                    'message': f'Kolom tidak lengkap: {", ".join(missing)}',
+                    'errors': [
+                        f'Header ditemukan: {header}',
+                        f'Kolom yang diperlukan: {", ".join(required_student + required_rmib)}'
+                    ],
+                    'error_code': 'missing_columns'
+                }
+            
+            # Check record count
+            data_rows = len(lines) - 1
+            if data_rows > 2000:
+                return {
+                    'valid': False,
+                    'message': f'Terlalu banyak record ({data_rows}). Maksimal 2000',
+                    'error_code': 'too_many_records'
+                }
+            
+            return {
+                'valid': True,
+                'total_records': data_rows,
+                'delimiter': delimiter
+            }
+            
+        except Exception as e:
+            logger.error(f"File validation error: {str(e)}")
+            return {
+                'valid': False,
+                'message': 'Terjadi kesalahan validasi',
+                'error_code': 'validation_exception'
+            }
+    
+    def detect_delimiter(self, header):
+        """Auto-detect CSV delimiter"""
+        delimiters = {',': 0, ';': 0, '\t': 0, '|': 0}
+        
+        for delimiter in delimiters:
+            delimiters[delimiter] = header.count(delimiter)
+        
+        best = max(delimiters.items(), key=lambda x: x[1])
+        return best[0] if best[1] > 0 else ','
+    
+    def process_csv(self, file):
+        """Process CSV file - OPTIMIZED with bulk operations"""
+        result = {
+            'success': False,
+            'total_processed': 0,
+            'students_created': 0,
+            'students_updated': 0,
+            'rmib_created': 0,
+            'rmib_updated': 0,
+            'rmib_skipped': 0,
+            'errors': 0,
+            'error_details': [],
+            'message': ''
+        }
+        
+        try:
+            file.seek(0)
+            content = file.read()
+            
+            # Decode
+            for encoding in ['utf-8-sig', 'utf-8', 'latin-1']:
+                try:
+                    content_str = content.decode(encoding)
+                    break
+                except UnicodeDecodeError:
+                    continue
+            else:
+                result['message'] = 'Tidak dapat membaca file'
+                return result
+            
+            # Parse CSV
+            csv_reader = csv.DictReader(io.StringIO(content_str))
+            
+            # Track processed NISN
+            processed_nisn = set()
+            
+            # Batch lists (for potential bulk_create optimization)
+            students_to_create = []
+            
+            for row_num, row in enumerate(csv_reader, start=2):
+                result['total_processed'] += 1
+                
+                try:
+                    # ==================== EXTRACT DATA ====================
+                    nisn = str(row.get('NISN', '')).strip()
+                    nama = str(row.get('Nama', '')).strip()
+                    kelas = str(row.get('Kelas', '')).strip().upper()
+                    jenis_kelamin = str(row.get('Jenis Kelamin', '')).strip()
+                    tanggal_lahir_str = str(row.get('Tanggal Lahir', '')).strip()
+                    tempat_lahir = str(row.get('Tempat Lahir', '')).strip()
+                    tahun_masuk_str = str(row.get('Tahun Masuk', '')).strip()
+                    
+                    # ==================== VALIDATION ====================
+                    # Validate NISN
+                    if not nisn or not nisn.isdigit() or len(nisn) != 10:
+                        result['errors'] += 1
+                        result['error_details'].append(f"Baris {row_num}: NISN tidak valid ({nisn})")
+                        continue
+                    
+                    # Check duplicate in file
+                    if nisn in processed_nisn:
+                        result['errors'] += 1
+                        result['error_details'].append(f"Baris {row_num}: NISN {nisn} duplikat dalam file")
+                        continue
+                    
+                    processed_nisn.add(nisn)
+                    
+                    # Validate nama
+                    if not nama or len(nama) < 2:
+                        result['errors'] += 1
+                        result['error_details'].append(f"Baris {row_num}: Nama tidak valid")
+                        continue
+                    
+                    # Parse gender
+                    gender = 'L' if 'laki' in jenis_kelamin.lower() or jenis_kelamin.upper() == 'L' else 'P'
+                    
+                    # Parse date
+                    tanggal_lahir = self.parse_date(tanggal_lahir_str)
+                    
+                    # Parse year
+                    try:
+                        tahun_masuk = int(tahun_masuk_str) if tahun_masuk_str.isdigit() else datetime.now().year
+                    except:
+                        tahun_masuk = datetime.now().year
+                    
+                    # ==================== STUDENT DATA ====================
+                    student_data = {
+                        'name': nama,
+                        'student_class': kelas,
+                        'gender': gender,
+                        'birth_date': tanggal_lahir,
+                        'birth_place': tempat_lahir,
+                        'entry_year': tahun_masuk,
+                    }
+                    
+                    # Get or create student
+                    student, created = Student.objects.get_or_create(
+                        nisn=nisn,
+                        defaults=student_data
+                    )
+                    
+                    if created:
+                        result['students_created'] += 1
+                        # Create user account
+                        try:
+                            student.create_user_account()
+                        except Exception as e:
+                            logger.warning(f"Failed to create user for {nisn}: {str(e)}")
+                    else:
+                        # Update existing student (optional fields)
+                        updated = False
+                        for field, value in student_data.items():
+                            if value and getattr(student, field) != value:
+                                setattr(student, field, value)
+                                updated = True
+                        
+                        if updated:
+                            student.save()
+                            result['students_updated'] += 1
+                    
+                    # ==================== RMIB DATA ====================
+                    rmib_rankings = {}
+                    has_rmib_data = False
+                    
+                    # Extract RMIB rankings
+                    for csv_col, category_key in self.RMIB_COLUMN_MAP.items():
+                        ranking_str = str(row.get(csv_col, '')).strip()
+                        
+                        if ranking_str:
+                            try:
+                                ranking = int(ranking_str)
+                                if 1 <= ranking <= 12:
+                                    rmib_rankings[category_key] = ranking
+                                    has_rmib_data = True
+                                else:
+                                    result['error_details'].append(
+                                        f"Baris {row_num}: Ranking {csv_col} di luar range 1-12 ({ranking})"
+                                    )
+                            except ValueError:
+                                result['error_details'].append(
+                                    f"Baris {row_num}: Ranking {csv_col} bukan angka ({ranking_str})"
+                                )
+                    
+                    # Process RMIB if data exists
+                    if has_rmib_data:
+                        # Check if already completed (SKIP if completed)
+                        if hasattr(student, 'rmib_result') and student.rmib_result.status == 'completed':
+                            result['rmib_skipped'] += 1
+                            logger.debug(f"Skipped NISN {nisn} - already completed")
+                            continue
+                        
+                        # Determine status based on completeness
+                        if len(rmib_rankings) == 12:
+                            rmib_status = 'completed'
+                            test_status = 'completed'
+                        else:
+                            rmib_status = 'in_progress'
+                            test_status = 'in_progress'
+                            result['error_details'].append(
+                                f"Baris {row_num}: Data RMIB tidak lengkap ({len(rmib_rankings)}/12) - status in_progress"
+                            )
+                        
+                        # Create or update RMIB result
+                        rmib_result, rmib_created = RMIBResult.objects.update_or_create(
+                            student=student,
+                            defaults={
+                                'levels': rmib_rankings,
+                                'submitted_at': timezone.now(),
+                                'status': rmib_status
+                            }
+                        )
+                        
+                        # Calculate scores
+                        rmib_result.calculate_scores()
+                        rmib_result.save()
+                        
+                        # Update student status
+                        student.test_status = test_status
+                        if rmib_status == 'completed':
+                            student.test_date = timezone.now()
+                        student.save()
+                        
+                        if rmib_created:
+                            result['rmib_created'] += 1
+                        else:
+                            result['rmib_updated'] += 1
+                        
+                        logger.info(f"RMIB {rmib_status} for {nama} (NISN: {nisn})")
+                
+                except Exception as e:
+                    result['errors'] += 1
+                    error_msg = f"Baris {row_num}: {str(e)}"
+                    result['error_details'].append(error_msg)
+                    logger.error(f"Row processing error: {error_msg}")
+            
+            # ==================== FINALIZE RESULT ====================
+            if result['rmib_created'] > 0 or result['students_created'] > 0:
+                result['success'] = True
+                parts = []
+                if result['students_created'] > 0:
+                    parts.append(f"{result['students_created']} siswa baru")
+                if result['students_updated'] > 0:
+                    parts.append(f"{result['students_updated']} siswa di-update")
+                if result['rmib_created'] > 0:
+                    parts.append(f"{result['rmib_created']} RMIB baru")
+                if result['rmib_updated'] > 0:
+                    parts.append(f"{result['rmib_updated']} RMIB di-update")
+                
+                result['message'] = f"Import selesai: {', '.join(parts)}."
+                
+                logger.info(
+                    f"RMIB Batch Import completed by {self.request.user.username}: "
+                    f"{result['rmib_created']} created, {result['rmib_updated']} updated"
+                )
+            else:
+                result['message'] = "Tidak ada data yang berhasil di-import."
+            
+        except Exception as e:
+            logger.error(f"CSV processing error: {str(e)}", exc_info=True)
+            result['message'] = f'Terjadi kesalahan: {str(e)}'
+            result['error_details'].append(f"System error: {str(e)}")
+        
+        return result
+    
+    def parse_date(self, date_str):
+        """Parse date from various formats"""
+        if not date_str:
+            return None
+        
+        formats = [
+            '%Y-%m-%d',
+            '%d/%m/%Y',
+            '%d-%m-%Y',
+            '%Y/%m/%d',
+            '%d.%m.%Y',
+            '%Y.%m.%d'
+        ]
+        
+        for fmt in formats:
+            try:
+                return datetime.strptime(date_str, fmt).date()
+            except ValueError:
+                continue
+        
+        logger.warning(f"Failed to parse date: {date_str}")
+        return None
+
+
+# ==================== TEMPLATE DOWNLOAD ====================
+
+@login_required
+def download_rmib_template(request):
+    """Download template CSV untuk RMIB batch import"""
+    if not request.user.is_staff:
+        return HttpResponse('Unauthorized', status=403)
+    
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="template_rmib_batch_import.csv"'
+    response.write('\ufeff')  # UTF-8 BOM for Excel
+    
+    writer = csv.writer(response)
+    
+    # Header
+    writer.writerow([
+        'NISN', 'Nama', 'Kelas', 'Jenis Kelamin', 'Tanggal Lahir', 'Tempat Lahir', 
+        'Status Tes', 'Tahun Masuk',
+        'Out', 'Me', 'COMP', 'Sci', 'Prs', 'Aesth', 'Lit', 'Mus', 'S.S', 'Cler', 'Prac', 'Med'
+    ])
+    
+    # Example 1: Completed
+    writer.writerow([
+        '1234567890', 'Ahmad Ramadhan', '7A', 'Laki-laki', '2008-05-15', 'Jakarta',
+        'completed', '2021',
+        '1', '3', '2', '4', '5', '6', '7', '8', '9', '10', '11', '12'
+    ])
+    
+    # Example 2: Completed dengan ranking berbeda
+    writer.writerow([
+        '1234567891', 'Siti Nurhaliza', '7A', 'Perempuan', '2008-08-22', 'Bandung',
+        'completed', '2021',
+        '2', '4', '1', '3', '6', '5', '8', '7', '9', '11', '10', '12'
+    ])
+    
+    # Example 3: In Progress (partial data)
+    writer.writerow([
+        '1234567892', 'Budi Santoso', '7B', 'Laki-laki', '2008-03-10', 'Surabaya',
+        'in_progress', '2021',
+        '1', '2', '', '', '5', '', '', '', '', '', '', ''
+    ])
+    
+    # Example 4: Pending (no RMIB data)
+    writer.writerow([
+        '1234567893', 'Dewi Kusuma', '7B', 'Perempuan', '2008-11-30', 'Medan',
+        'pending', '2021',
+        '', '', '', '', '', '', '', '', '', '', '', ''
+    ])
+    
+    logger.info(f"RMIB template downloaded by {request.user.username}")
+    
+    return response
+class RMIBTestView(LoginRequiredMixin, TemplateView):
+    template_name = 'students/rmib_test.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # ✅ GET student dari URL parameter
+        student_pk = self.kwargs.get('pk')
+        student = get_object_or_404(Student, pk=student_pk)
+        
+        # RMIB categories definition
+        rmib_categories = {
+            'outdoor': {'name': 'Outdoor', 'icon': 'fa-tree', 'desc': 'Aktivitas luar ruangan', 'color': '#10b981'},
+            'mechanical': {'name': 'Mechanical', 'icon': 'fa-cog', 'desc': 'Mesin dan teknik', 'color': '#f59e0b'},
+            'computational': {'name': 'Computational', 'icon': 'fa-calculator', 'desc': 'Perhitungan', 'color': '#3b82f6'},
+            'scientific': {'name': 'Scientific', 'icon': 'fa-flask', 'desc': 'Ilmu pengetahuan', 'color': '#8b5cf6'},
+            'personal_contact': {'name': 'Personal Contact', 'icon': 'fa-handshake', 'desc': 'Interaksi sosial', 'color': '#ec4899'},
+            'aesthetic': {'name': 'Aesthetic', 'icon': 'fa-palette', 'desc': 'Seni', 'color': '#f43f5e'},
+            'literary': {'name': 'Literary', 'icon': 'fa-book', 'desc': 'Literasi', 'color': '#06b6d4'},
+            'musical': {'name': 'Musical', 'icon': 'fa-music', 'desc': 'Musik', 'color': '#14b8a6'},
+            'social_service': {'name': 'Social Service', 'icon': 'fa-heart', 'desc': 'Pelayanan sosial', 'color': '#ef4444'},
+            'clerical': {'name': 'Clerical', 'icon': 'fa-clipboard', 'desc': 'Administrasi', 'color': '#84cc16'},
+            'practical': {'name': 'Practical', 'icon': 'fa-tools', 'desc': 'Praktis', 'color': '#f97316'},
+            'medical': {'name': 'Medical', 'icon': 'fa-heartbeat', 'desc': 'Kesehatan medis', 'color': '#0ea5e9'},
+        }
+        
+        # Check for existing progress
+        has_progress = False
+        existing_levels = {}
+        existing_scores = {}
+        
+        try:
+            rmib_result = RMIBResult.objects.get(student=student)
+            if rmib_result.levels:
+                has_progress = True
+                existing_levels = rmib_result.levels
+                existing_scores = rmib_result.scores or {}
+        except RMIBResult.DoesNotExist:
+            pass
+        
+        # Get existing achievements
+        achievements = StudentAchievement.objects.filter(student=student).select_related('achievement_type')
+        achievements_data = []
+        for ach in achievements:
+            achievements_data.append({
+                'id': ach.id,
+                'type_name': ach.achievement_type.name,
+                'type_id': ach.achievement_type.id,
+                'level': ach.level,
+                'rank': ach.rank,
+                'year': ach.year,
+                'points': ach.points,
+                'notes': ach.notes or '',
+                'rmib_category': ach.achievement_type.rmib_category,
+            })
+        
+        context.update({
+            'student': student,  # ← PENTING!
+            'rmib_categories_json': json.dumps(rmib_categories),
+            'has_progress': has_progress,
+            'existing_levels': json.dumps(existing_levels),
+            'existing_scores': json.dumps(existing_scores),
+            'existing_achievements': json.dumps(achievements_data),
+        })
+        
+        return context
+@require_POST
+@login_required
+def rmib_start_test(request, student_id):
+    """Start RMIB test for student"""
+    try:
+        # ✅ FIX: Tambah error handling untuk student not found
+        try:
+            student = Student.objects.get(pk=student_id)
+        except Student.DoesNotExist:
+            logger.error(f"Start test error: No Student with ID {student_id}")
+            return JsonResponse({
+                'success': False,
+                'message': f'Siswa dengan ID {student_id} tidak ditemukan'
+            }, status=404)
+        
+        # Check if user has permission (only own student or staff)
+        if not request.user.is_staff and (not hasattr(request.user, 'student') or request.user.student.id != student.id):
+            return JsonResponse({
+                'success': False,
+                'message': 'Anda tidak memiliki akses ke tes ini'
+            }, status=403)
+        
+        # Get or create RMIB result
+        rmib_result, created = RMIBResult.objects.get_or_create(
+            student=student,
+            defaults={
+                'status': 'in_progress',
+                'levels': {},
+                'scores': {}
+            }
+        )
+        
+        if not created and rmib_result.status == 'completed':
+            return JsonResponse({
+                'success': False,
+                'message': 'Tes RMIB sudah selesai. Hubungi admin untuk reset.'
+            })
+        
+        # Update status
+        rmib_result.status = 'in_progress'
+        rmib_result.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Tes dimulai',
+            'has_progress': bool(rmib_result.levels)
+        })
+        
+    except Exception as e:
+        logger.error(f"Start test error: {str(e)}", exc_info=True)
+        return JsonResponse({
+            'success': False,
+            'message': f'Terjadi kesalahan: {str(e)}'
+        }, status=500)
+
+@require_POST
+def rmib_autosave_api(request, student_id):
+    try:
+        student = Student.objects.get(pk=student_id)
+        data = json.loads(request.body)
+        levels = data.get('levels', {})
+        
+        # Get or create RMIB result
+        rmib_result, created = RMIBResult.objects.get_or_create(
+            student=student,
+            defaults={'levels': levels, 'status': 'in_progress'}
+        )
+        
+        if not created:
+            # Merge with existing
+            existing_levels = rmib_result.levels or {}
+            existing_levels.update(levels)
+            rmib_result.levels = existing_levels
+            rmib_result.status = 'in_progress'
+        
+        # Calculate scores
+        rmib_result.calculate_scores()
+        rmib_result.save()
+        
+        return JsonResponse({
+            'success': True,
+            'scores': rmib_result.scores,
+            'message': 'Progress saved'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)

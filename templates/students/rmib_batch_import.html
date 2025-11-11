@@ -1,0 +1,493 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Batch Import RMIB - PRESTISIA{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-6">
+    
+    <!-- HEADER WITH STEPPER -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Batch Import RMIB</h1>
+        <p class="text-gray-600 mb-4">Import hasil tes RMIB secara massal dengan file CSV</p>
+        
+        <!-- STEPPER -->
+        <div id="stepperContainer" class="flex items-center justify-between mb-6 relative">
+            <div class="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
+            <div id="stepperProgress" class="absolute top-1/2 left-0 h-1 bg-blue-600 transition-all duration-500 -z-10" style="width:0%"></div>
+            
+            <div class="step-item flex flex-col items-center relative bg-white px-2" data-step="1">
+                <div class="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center bg-white font-bold text-gray-400 transition-all duration-300">1</div>
+                <span class="text-xs mt-1 text-gray-500 whitespace-nowrap">Download Template</span>
+            </div>
+            <div class="step-item flex flex-col items-center relative bg-white px-2" data-step="2">
+                <div class="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center bg-white font-bold text-gray-400 transition-all duration-300">2</div>
+                <span class="text-xs mt-1 text-gray-500 whitespace-nowrap">Upload File</span>
+            </div>
+            <div class="step-item flex flex-col items-center relative bg-white px-2" data-step="3">
+                <div class="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center bg-white font-bold text-gray-400 transition-all duration-300">3</div>
+                <span class="text-xs mt-1 text-gray-500 whitespace-nowrap">Validasi</span>
+            </div>
+            <div class="step-item flex flex-col items-center relative bg-white px-2" data-step="4">
+                <div class="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center bg-white font-bold text-gray-400 transition-all duration-300">4</div>
+                <span class="text-xs mt-1 text-gray-500 whitespace-nowrap">Proses Import</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="flex flex-wrap gap-3 mb-6">
+        <a href="{% url 'students:download_rmib_template' %}" id="downloadBtn" class="inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-sm transition-all">
+            <i class="fas fa-download mr-2"></i> Download Template CSV
+        </a>
+        <a href="{% url 'students:list' %}" class="inline-flex items-center px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-all">
+            <i class="fas fa-arrow-left mr-2"></i> Kembali
+        </a>
+        <button type="button" id="toggleInfoBtn" class="inline-flex items-center px-5 py-2.5 bg-purple-100 hover:bg-purple-200 text-purple-700 font-semibold rounded-lg transition-all">
+            <i class="fas fa-info-circle mr-2"></i> Petunjuk
+        </button>
+    </div>
+
+    <!-- COLLAPSIBLE INFO SECTION -->
+    <div id="infoSection" class="bg-blue-50 border border-blue-200 rounded-lg mb-6 overflow-hidden transition-all duration-300" style="max-height:0;">
+        <div class="p-4">
+            <h3 class="font-bold text-blue-900 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i> Format CSV RMIB</h3>
+            <div class="text-sm text-blue-800 space-y-2 mb-3">
+                <p><strong>Header yang diperlukan:</strong></p>
+                <code class="block bg-blue-100 p-2 rounded text-xs overflow-x-auto">NISN,Nama,Kelas,Jenis Kelamin,Tanggal Lahir,Tempat Lahir,Tahun Masuk,Out,Me,COMP,Sci,Prs,Aesth,Lit,Mus,S.S,Cler,Prac,Med</code>
+            </div>
+            <div class="text-sm text-blue-800 space-y-1">
+                <p><i class="fas fa-check-circle mr-1"></i> Ranking harus unik 1-12 untuk setiap siswa</p>
+                <p><i class="fas fa-check-circle mr-1"></i> Kosong = siswa belum tes RMIB</p>
+                <p><i class="fas fa-check-circle mr-1"></i> Lengkap 12 kategori = status completed</p>
+                <p><i class="fas fa-exclamation-triangle mr-1 text-yellow-600"></i> Siswa yang sudah completed tidak akan ditimpa</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILE UPLOAD FORM -->
+    <form id="uploadForm" method="post" enctype="multipart/form-data" class="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg mb-6">
+        {% csrf_token %}
+        
+        <div class="mb-4">
+            <label class="block font-semibold text-gray-800 mb-2">
+                <i class="fas fa-file-csv text-green-600 mr-1"></i> Pilih File CSV
+            </label>
+            <div class="relative">
+                <input type="file" accept=".csv" id="csvFileInput" name="csv_file" required 
+                       class="block w-full border-2 border-dashed border-gray-300 rounded-lg p-4 text-sm focus:outline-none focus:border-blue-500 bg-gray-50 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 file:font-semibold hover:file:bg-blue-100 transition-all">
+                <div id="fileInfo" class="hidden mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="font-semibold text-green-800" id="fileName"></p>
+                            <p class="text-sm text-green-600" id="fileSize"></p>
+                            <p class="text-sm text-green-600" id="fileRows"></p>
+                        </div>
+                        <button type="button" id="removeFileBtn" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-times-circle text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <small class="text-gray-500 mt-2 block">Format: .csv | Maksimal: 10MB, 2000 baris</small>
+        </div>
+
+        <!-- VALIDATION SUMMARY -->
+        <div id="validationSummary" class="hidden mb-4 p-4 border rounded-lg">
+            <h4 class="font-semibold mb-2 flex items-center">
+                <i class="fas fa-clipboard-check mr-2"></i> Hasil Validasi
+            </h4>
+            <div id="validationResults" class="space-y-2 text-sm"></div>
+        </div>
+
+        <!-- PREVIEW TABLE -->
+        <div id="previewContainer" class="hidden mb-4">
+            <div class="flex items-center justify-between mb-2">
+                <h4 class="font-semibold text-gray-800">Preview Data (5 baris pertama)</h4>
+                <button type="button" id="togglePreviewBtn" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+                    <i class="fas fa-chevron-up"></i> Sembunyikan
+                </button>
+            </div>
+            <div id="previewWrapper" class="overflow-x-auto bg-gray-50 border border-gray-200 rounded-lg shadow-inner">
+                <table id="previewTable" class="min-w-full text-xs">
+                    <thead class="bg-gray-100 sticky top-0">
+                        <tr id="previewTableHeader"></tr>
+                    </thead>
+                    <tbody id="previewTableBody" class="divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SUBMIT BUTTON -->
+        <div class="flex items-center gap-3">
+            <button type="submit" id="uploadBtn" disabled 
+                    class="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all transform hover:scale-105 active:scale-95 disabled:transform-none">
+                <i class="fas fa-cloud-upload-alt mr-2"></i> <span id="uploadBtnText">Upload & Proses Import</span>
+            </button>
+            <button type="button" id="resetBtn" class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition-all">
+                <i class="fas fa-redo mr-1"></i> Reset
+            </button>
+        </div>
+    </form>
+
+    <!-- PROGRESS SECTION -->
+    <div id="progressContainer" class="hidden bg-white border-2 border-blue-200 rounded-xl p-6 shadow-lg mb-6">
+        <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+            <i class="fas fa-spinner fa-spin mr-2 text-blue-600"></i> Memproses Import...
+        </h4>
+        <div class="relative w-full bg-gray-200 h-6 rounded-full overflow-hidden mb-2">
+            <div id="progressFill" class="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300 flex items-center justify-center text-white text-xs font-bold" style="width:0%">
+                <span id="progressText">0%</span>
+            </div>
+        </div>
+        <p id="progressStatus" class="text-sm text-gray-600 text-center"></p>
+    </div>
+
+    <!-- RESULTS SECTION -->
+    <div id="resultsContainer" class="hidden"></div>
+
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toastContainer" style="position:fixed;top:1rem;right:1rem;z-index:9999;max-width:400px;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ==================== VARIABLES ====================
+const csvFileInput = document.getElementById('csvFileInput');
+const uploadBtn = document.getElementById('uploadBtn');
+const uploadBtnText = document.getElementById('uploadBtnText');
+const resetBtn = document.getElementById('resetBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const toggleInfoBtn = document.getElementById('toggleInfoBtn');
+const togglePreviewBtn = document.getElementById('togglePreviewBtn');
+const removeFileBtn = document.getElementById('removeFileBtn');
+
+const infoSection = document.getElementById('infoSection');
+const fileInfo = document.getElementById('fileInfo');
+const fileName = document.getElementById('fileName');
+const fileSize = document.getElementById('fileSize');
+const fileRows = document.getElementById('fileRows');
+
+const validationSummary = document.getElementById('validationSummary');
+const validationResults = document.getElementById('validationResults');
+
+const previewContainer = document.getElementById('previewContainer');
+const previewWrapper = document.getElementById('previewWrapper');
+const previewTableHeader = document.getElementById('previewTableHeader');
+const previewTableBody = document.getElementById('previewTableBody');
+
+const progressContainer = document.getElementById('progressContainer');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const progressStatus = document.getElementById('progressStatus');
+
+const resultsContainer = document.getElementById('resultsContainer');
+const toastContainer = document.getElementById('toastContainer');
+
+const stepperProgress = document.getElementById('stepperProgress');
+const stepItems = document.querySelectorAll('.step-item');
+
+let selectedFile = null;
+let currentStep = 1;
+let previewVisible = true;
+
+// ==================== STEPPER FUNCTIONS ====================
+function updateStepper(step) {
+    currentStep = step;
+    const progressWidth = ((step - 1) / 3) * 100;
+    stepperProgress.style.width = progressWidth + '%';
+    
+    stepItems.forEach((item, index) => {
+        const stepNum = index + 1;
+        const circle = item.querySelector('div');
+        const label = item.querySelector('span');
+        
+        if (stepNum < step) {
+            circle.className = 'w-10 h-10 rounded-full border-2 border-green-500 flex items-center justify-center bg-green-500 font-bold text-white transition-all duration-300';
+            circle.innerHTML = '<i class="fas fa-check"></i>';
+            label.className = 'text-xs mt-1 text-green-600 whitespace-nowrap font-semibold';
+        } else if (stepNum === step) {
+            circle.className = 'w-10 h-10 rounded-full border-2 border-blue-500 flex items-center justify-center bg-blue-500 font-bold text-white transition-all duration-300 animate-pulse';
+            circle.textContent = stepNum;
+            label.className = 'text-xs mt-1 text-blue-600 whitespace-nowrap font-semibold';
+        } else {
+            circle.className = 'w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center bg-white font-bold text-gray-400 transition-all duration-300';
+            circle.textContent = stepNum;
+            label.className = 'text-xs mt-1 text-gray-500 whitespace-nowrap';
+        }
+    });
+}
+
+// ==================== TOAST NOTIFICATION ====================
+function showToast(message, type='info', duration=5000) {
+    const icons = {success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
+    const colors = {success:'green',error:'red',warning:'yellow',info:'blue'};
+    const bgColors = {success:'bg-green-50 border-green-500',error:'bg-red-50 border-red-500',warning:'bg-yellow-50 border-yellow-500',info:'bg-blue-50 border-blue-500'};
+    
+    const toast = document.createElement('div');
+    toast.className = `${bgColors[type]} border-l-4 p-4 mb-2 rounded shadow-lg transition-all transform translate-x-full`;
+    toast.innerHTML = `
+        <div class="flex items-start">
+            <i class="fas ${icons[type]} text-${colors[type]}-600 mr-3 mt-0.5"></i>
+            <div class="flex-1 text-sm text-gray-800">${message}</div>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    toastContainer.appendChild(toast);
+    setTimeout(() => toast.classList.remove('translate-x-full'), 100);
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
+
+// ==================== TOGGLE INFO ====================
+toggleInfoBtn.addEventListener('click', () => {
+    if (infoSection.style.maxHeight === '0px' || !infoSection.style.maxHeight) {
+        infoSection.style.maxHeight = infoSection.scrollHeight + 'px';
+        toggleInfoBtn.innerHTML = '<i class="fas fa-times-circle mr-2"></i> Tutup Petunjuk';
+    } else {
+        infoSection.style.maxHeight = '0';
+        toggleInfoBtn.innerHTML = '<i class="fas fa-info-circle mr-2"></i> Petunjuk';
+    }
+});
+
+// ==================== DOWNLOAD TEMPLATE ====================
+downloadBtn.addEventListener('click', () => {
+    updateStepper(2);
+    showToast('Template CSV berhasil didownload. Silakan isi data dan upload kembali.', 'success', 6000);
+});
+
+// ==================== FILE SELECT ====================
+csvFileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validation
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+        showToast('File harus berformat .csv', 'error');
+        resetForm();
+        return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+        showToast('Ukuran file maksimal 10MB', 'error');
+        resetForm();
+        return;
+    }
+    if (file.size === 0) {
+        showToast('File kosong', 'error');
+        resetForm();
+        return;
+    }
+    
+    selectedFile = file;
+    updateStepper(2);
+    
+    // Show file info
+    fileName.textContent = file.name;
+    fileSize.textContent = formatFileSize(file.size);
+    fileInfo.classList.remove('hidden');
+    
+    // Parse and validate
+    try {
+        const text = await file.text();
+        const lines = text.trim().split('\n');
+        fileRows.textContent = `${lines.length - 1} baris data`;
+        
+        validateAndPreviewCSV(text, lines);
+        updateStepper(3);
+        
+    } catch (err) {
+        showToast('Gagal membaca file', 'error');
+        resetForm();
+    }
+});
+
+// ==================== VALIDATE & PREVIEW ====================
+function validateAndPreviewCSV(text, lines) {
+    if (lines.length < 2) {
+        showToast('File tidak memiliki data', 'error');
+        resetForm();
+        return;
+    }
+    
+    const header = lines[0].split(',').map(h => h.trim());
+    const requiredCols = ['NISN','Nama','Kelas','Out','Me','COMP','Sci','Prs','Aesth','Lit','Mus','S.S','Cler','Prac','Med'];
+    const missing = requiredCols.filter(col => !header.includes(col));
+    
+    // Validation results
+    validationResults.innerHTML = '';
+    let isValid = true;
+    
+    if (missing.length > 0) {
+        validationResults.innerHTML += `<div class="flex items-center text-red-600"><i class="fas fa-times-circle mr-2"></i> Kolom tidak lengkap: ${missing.join(', ')}</div>`;
+        isValid = false;
+    } else {
+        validationResults.innerHTML += `<div class="flex items-center text-green-600"><i class="fas fa-check-circle mr-2"></i> Semua kolom ditemukan</div>`;
+    }
+    
+    const dataRows = lines.length - 1;
+    if (dataRows > 2000) {
+        validationResults.innerHTML += `<div class="flex items-center text-red-600"><i class="fas fa-times-circle mr-2"></i> Terlalu banyak baris (${dataRows}). Maksimal 2000</div>`;
+        isValid = false;
+    } else {
+        validationResults.innerHTML += `<div class="flex items-center text-green-600"><i class="fas fa-check-circle mr-2"></i> Jumlah baris valid: ${dataRows}</div>`;
+    }
+    
+    validationSummary.className = isValid ? 'mb-4 p-4 border-2 border-green-300 bg-green-50 rounded-lg' : 'mb-4 p-4 border-2 border-red-300 bg-red-50 rounded-lg';
+    validationSummary.classList.remove('hidden');
+    
+    if (!isValid) {
+        uploadBtn.disabled = true;
+        showToast('Validasi gagal. Periksa format file CSV.', 'error', 7000);
+        return;
+    }
+    
+    // Build preview table
+    previewTableHeader.innerHTML = header.map(h => `<th class="px-3 py-2 text-left border-b font-semibold text-gray-700">${h}</th>`).join('');
+    previewTableBody.innerHTML = '';
+    
+    lines.slice(1, 6).forEach(line => {
+        if (line.trim()) {
+            const cells = line.split(',').map(c => c.trim());
+            const row = `<tr class="hover:bg-blue-50 transition-colors">${cells.map(c => `<td class="px-3 py-2 border-b text-gray-700">${c || '-'}</td>`).join('')}</tr>`;
+            previewTableBody.insertAdjacentHTML('beforeend', row);
+        }
+    });
+    
+    previewContainer.classList.remove('hidden');
+    uploadBtn.disabled = false;
+    showToast('Validasi berhasil! File siap diupload.', 'success');
+}
+
+// ==================== TOGGLE PREVIEW ====================
+togglePreviewBtn.addEventListener('click', () => {
+    previewVisible = !previewVisible;
+    previewWrapper.style.display = previewVisible ? 'block' : 'none';
+    togglePreviewBtn.innerHTML = previewVisible ? '<i class="fas fa-chevron-up"></i> Sembunyikan' : '<i class="fas fa-chevron-down"></i> Tampilkan';
+});
+
+// ==================== REMOVE FILE ====================
+removeFileBtn.addEventListener('click', resetForm);
+
+// ==================== RESET ====================
+resetBtn.addEventListener('click', resetForm);
+
+function resetForm() {
+    selectedFile = null;
+    csvFileInput.value = '';
+    fileInfo.classList.add('hidden');
+    validationSummary.classList.add('hidden');
+    previewContainer.classList.add('hidden');
+    progressContainer.classList.add('hidden');
+    resultsContainer.classList.add('hidden');
+    uploadBtn.disabled = true;
+    updateStepper(1);
+}
+
+// ==================== FORM SUBMIT ====================
+document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!selectedFile) return;
+    
+    updateStepper(4);
+    uploadBtn.disabled = true;
+    uploadBtnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
+    
+    progressContainer.classList.remove('hidden');
+    resultsContainer.classList.add('hidden');
+    progressFill.style.width = '0%';
+    progressText.textContent = '0%';
+    progressStatus.textContent = 'Mengunggah file...';
+    
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress = Math.min(progress + 7, 90);
+        progressFill.style.width = progress + '%';
+        progressText.textContent = progress + '%';
+        
+        if (progress < 30) progressStatus.textContent = 'Mengunggah file...';
+        else if (progress < 60) progressStatus.textContent = 'Memvalidasi data...';
+        else if (progress < 90) progressStatus.textContent = 'Memproses import...';
+    }, 150);
+    
+    const formData = new FormData(this);
+    try {
+        const res = await fetch(this.action || window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        });
+        
+        clearInterval(progressInterval);
+        progressFill.style.width = '100%';
+        progressText.textContent = '100%';
+        progressStatus.textContent = 'Selesai!';
+        
+        const result = await res.json();
+        
+        if (result.success) {
+            resultsContainer.innerHTML = `
+                <div class="bg-green-50 border-2 border-green-500 rounded-xl p-6 shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-check-circle text-green-600 text-3xl mr-3"></i>
+                        <h3 class="text-xl font-bold text-green-800">Import Berhasil!</h3>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                        <div><strong>Total diproses:</strong> ${result.results.total_processed}</div>
+                        <div><strong>Siswa baru:</strong> ${result.results.students_created}</div>
+                        <div><strong>Siswa diupdate:</strong> ${result.results.students_updated}</div>
+                        <div><strong>RMIB dibuat:</strong> ${result.results.rmib_created}</div>
+                        <div><strong>RMIB diupdate:</strong> ${result.results.rmib_updated}</div>
+                        <div><strong>RMIB skip:</strong> ${result.results.rmib_skipped}</div>
+                    </div>
+                    <p class="text-green-700 font-semibold">${result.message}</p>
+                </div>
+            `;
+            resultsContainer.classList.remove('hidden');
+            showToast('Import berhasil! Redirect dalam 3 detik...', 'success', 3000);
+            setTimeout(() => window.location.href = result.redirect_url || "{% url 'students:list' %}", 3000);
+        } else {
+            resultsContainer.innerHTML = `
+                <div class="bg-red-50 border-2 border-red-500 rounded-xl p-6 shadow-lg">
+                    <div class="flex items-center mb-3">
+                        <i class="fas fa-exclamation-circle text-red-600 text-3xl mr-3"></i>
+                        <h3 class="text-xl font-bold text-red-800">Import Gagal</h3>
+                    </div>
+                    <p class="text-red-700 mb-3">${result.message}</p>
+                    ${result.errors && result.errors.length > 0 ? `<div class="text-sm text-red-600"><strong>Error:</strong><ul class="list-disc ml-5 mt-2">${result.errors.map(e => `<li>${e}</li>`).join('')}</ul></div>` : ''}
+                </div>
+            `;
+            resultsContainer.classList.remove('hidden');
+            showToast(result.message, 'error', 8000);
+        }
+    } catch (err) {
+        clearInterval(progressInterval);
+        resultsContainer.innerHTML = `<div class="bg-red-50 border-2 border-red-500 rounded-xl p-6 text-red-800">Terjadi kesalahan server. Coba lagi.</div>`;
+        resultsContainer.classList.remove('hidden');
+        showToast('Terjadi kesalahan server', 'error');
+    }
+    
+    uploadBtn.disabled = false;
+    uploadBtnText.innerHTML = '<i class="fas fa-cloud-upload-alt mr-2"></i> Upload & Proses Import';
+});
+
+// ==================== HELPERS ====================
+function formatFileSize(bytes) {
+    if (!bytes) return '0 B';
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+}
+
+// Initialize
+updateStepper(1);
+</script>
+{% endblock %}
