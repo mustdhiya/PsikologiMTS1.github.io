@@ -115,21 +115,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'psikologimts1.wsgi.application'
 
-# Database
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get(
-            'DB_ENGINE',
-            'django.db.backends.sqlite3' if not IS_PRODUCTION else 'django.db.backends.mysql'
-        ),
-        'NAME': os.environ.get(
-            'DB_NAME',
-            os.path.join(BASE_DIR, 'db_local.sqlite3') if not IS_PRODUCTION else 'psikologimts1_db'
-        ),
-        'USER': os.environ.get('DB_USER', 'root' if not IS_PRODUCTION else ''),
-        'PASSWORD': os.environ.get('DB_PASSWORD', '' if not IS_PRODUCTION else ''),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '3306'),
+        'ENGINE': 'django.db.backends.mysql' if IS_PRODUCTION else 'django.db.backends.sqlite3',
+        'NAME': 'prep8924_psikologimts1_db' if IS_PRODUCTION else os.path.join(BASE_DIR, 'db_local.sqlite3'),
+        'USER': 'prep8924' if IS_PRODUCTION else 'root',
+        'PASSWORD': '' if IS_PRODUCTION else '',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 

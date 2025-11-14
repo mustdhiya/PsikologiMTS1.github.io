@@ -7,3 +7,6 @@ git reset --hard
 # Atau jika mau stash dulu:
 git stash
 git pull origin main
+
+
+jangan lupa ke settings.py tambahkan password nya
