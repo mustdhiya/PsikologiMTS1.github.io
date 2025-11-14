@@ -1,0 +1,9 @@
+cd /home/prep8924/apps/PsikologiMTS1hub.io
+
+# Bersihkan __pycache__ yang tidak staged
+git clean -fd __pycache__/
+git reset --hard
+
+# Atau jika mau stash dulu:
+git stash
+git pull origin main

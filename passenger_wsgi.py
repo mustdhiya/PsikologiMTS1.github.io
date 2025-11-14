@@ -2,16 +2,14 @@ import imp
 import os
 import sys
 
-# Add project directory to path
-project_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, project_dir)
-
-# Set environment variables SEBELUM import Django
+# ✅ SET ENVIRONMENT VARIABLES SEBELUM IMPORT DJANGO
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'psikologimts1.settings')
+os.environ['ENVIRONMENT'] = 'production'      # ← TAMBAH INI
+os.environ['DEBUG'] = 'False'                  # ← TAMBAH INI
+os.environ['DB_ENGINE'] = 'django.db.backends.sqlite3'  # Atau MySQL sesuai setup
 
-# Import WSGI application
-import django
-django.setup()
+# Baru setelah ini import Django
+sys.path.insert(0, os.path.dirname(__file__))
 
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+wsgi = imp.load_source('wsgi', 'psikologimts1/wsgi.py')
+application = wsgi.application
