@@ -36,6 +36,131 @@ class IsStaffMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_staff or self.request.user.is_superuser
 
+@login_required
+def student_dashboard(request):
+    """
+    Dashboard utama untuk student
+    Redirect ke dashboard jika staff, atau tampilkan dashboard student
+    """
+    # Jika staff/admin, redirect ke admin area
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect('students:list')
+    
+    # Ambil data student dari user
+    try:
+        student = Student.objects.get(user=request.user)
+    except Student.DoesNotExist:
+        messages.error(request, 'Data siswa tidak ditemukan. Hubungi administrator.')
+        return redirect('accounts:login')
+    
+    # Ambil data RMIB
+    rmib_result = None
+    rmib_status = 'pending'
+    top_categories = []
+    
+    try:
+        rmib_result = RMIBResult.objects.get(student=student)
+        rmib_status = rmib_result.status
+        
+        # ✅ FIXED: Get top 3 categories berdasarkan field yang ADA
+        if rmib_result.status == 'completed':
+            # Cek field mana yang ada di model RMIBResult
+            if hasattr(rmib_result, 'levels') and rmib_result.levels:
+                # levels adalah JSONField dengan ranking {category: rank}
+                # Sort berdasarkan ranking (nilai terkecil = prioritas tertinggi)
+                sorted_categories = sorted(
+                    rmib_result.levels.items(), 
+                    key=lambda x: x[1]  # Sort by rank value
+                )[:3]
+                
+                # Map category key ke data lengkap
+                category_mapping = {
+                    'outdoor': {'name': 'Outdoor', 'icon': '🌲', 'description': 'Aktivitas luar ruangan'},
+                    'mechanical': {'name': 'Mechanical', 'icon': '⚙️', 'description': 'Mesin dan teknik'},
+                    'computational': {'name': 'Computational', 'icon': '🔢', 'description': 'Perhitungan dan logika'},
+                    'scientific': {'name': 'Scientific', 'icon': '🔬', 'description': 'Ilmu pengetahuan'},
+                    'personal_contact': {'name': 'Personal Contact', 'icon': '🤝', 'description': 'Interaksi sosial'},
+                    'aesthetic': {'name': 'Aesthetic', 'icon': '🎨', 'description': 'Seni dan keindahan'},
+                    'literary': {'name': 'Literary', 'icon': '📚', 'description': 'Literasi dan bahasa'},
+                    'musical': {'name': 'Musical', 'icon': '🎵', 'description': 'Musik dan nada'},
+                    'social_service': {'name': 'Social Service', 'icon': '❤️', 'description': 'Pelayanan sosial'},
+                    'clerical': {'name': 'Clerical', 'icon': '📋', 'description': 'Administrasi'},
+                    'practical': {'name': 'Practical', 'icon': '🔧', 'description': 'Praktis dan terapan'},
+                    'medical': {'name': 'Medical', 'icon': '⚕️', 'description': 'Kesehatan medis'},
+                }
+                
+                top_categories = [
+                    {
+                        'key': cat_key,
+                        'rank': rank,
+                        **category_mapping.get(cat_key, {
+                            'name': cat_key.title(),
+                            'icon': '📊',
+                            'description': 'Kategori RMIB'
+                        })
+                    }
+                    for cat_key, rank in sorted_categories
+                ]
+            
+            elif hasattr(rmib_result, 'scores') and rmib_result.scores:
+                # scores adalah JSONField dengan skor {category: score}
+                # Sort berdasarkan skor tertinggi
+                sorted_categories = sorted(
+                    rmib_result.scores.items(),
+                    key=lambda x: x[1],
+                    reverse=True  # Skor tertinggi dulu
+                )[:3]
+                
+                category_mapping = {
+                    'outdoor': {'name': 'Outdoor', 'icon': '🌲', 'description': 'Aktivitas luar ruangan'},
+                    'mechanical': {'name': 'Mechanical', 'icon': '⚙️', 'description': 'Mesin dan teknik'},
+                    'computational': {'name': 'Computational', 'icon': '🔢', 'description': 'Perhitungan dan logika'},
+                    'scientific': {'name': 'Scientific', 'icon': '🔬', 'description': 'Ilmu pengetahuan'},
+                    'personal_contact': {'name': 'Personal Contact', 'icon': '🤝', 'description': 'Interaksi sosial'},
+                    'aesthetic': {'name': 'Aesthetic', 'icon': '🎨', 'description': 'Seni dan keindahan'},
+                    'literary': {'name': 'Literary', 'icon': '📚', 'description': 'Literasi dan bahasa'},
+                    'musical': {'name': 'Musical', 'icon': '🎵', 'description': 'Musik dan nada'},
+                    'social_service': {'name': 'Social Service', 'icon': '❤️', 'description': 'Pelayanan sosial'},
+                    'clerical': {'name': 'Clerical', 'icon': '📋', 'description': 'Administrasi'},
+                    'practical': {'name': 'Practical', 'icon': '🔧', 'description': 'Praktis dan terapan'},
+                    'medical': {'name': 'Medical', 'icon': '⚕️', 'description': 'Kesehatan medis'},
+                }
+                
+                top_categories = [
+                    {
+                        'key': cat_key,
+                        'score': score,
+                        **category_mapping.get(cat_key, {
+                            'name': cat_key.title(),
+                            'icon': '📊',
+                            'description': 'Kategori RMIB'
+                        })
+                    }
+                    for cat_key, score in sorted_categories
+                ]
+                
+    except RMIBResult.DoesNotExist:
+        pass
+    
+    # Ambil achievements
+    achievements = StudentAchievement.objects.filter(student=student).order_by('-year', '-points')[:5]
+    total_achievement_points = sum(ach.points for ach in achievements)
+    
+    # Certificate requests (placeholder - sesuaikan dengan model Anda)
+    certificate_requests = []
+    
+    context = {
+        'student': student,
+        'rmib_result': rmib_result,
+        'rmib_status': rmib_status,
+        'top_categories': top_categories,
+        'achievements': achievements,
+        'total_achievement_points': total_achievement_points,
+        'certificate_requests': certificate_requests,
+    }
+    
+    return render(request, 'students/student_dashboard.html', context)
+
 class StudentListView(LoginRequiredMixin, ListView):
     """Enhanced student list view with advanced filtering and search"""
     model = Student

@@ -3406,3 +3406,58 @@ Internal Server Error: /students/0/rmib/start/
 "POST /students/0/rmib/start/ HTTP/1.1" 500 68
 Internal Server Error: /students/0/rmib/start/
 "POST /students/0/rmib/start/ HTTP/1.1" 500 68
+Internal Server Error: /accounts/admin-login/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\utils\decorators.py", line 46, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\views\decorators\cache.py", line 62, in _wrapper_view_func
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\utils\decorators.py", line 134, in _wrapper_view
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\accounts\views.py", line 170, in post
+    return redirect('students:index')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 48, in redirect
+    return redirect_class(resolve_url(to, *args, **kwargs))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\shortcuts.py", line 145, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'index' not found. 'index' is not a valid view function or pattern name.
+"POST /accounts/admin-login/ HTTP/1.1" 500 126504
+Internal Server Error: /students/dashboard/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 66, in student_dashboard
+    if rmib_result.status == 'completed' and rmib_result.final_ranking:
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'RMIBResult' object has no attribute 'final_ranking'. Did you mean: 'get_final_ranking'?
+"GET /students/dashboard/ HTTP/1.1" 500 85312

@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sertifikat Prestasi RMIB - {{ student.name }}</title>
+    <title>Rekomendasi Minat & Prestasi - {{ student.name }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@300;400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <style>
+        /* CSS TETAP SAMA PERSIS SEPERTI YANG ANDA BERIKAN */
         * {
             margin: 0;
             padding: 0;
@@ -624,7 +625,7 @@
             <a href="{% url 'students:view_parent_report' %}" class="nav-btn">
                 <i class="fas fa-heart"></i> Laporan Ortu
             </a>
-            <a href="{% url 'students:certificate_page' %}" class="nav-btn">
+            <a href="{% url 'students:student_dashboard' %}" class="nav-btn">
                 <i class="fas fa-home"></i> Dashboard
             </a>
         </div>
@@ -633,16 +634,16 @@
             <div class="cert-content">
                 <div class="cert-header">
                     <div class="school-badge">
-                        <i class="fas fa-crown"></i>
+                        <i class="fas fa-award"></i>
                     </div>
                     <div class="school-name">MTs Muhammadiyah 1 Samarinda</div>
-                    <div class="cert-title">SERTIFIKAT PRESTASI</div>
-                    <div class="cert-subtitle">Penghargaan Istimewa Penyelesaian Tes RMIB</div>
+                    <div class="cert-title">REKOMENDASI</div>
+                    <div class="cert-subtitle">Minat & Prestasi Siswa</div>
                 </div>
 
                 <div class="divider"></div>
 
-                <div class="presented-to">Dengan Penuh Kebanggaan Dipersembahkan Kepada</div>
+                <div class="presented-to">Kami Rekomendasikan Kepada</div>
                 <div class="student-name">{{ student.name }}</div>
                 <div class="student-info">
                     <i class="fas fa-id-card" style="color: #667eea;"></i> NISN: {{ student.nisn }} | 
@@ -651,51 +652,51 @@
 
                 <div class="achievement-section">
                     <div class="achievement-intro">
-                        Selamat! Kamu telah menyelesaikan Tes Ranking Minat dan Bakat (RMIB) dengan prestasi luar biasa. 
-                        Sertifikat ini membuktikan dedikasimu yang hebat dalam menemukan bakat dan minat terbaikmu.
+                        Berdasarkan hasil Tes Ranking Minat dan Bakat (RMIB) yang telah diselesaikan dengan sangat baik, 
+                        kami merekomendasikan siswa ini untuk mengembangkan potensi di bidang minat dan prestasi sebagai berikut:
                     </div>
 
                     <div class="achievement-grid">
                         <div class="achievement-card">
                             <i class="fas fa-star achievement-icon"></i>
-                            <div class="achievement-label">Minat Teratas</div>
+                            <div class="achievement-label">Minat Utama</div>
                             <div class="achievement-value">{{ primary_interest.category_name|default:"Unggul" }}</div>
-                            <div class="achievement-detail">Ranking 1 dari 12 Bidang</div>
+                            <div class="achievement-detail">Ranking #1 dari 12 Bidang</div>
                         </div>
                         <div class="achievement-card">
                             <i class="fas fa-trophy achievement-icon"></i>
-                            <div class="achievement-label">Total Prestasi</div>
+                            <div class="achievement-label">Total Skor RMIB</div>
                             <div class="achievement-value">{{ rmib_result.total_score }}</div>
-                            <div class="achievement-detail">Poin dari 720 Maksimal</div>
+                            <div class="achievement-detail">Dari Skor Maksimal 720</div>
                         </div>
                         <div class="achievement-card">
                             <i class="fas fa-fire achievement-icon"></i>
                             <div class="achievement-label">Level Tertinggi</div>
-                            <div class="achievement-value">{{ primary_interest.level }}/12</div>
+                            <div class="achievement-value">{{ primary_interest.level|default:"1" }}/12</div>
                             <div class="achievement-detail">Level di Bidang Favorit</div>
                         </div>
                         <div class="achievement-card">
                             <i class="fas fa-calendar-check achievement-icon"></i>
-                            <div class="achievement-label">Tanggal Pencapaian</div>
+                            <div class="achievement-label">Status Tes</div>
                             <div class="achievement-value">{{ request_date|date:"d M Y" }}</div>
-                            <div class="achievement-detail">Momen Istimewamu!</div>
+                            <div class="achievement-detail">Pencapaian Resmi</div>
                         </div>
                     </div>
 
                     <div class="message-box">
-                        Wah! Kamu sudah menemukan bakat hebatmu. Gunakan sertifikat ini sebagai langkah awal menuju karir impian 
-                        yang menyenangkan. Teruslah belajar dan mengeksplorasi minatmu. Tim RMIB bangga padamu!
+                        Dengan hasil tes yang sangat memuaskan, kami menyarankan siswa untuk terus mengembangkan kemampuan 
+                        di bidang minat yang teridentifikasi. Dukungan orang tua dan sekolah sangat penting untuk memaksimalkan potensi siswa.
                     </div>
                 </div>
 
                 {% if ranking_data %}
                 <div class="rankings-section">
-                    <div class="rankings-title">Peringkat Lengkap 12 Bidang Minatmu</div>
+                    <div class="rankings-title">Detail Hasil Pemetaan 12 Bidang Minat</div>
                     <div class="rankings-container">
                         <table class="rankings-table">
                             <thead>
                                 <tr>
-                                    <th>Peringkat</th>
+                                    <th>Ranking</th>
                                     <th>Bidang Minat</th>
                                     <th>Skor</th>
                                 </tr>
@@ -725,14 +726,14 @@
                             MTs Muhammadiyah 1 Samarinda
                         </div>
                         <div class="signature-line">
-                            <i class="fas fa-calendar-alt" style="color: #667eea;"></i><br>
-                            Tanggal Pencapaian<br>
-                            {{ request_date|date:"d F Y, H:i" }} WIB
+                            <i class="fas fa-user-tie" style="color: #667eea;"></i><br>
+                            Guru Bimbingan Konseling<br>
+                            Koordinator RMIB
                         </div>
                     </div>
                     <div class="footer-text">
-                        Sertifikat Prestasi Resmi RMIB | ID: RMIB-{{ student.nisn }}-2025<br>
-                        Dikeluarkan oleh Sistem RMIB MTs Muhammadiyah 1 Samarinda
+                        Dokumen Rekomendasi Resmi | ID: RMIB-{{ student.nisn }}-2025<br>
+                        Dikeluarkan pada {{ request_date|date:"d F Y" }} oleh MTs Muhammadiyah 1 Samarinda
                     </div>
                 </div>
             </div>
@@ -740,7 +741,7 @@
 
         <div class="buttons">
             <button onclick="window.print()" class="btn btn-primary">
-                <i class="fas fa-print"></i> Cetak & Simpan PDF
+                <i class="fas fa-print"></i> Cetak Rekomendasi
             </button>
             <a href="{% url 'students:view_summary' %}" class="btn btn-secondary">
                 <i class="fas fa-rocket"></i> Lihat Ringkasan

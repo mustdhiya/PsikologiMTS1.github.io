@@ -13,6 +13,7 @@ SECRET_KEY = os.environ.get(
     'django-insecure-1a$i4%tv3i6$xf0(dby40p(e6aqh(as%vcck1-l2&s1m&3*kze'
 )
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 # Set via environment variable: DEBUG=False di cPanel
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
@@ -87,6 +88,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'students.middleware.StudentAccessMiddleware',
 ]
 
 ROOT_URLCONF = 'psikologimts1.urls'
@@ -157,22 +159,30 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'public_html', 'static')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
 
-# Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'public_html', 'media')
+if IS_PRODUCTION:
+    # Di cPanel, static files harus di public_html yang bisa diakses web
+    STATIC_ROOT = '/home/prep8924/public_html/prestisia.com/static'
+    STATICFILES_DIRS = []  # Kosongkan atau jangan gunakan di production
+    
+    # Media files
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = '/home/prep8924/public_html/prestisia.com/media'
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Login URLs
 LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL = 'core:dashboard'
-LOGOUT_REDIRECT_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = '/students/dashboard/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
 
 # Session Settings
 SESSION_COOKIE_AGE = 1209600  # 2 weeks

@@ -1,10 +1,17 @@
+import imp
 import os
 import sys
 
-# Ganti 'username_anda' dengan username cPanel Anda
-sys.path.insert(0, '/home/prep8924/psikologimts1')
+# Add project directory to path
+project_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, project_dir)
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'psikologimts1.settings'
+# Set environment variables SEBELUM import Django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'psikologimts1.settings')
+
+# Import WSGI application
+import django
+django.setup()
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()

@@ -76,46 +76,20 @@ function hideLoading() {
 // ==================== RMIB RANKING FUNCTIONS ====================
 
 async function startTest() {
-    // ✅ VALIDATE STUDENT_ID
-    if (!RMIB_DATA.studentId || RMIB_DATA.studentId === 0) {
-        showToast('error', 'Error', 'Student ID tidak valid. Refresh halaman.');
-        console.error('RMIB_DATA:', RMIB_DATA);
-        return;
-    }
-    
     try {
         showLoading();
-        
-        // ✅ LOG URL untuk debugging
-        const url = `/students/${RMIB_DATA.studentId}/rmib/start/`;
-        console.log('Fetching:', url);
-        
-        const res = await fetch(url, {
+        const res = await fetch(`/students/${RMIB_DATA.studentId}/rmib/start/`, {
             method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json', 
-                'X-CSRFToken': getCsrfToken() 
-            }
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() }
         });
         
-        if (!res.ok) {
-            const errorText = await res.text();
-            console.error('Response error:', res.status, errorText);
-            throw new Error(`HTTP ${res.status}: ${errorText}`);
-        }
-        
         const data = await res.json();
-        
         if (data.success) {
             document.getElementById('instructionsPanel')?.classList.add('hidden');
             document.getElementById('testInterface')?.classList.remove('hidden');
             
-            if (!window.HAS_PROGRESS) {
-                Object.keys(RMIB_DATA.categories).forEach(key => { rankings[key] = 0; });
-            }
-            
+            Object.keys(RMIB_DATA.categories).forEach(key => { rankings[key] = 0; });
             renderRanking();
-            if (window.HAS_PROGRESS) loadExistingProgress();
             startAutoSave();
             loadAchievementTypes();
             
@@ -127,11 +101,9 @@ async function startTest() {
         }
     } catch (err) {
         hideLoading();
-        console.error('Start test error:', err);
         showToast('error', 'Error', err.message);
     }
 }
-
 
 function renderRanking() {
     const container = document.getElementById('rankingContainer');

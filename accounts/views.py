@@ -29,7 +29,7 @@ class StudentRequiredMixin(LoginRequiredMixin):
         # Jika admin/staff, redirect ke admin panel
         if request.user.is_staff or request.user.is_superuser:
             messages.warning(request, 'Akses sebagai admin. Mengarahkan ke admin panel.')
-            return redirect('admin:index')
+            return redirect('core:dashboard')
         
         # Pastikan user adalah siswa
         try:
@@ -62,7 +62,7 @@ class StudentLoginView(TemplateView):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             if request.user.is_staff or request.user.is_superuser:
-                return redirect('admin:index')
+                return redirect('core:dashboard')
             else:
                 return redirect('students:certificate_page')  # ← PENTING!
         return super().get(request, *args, **kwargs)
@@ -143,7 +143,7 @@ class AdminLoginView(TemplateView):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             if request.user.is_staff or request.user.is_superuser:
-                return redirect('admin:index')
+                return redirect('core:dashboard')
             else:
                 return redirect('students:certificate_page')
         return super().get(request, *args, **kwargs)
@@ -167,7 +167,7 @@ class AdminLoginView(TemplateView):
                     f'Selamat datang, {user.get_full_name() or user.username}!'
                 )
                 logger.info(f'Admin login: {user.username}')
-                return redirect('admin:index')
+                return redirect('core:dashboard')
             else:
                 messages.error(request, 'Akun ini bukan administrator.')
                 logger.warning(f'Non-admin attempted admin login: {user.username}')
@@ -223,7 +223,7 @@ class DashboardRedirectView(LoginRequiredMixin, TemplateView):
         
         # Admin/Staff → Admin Panel
         if user.is_staff or user.is_superuser:
-            return redirect('admin:index')
+            return redirect('core:dashboard')
         
         # Student → Certificate Page
         try:

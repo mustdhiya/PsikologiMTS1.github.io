@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - {{ student.name }} | PRESTISIA</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        
+        /* Custom Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); }
+        }
+        
+        .animate-fadeInUp { animation: fadeInUp 0.6s ease-out forwards; }
+        .animate-slideInLeft { animation: slideInLeft 0.6s ease-out forwards; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        
+        /* Glass Morphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Custom Gradient */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Hover Scale */
+        .hover-scale { transition: transform 0.3s ease; }
+        .hover-scale:hover { transform: scale(1.05); }
+        
+        /* Smooth Scroll */
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 min-h-screen">
+
+    <!-- FLOATING NAVBAR -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-graduation-cap text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-black gradient-text">PRESTISIA</h1>
+                        <p class="text-xs text-gray-500">Student Portal</p>
+                    </div>
+                </div>
+                
+                <!-- User Info -->
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:block text-right">
+                        <p class="text-sm font-bold text-gray-800">{{ student.name }}</p>
+                        <p class="text-xs text-gray-500">{{ student.nisn }}</p>
+                    </div>
+                    <a href="{% url 'accounts:logout' %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        <span class="hidden sm:inline">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            
+            <!-- HERO WELCOME CARD -->
+            <div class="mb-8 animate-fadeInUp">
+                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-white shadow-2xl">
+                    <!-- Decorative Elements -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
+                    <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
+                    
+                    <div class="relative p-8 md:p-12">
+                        <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+                            <div class="text-center lg:text-left flex-1">
+                                <h1 class="text-4xl md:text-5xl font-black mb-4">
+                                    Selamat Datang! 👋
+                                </h1>
+                                <p class="text-2xl font-bold mb-6 text-white/90">{{ student.name }}</p>
+                                
+                                <div class="flex flex-wrap gap-3 justify-center lg:justify-start">
+                                    <span class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold border border-white/30">
+                                        <i class="fas fa-id-card mr-2"></i>NISN: {{ student.nisn }}
+                                    </span>
+                                    <span class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold border border-white/30">
+                                        <i class="fas fa-school mr-2"></i>{{ student.student_class }}
+                                    </span>
+                                    <span class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold border border-white/30">
+                                        <i class="fas fa-calendar mr-2"></i>{{ student.entry_year }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <a href="{% url 'students:certificate_page' %}" class="bg-white text-purple-600 px-8 py-4 rounded-2xl font-bold shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all text-center">
+                                    <i class="fas fa-certificate mr-2"></i>Sertifikat
+                                </a>
+                                <a href="{% url 'students:view_summary' %}" class="bg-yellow-400 text-gray-900 px-8 py-4 rounded-2xl font-bold shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all text-center">
+                                    <i class="fas fa-file-alt mr-2"></i>Ringkasan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK STATS CARDS -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- RMIB Status Card -->
+                <div class="glass rounded-2xl p-6 shadow-xl hover-scale animate-fadeInUp delay-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-700 text-lg">Status RMIB</h3>
+                        <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <i class="fas fa-chart-line text-white text-2xl"></i>
+                        </div>
+                    </div>
+                    {% if rmib_status == 'completed' %}
+                        <div class="space-y-2">
+                            <p class="text-3xl font-black text-green-600">Selesai ✓</p>
+                            <div class="w-full bg-green-100 rounded-full h-2">
+                                <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
+                            </div>
+                            <p class="text-sm text-gray-500">Tes RMIB sudah completed</p>
+                        </div>
+                    {% elif rmib_status == 'in_progress' %}
+                        <div class="space-y-2">
+                            <p class="text-3xl font-black text-yellow-600">Dikerjakan...</p>
+                            <div class="w-full bg-yellow-100 rounded-full h-2">
+                                <div class="bg-yellow-600 h-2 rounded-full animate-pulse" style="width: 60%"></div>
+                            </div>
+                            <p class="text-sm text-gray-500">Lanjutkan tes RMIB Anda</p>
+                        </div>
+                    {% else %}
+                        <div class="space-y-2">
+                            <p class="text-3xl font-black text-gray-400">Belum Mulai</p>
+                            <div class="w-full bg-gray-100 rounded-full h-2">
+                                <div class="bg-gray-300 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <p class="text-sm text-gray-500">Hubungi guru BK</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Achievement Card -->
+                <div class="glass rounded-2xl p-6 shadow-xl hover-scale animate-fadeInUp delay-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-700 text-lg">Prestasi</h3>
+                        <div class="w-14 h-14 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg animate-float">
+                            <i class="fas fa-trophy text-white text-2xl"></i>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-black text-yellow-600 mb-2">{{ achievements.count }}</p>
+                    <p class="text-lg font-bold text-gray-700 mb-1">{{ total_achievement_points }} Poin</p>
+                    <p class="text-sm text-gray-500">Total pencapaian</p>
+                </div>
+
+                <!-- Certificate Card -->
+                <div class="glass rounded-2xl p-6 shadow-xl hover-scale animate-fadeInUp delay-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-700 text-lg">Sertifikat</h3>
+                        <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <i class="fas fa-certificate text-white text-2xl"></i>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-black text-purple-600 mb-2">{{ certificate_requests.count|default:0 }}</p>
+                    <p class="text-sm text-gray-500">Permintaan sertifikat</p>
+                </div>
+            </div>
+
+            <!-- TOP 3 RMIB INTERESTS -->
+            {% if rmib_status == 'completed' and top_categories %}
+            <section class="mb-8 animate-fadeInUp delay-400">
+                <div class="glass rounded-3xl p-8 shadow-2xl">
+                    <div class="flex items-center mb-8">
+                        <i class="fas fa-star text-yellow-500 text-3xl mr-4"></i>
+                        <h2 class="text-3xl font-black gradient-text">Top 3 Minat RMIB</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {% for cat in top_categories %}
+                        <div class="relative group">
+                            <div class="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition-opacity"></div>
+                            <div class="relative bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-lg">
+                                        #{{ forloop.counter }}
+                                    </div>
+                                    <span class="text-5xl">{{ cat.icon }}</span>
+                                </div>
+                                <h3 class="text-xl font-black text-gray-900 mb-2">{{ cat.name }}</h3>
+                                <p class="text-sm text-gray-600 leading-relaxed">{{ cat.description }}</p>
+                                {% if cat.rank %}
+                                <div class="mt-4 pt-4 border-t border-gray-100">
+                                    <p class="text-xs text-gray-500">Ranking</p>
+                                    <p class="text-2xl font-black gradient-text">{{ cat.rank }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- RECENT ACHIEVEMENTS -->
+            {% if achievements %}
+            <section class="mb-8 animate-fadeInUp">
+                <div class="glass rounded-3xl p-8 shadow-2xl">
+                    <div class="flex items-center mb-8">
+                        <i class="fas fa-medal text-yellow-500 text-3xl mr-4"></i>
+                        <h2 class="text-3xl font-black gradient-text">Prestasi Terbaru</h2>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        {% for ach in achievements %}
+                        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-5 border-l-4 border-yellow-500 hover:shadow-lg transition-all">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-start space-x-4 flex-1">
+                                    <div class="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md">
+                                        <i class="fas fa-trophy"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="font-black text-gray-900 text-lg mb-1">{{ ach.achievement_type.name }}</h3>
+                                        <p class="text-sm text-gray-600">
+                                            <i class="fas fa-layer-group mr-1"></i>{{ ach.get_level_display }} 
+                                            <span class="mx-2">•</span>
+                                            <i class="fas fa-medal mr-1"></i>{{ ach.get_rank_display }}
+                                            <span class="mx-2">•</span>
+                                            <i class="fas fa-calendar mr-1"></i>{{ ach.year }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-3xl font-black text-yellow-600">+{{ ach.points }}</p>
+                                    <p class="text-xs text-gray-500 font-semibold">poin</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- CTA SECTION -->
+            <section class="animate-fadeInUp">
+                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white shadow-2xl pulse-glow">
+                    <!-- Animated Background -->
+                    <div class="absolute inset-0 opacity-20">
+                        <div class="absolute w-64 h-64 bg-white rounded-full -top-32 -left-32 animate-float"></div>
+                        <div class="absolute w-96 h-96 bg-white rounded-full -bottom-48 -right-48 animate-float" style="animation-delay: 1s;"></div>
+                    </div>
+                    
+                    <div class="relative p-12 text-center">
+                        <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-certificate text-6xl"></i>
+                        </div>
+                        <h2 class="text-4xl font-black mb-4">Dapatkan Sertifikat Resmi</h2>
+                        <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                            Unduh sertifikat hasil tes RMIB dan lihat ringkasan lengkap profil minat dan prestasi Anda
+                        </p>
+                        <div class="flex flex-wrap gap-4 justify-center">
+                            <a href="{% url 'students:certificate_page' %}" class="bg-white text-purple-600 px-10 py-4 rounded-2xl font-black text-lg shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all">
+                                <i class="fas fa-eye mr-3"></i>Lihat Sertifikat
+                            </a>
+                            <a href="{% url 'students:view_summary' %}" class="bg-yellow-400 text-gray-900 px-10 py-4 rounded-2xl font-black text-lg shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all">
+                                <i class="fas fa-file-alt mr-3"></i>Lihat Ringkasan
+                            </a>
+                            <a href="{% url 'students:view_parent_report' %}" class="bg-green-500 text-white px-10 py-4 rounded-2xl font-black text-lg shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all">
+                                <i class="fas fa-download mr-3"></i>Laporan Ortu
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="glass mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-600">
+                © 2025 <span class="font-bold gradient-text">PRESTISIA</span> - Sistem Pemetaan Minat & Bakat MTS Muhammadiyah 1 Samarinda
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>

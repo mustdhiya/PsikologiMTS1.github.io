@@ -46,15 +46,18 @@ urlpatterns = [
     path('add/', views.StudentCreateView.as_view()),
     path('import/', views.BatchImportView.as_view()),
 
+    # ==================== STUDENT DASHBOARD ====================
+    path('dashboard/', views.student_dashboard, name='student_dashboard'),
+    
     # ==================== CERTIFICATE PAGES ====================
     path('certificate/', views.student_certificate_page, name='certificate_page'),
     path('certificate/detail/', views.view_certificate, name='view_certificate'),
     path('certificate/summary/', views.view_summary, name='view_summary'),
     path('certificate/parent-report/', views.view_parent_report, name='view_parent_report'),
-
     
     # Certificate detail views
-    path('certificate/view/<int:request_id>/', views.view_certificate, name='view_certificate'),    
+    path('certificate/view/<int:request_id>/', views.view_certificate, name='view_certificate'),
+    
     # Certificate actions
     path('certificate/request/<str:template_type>/', views.request_certificate, name='request_certificate'),
     path('certificate/download/<int:request_id>/', views.download_certificate_pdf, name='download_certificate'),
