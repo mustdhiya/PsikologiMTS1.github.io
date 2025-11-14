@@ -120,7 +120,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql' if IS_PRODUCTION else 'django.db.backends.sqlite3',
         'NAME': 'prep8924_psikologimts1_db' if IS_PRODUCTION else os.path.join(BASE_DIR, 'db_local.sqlite3'),
         'USER': 'prep8924' if IS_PRODUCTION else 'root',
-        'PASSWORD': '' if IS_PRODUCTION else '',
+        'PASSWORD': 'vEjwWHc1P9P337' if IS_PRODUCTION else '',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -158,12 +158,12 @@ STATIC_URL = '/static/'
 
 if IS_PRODUCTION:
     # Di cPanel, static files harus di public_html yang bisa diakses web
-    STATIC_ROOT = '/home/prep8924/public_html/prestisia.com/static'
+    STATIC_ROOT = '/home/prep8924/public_html/static'
     STATICFILES_DIRS = []  # Kosongkan atau jangan gunakan di production
     
     # Media files
     MEDIA_URL = '/media/'
-    MEDIA_ROOT = '/home/prep8924/public_html/prestisia.com/media'
+    MEDIA_ROOT = '/home/prep8924/public_html/media'
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     STATICFILES_DIRS = [
