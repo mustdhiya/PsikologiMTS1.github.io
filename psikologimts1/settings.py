@@ -16,10 +16,13 @@ SECRET_KEY = os.environ.get(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Set via environment variable: DEBUG=False di cPanel
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+# DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# Deteksi apakah ini production atau development
-IS_PRODUCTION = not DEBUG and os.environ.get('ENVIRONMENT', 'development') == 'production'
+# # Deteksi apakah ini production atau development
+# IS_PRODUCTION = not DEBUG and os.environ.get('ENVIRONMENT', 'development') == 'production'
+
+DEBUG = False
+IS_PRODUCTION = True  
 
 # ALLOWED_HOSTS
 if IS_PRODUCTION:
