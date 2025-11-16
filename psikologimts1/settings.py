@@ -28,7 +28,8 @@ IS_PRODUCTION = True
 if IS_PRODUCTION:
     ALLOWED_HOSTS = ['prestisia.com', 'www.prestisia.com']
 else:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:8000', '127.0.0.1:8000']
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:8000', '127.0.0.1:8000',
+        'prestisia.com', 'www.prestisia.com']
 
 # CSRF Trusted Origins
 # settings.py
