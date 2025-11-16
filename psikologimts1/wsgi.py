@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
 
 import sys
 import os
+import pymysql
+pymysql.install_as_MySQLdb()
 
 # Add Django project to path
 sys.path.insert(0, '/home/prep8924/apps/PsikologiMTS1hub.io')
