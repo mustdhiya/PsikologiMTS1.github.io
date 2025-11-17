@@ -1,15 +1,11 @@
 import imp
 import os
 import sys
+sys.path.insert(0, "/home/prep8924/python/PsikologiMTS1.github.io/psikologimts1")
 
-# ✅ SET ENVIRONMENT UNTUK PRODUCTION
+import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'psikologimts1.settings'
-os.environ['ENVIRONMENT'] = 'production'
-os.environ['DEBUG'] = 'False'
 
-# Add path
-sys.path.insert(0, os.path.dirname(__file__))
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
 
-# Load Django
-wsgi = imp.load_source('wsgi', 'psikologimts1/wsgi.py')
-application = wsgi.application
