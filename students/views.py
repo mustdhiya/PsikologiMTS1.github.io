@@ -944,46 +944,44 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
                 result['message'] = 'Tidak dapat membaca file dengan encoding yang didukung'
                 return result
             
-            # Auto-detect delimiter
             lines = content_str.strip().split('\n')
             if not lines:
                 result['message'] = 'File kosong'
                 return result
-                
-            delimiter = self.detect_delimiter(lines[0])
             
+            delimiter = self.detect_delimiter(lines[0])
             csv_reader = csv.DictReader(io.StringIO(content_str), delimiter=delimiter)
             
+            if not csv_reader.fieldnames:
+                result['message'] = 'File CSV tidak memiliki header'
+                return result
+            
             # Normalize dan map fieldnames
-            if csv_reader.fieldnames:
-                fieldname_mapping = {}
-                normalized_fieldnames = []
-                
-                for original_name in csv_reader.fieldnames:
-                    normalized = self.normalize_column_name(original_name)
-                    fieldname_mapping[normalized] = original_name.strip()
-                    normalized_fieldnames.append(normalized)
-                
-                # Verify we have all required fields
-                required_fields = ['nama', 'nisn', 'kelas', 'jenis_kelamin', 'tanggal_lahir']
-                missing_fields = [field for field in required_fields if field not in normalized_fieldnames]
-                
-                if missing_fields:
-                    result['message'] = f'Field yang diperlukan tidak ditemukan: {", ".join(missing_fields)}'
-                    return result
+            field_name_mapping = {}
+            normalized_fieldnames = []
+            for original_name in csv_reader.fieldnames:
+                normalized = self.normalize_column_name(original_name)
+                field_name_mapping[normalized] = original_name.strip()
+                normalized_fieldnames.append(normalized)
             
-            # Track processed NISNs
-            processed_nisns = set()
+            # Verify we have all required fields
+            required_fields = ['nama', 'nisn', 'kelas', 'jeniskelamin', 'tanggallahir']
+            missing_fields = [field for field in required_fields if field not in normalized_fieldnames]
             
-            # FIXED: Remove transaction.atomic() - Process each row independently
+            if missing_fields:
+                result['message'] = f'Field yang diperlukan tidak ditemukan: {", ".join(missing_fields)}'
+                return result
+            
+            processed_nisns = set()  # Track processed NISNs
+            
             for row_num, row in enumerate(csv_reader, start=2):
                 result['total_processed'] += 1
                 
                 try:
                     # Map row data using field mapping
                     mapped_row = {}
-                    for normalized_field, original_field in fieldname_mapping.items():
-                        if normalized_field in ['nama', 'nisn', 'kelas', 'jenis_kelamin', 'tanggal_lahir']:
+                    for normalized_field, original_field in field_name_mapping.items():
+                        if normalized_field in ['nama', 'nisn', 'kelas', 'jeniskelamin', 'tanggallahir', 'tempatlahir', 'password']:
                             mapped_row[normalized_field] = row.get(original_field, '').strip()
                     
                     cleaned_data = self.clean_row_data_mapped(mapped_row, row_num)
@@ -997,36 +995,37 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
                     
                     if data['nisn'] in processed_nisns:
                         result['duplicates'] += 1
-                        result['error_details'].append(
-                            f"Baris {row_num}: NISN {data['nisn']} duplikat dalam file"
-                        )
+                        result['error_details'].append(f"Baris {row_num}: NISN {data['nisn']} duplikat dalam file")
                         continue
                     
                     processed_nisns.add(data['nisn'])
                     
-                    # Check existing student
                     if Student.objects.filter(nisn=data['nisn']).exists():
                         result['duplicates'] += 1
-                        result['error_details'].append(
-                            f"Baris {row_num}: NISN {data['nisn']} sudah ada dalam sistem"
-                        )
+                        result['error_details'].append(f"Baris {row_num}: NISN {data['nisn']} sudah ada dalam sistem")
                         continue
                     
-                    # FIXED: Create student OUTSIDE atomic block
+                    # Extract custom password
+                    custom_password = data.pop('custom_password', None)
+                    
+                    # Create student OUTSIDE atomic block
                     student = Student.objects.create(**data)
                     
                     # Try to create user account - SEPARATE transaction
                     try:
-                        # Check if user already exists
                         if not User.objects.filter(username=data['nisn']).exists():
-                            user, password = student.create_user_account()
+                            if custom_password:
+                                # Use custom password from CSV
+                                user, password = student.create_user_account(custom_password=custom_password)
+                            else:
+                                # Auto-generate password
+                                user, password = student.create_user_account()
                         else:
                             logger.warning(f"User account already exists for NISN: {data['nisn']}")
                     except IntegrityError as e:
-                        logger.warning(f"Failed to create user for {student.name}: User duplicate - {str(e)}")
+                        logger.warning(f"Failed to create user for {student.name} (User duplicate) - {str(e)}")
                     except Exception as e:
                         logger.warning(f"Failed to create user account for {student.name}: {str(e)}")
-                        # Student still created, user creation just failed
                     
                     result['successful'] += 1
                     
@@ -1034,37 +1033,34 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
                     result['errors'] += 1
                     error_msg = f"Baris {row_num}: Data tidak valid (kemungkinan NISN duplikat) - {str(e)}"
                     result['error_details'].append(error_msg)
-                    logger.warning(f"IntegrityError: {error_msg}")
-                    
+                    logger.warning(f'IntegrityError: {error_msg}')
                 except Exception as e:
                     result['errors'] += 1
                     error_msg = f"Baris {row_num}: {str(e)}"
                     result['error_details'].append(error_msg)
-                    logger.error(f"Row processing error: {error_msg}")
+                    logger.error(f'Row processing error: {error_msg}')
             
             # Determine success status dan message
             if result['successful'] > 0:
                 result['success'] = True
                 result['message'] = f"Import selesai. {result['successful']} siswa berhasil ditambahkan."
-                
                 if result['errors'] > 0 or result['duplicates'] > 0:
-                    result['message'] += f" {result['errors']} error, {result['duplicates']} duplikat."
+                    result['message'] += f" ({result['errors']} error, {result['duplicates']} duplikat)."
             else:
-                result['message'] = "Tidak ada siswa yang berhasil ditambahkan."
-                
-            # Log successful import
+                result['message'] = 'Tidak ada siswa yang berhasil ditambahkan.'
+            
             if result['successful'] > 0:
-                logger.info(f"Batch import completed: {result['successful']} students created by {self.request.user.username}")
-                    
+                logger.info(f'Batch import completed: {result["successful"]} students created by {self.request.user.username}')
+        
         except Exception as e:
-            logger.error(f"CSV processing error: {str(e)}", exc_info=True)
+            logger.error(f'CSV processing error: {str(e)}', exc_info=True)
             result['message'] = f'Terjadi kesalahan saat memproses file CSV: {str(e)}'
-            result['error_details'].append(f"System error: {str(e)}")
+            result['error_details'].append(f'System error: {str(e)}')
         
         return result
 
     def clean_row_data_mapped(self, row, row_num):
-        """Clean row data with mapped field names"""
+        """Clean row data with mapped field names - SUPPORT PASSWORD"""
         errors = []
         
         try:
@@ -1072,8 +1068,10 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
             nama = str(row.get('nama', '')).strip()
             nisn = str(row.get('nisn', '')).strip()
             kelas = str(row.get('kelas', '')).strip().upper()
-            jenis_kelamin_raw = str(row.get('jenis_kelamin', '')).strip().upper()
-            tanggal_lahir = str(row.get('tanggal_lahir', '')).strip()
+            jenis_kelamin_raw = str(row.get('jeniskelamin', '')).strip().upper()
+            tanggal_lahir = str(row.get('tanggallahir', '')).strip()
+            tempat_lahir = str(row.get('tempatlahir', '')).strip()  # NEW
+            password = str(row.get('password', '')).strip()  # NEW - Support custom password
             
             # Validate nama - SIMPLE VERSION (no regex)
             if not nama:
@@ -1082,7 +1080,6 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
                 errors.append(f"Baris {row_num}: Nama terlalu pendek (minimal 2 karakter)")
             elif len(nama) > 200:
                 errors.append(f"Baris {row_num}: Nama terlalu panjang (maksimal 200 karakter)")
-            # Accept any nama without regex validation
             
             # Validate NISN
             if not nisn:
@@ -1095,30 +1092,21 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
             # Validate kelas
             if not kelas:
                 errors.append(f"Baris {row_num}: Kelas tidak boleh kosong")
-            elif not re.match(r'^[789][A-Z]$', kelas):
-                errors.append(f"Baris {row_num}: Format kelas tidak valid (harus 7A, 8B, 9C, dll. Ditemukan: {kelas})")
+            elif not re.match(r'^[7-9][A-Z]$', kelas):
+                errors.append(f"Baris {row_num}: Format kelas tidak valid (harus 7A, 8B, 9C, dll). Ditemukan: {kelas}")
             
             # Validate dan mapping jenis kelamin - FIXED!
             jenis_kelamin_mapping = {
-                'L': 'L',
-                'P': 'P',
-                'LAKI': 'L',
-                'LAKI-LAKI': 'L',
-                'LELAKI': 'L',
-                'MALE': 'L',
-                'M': 'L',
-                'PEREMPUAN': 'P',
-                'WANITA': 'P',
-                'FEMALE': 'P',
-                'F': 'P',
+                'L': 'L', 'P': 'P',
+                'LAKI': 'L', 'LAKI-LAKI': 'L', 'LELAKI': 'L', 'MALE': 'L', 'M': 'L',
+                'PEREMPUAN': 'P', 'WANITA': 'P', 'FEMALE': 'P', 'F': 'P',
             }
-            
             jenis_kelamin = jenis_kelamin_mapping.get(jenis_kelamin_raw)
             
             if not jenis_kelamin:
                 errors.append(
                     f"Baris {row_num}: Jenis kelamin tidak valid "
-                    f"(gunakan: L/P, LAKI-LAKI, atau PEREMPUAN. Ditemukan: {jenis_kelamin_raw})"
+                    f"(gunakan L/P, LAKI-LAKI, atau PEREMPUAN). Ditemukan: {jenis_kelamin_raw}"
                 )
             
             # Validate dan parse tanggal lahir
@@ -1127,15 +1115,16 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
                 errors.append(f"Baris {row_num}: Tanggal lahir tidak boleh kosong")
             else:
                 # Try multiple date formats
-                date_formats = ['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y', '%m/%d/%Y', '%d/%m/%y']
+                date_formats = ['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y', '%m/%d/%Y', '%d%m%Y']
                 parsed = False
-                
                 for date_format in date_formats:
                     try:
                         birth_date = datetime.strptime(tanggal_lahir, date_format).date()
+                        
                         # Handle 2-digit years
                         if birth_date.year < 1950:  # Assume it's 20xx
                             birth_date = birth_date.replace(year=birth_date.year + 100)
+                        
                         parsed = True
                         break
                     except ValueError:
@@ -1157,6 +1146,13 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
             if errors:
                 return {'valid': False, 'errors': errors}
             
+            # Validate password if provided
+            if password and (len(password) < 4 or len(password) > 20):
+                errors.append(f"Baris {row_num}: Password harus 4-20 karakter (ditemukan: {len(password)})")
+            
+            if errors:
+                return {'valid': False, 'errors': errors}
+            
             # Return cleaned data
             return {
                 'valid': True,
@@ -1166,9 +1162,10 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
                     'student_class': kelas,
                     'gender': jenis_kelamin,  # Now mapped correctly (L atau P)
                     'birth_date': birth_date,
+                    'birth_place': tempat_lahir.title() if tempat_lahir else '',  # NEW
+                    'custom_password': password if password else None,  # NEW - Store custom password
                     'entry_year': datetime.now().year,
                     'test_status': 'pending',
-                    'birth_place': '',
                     'phone': '',
                     'address': '',
                     'parent_phone': '',
@@ -1176,10 +1173,7 @@ class BatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
             }
             
         except Exception as e:
-            return {
-                'valid': False,
-                'errors': [f"Baris {row_num}: Error memproses data - {str(e)}"]
-            }
+            return {'valid': False, 'errors': [f"Baris {row_num}: Error memproses data - {str(e)}"]}
 
 
 @require_http_methods(["POST"])
@@ -2073,9 +2067,6 @@ def view_certificate(request):
         return redirect('students:certificate_page')
 
 
-
-
-
 @login_required
 def view_parent_report(request):
     """Lihat laporan orang tua - FIXED"""
@@ -2773,6 +2764,11 @@ class RMIBBatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
                 try:
                     # ==================== EXTRACT DATA ====================
                     nisn = str(row.get('NISN', '')).strip()
+                    
+                    if nisn.startswith("'"):
+                        nisn = nisn[1:]
+                    nisn = ''.join(filter(str.isdigit, nisn)).strip()
+                    
                     nama = str(row.get('Nama', '')).strip()
                     kelas = str(row.get('Kelas', '')).strip().upper()
                     jenis_kelamin = str(row.get('Jenis Kelamin', '')).strip()
@@ -2781,10 +2777,12 @@ class RMIBBatchImportView(LoginRequiredMixin, IsStaffMixin, TemplateView):
                     tahun_masuk_str = str(row.get('Tahun Masuk', '')).strip()
                     
                     # ==================== VALIDATION ====================
-                    # Validate NISN
-                    if not nisn or not nisn.isdigit() or len(nisn) != 10:
+                    # Validate NISN (sekarang sudah bersih)
+                    if not nisn or len(nisn) != 10:
                         result['errors'] += 1
-                        result['error_details'].append(f"Baris {row_num}: NISN tidak valid ({nisn})")
+                        result['error_details'].append(
+                            f"Baris {row_num}: NISN tidak valid (harus 10 digit, dapat: '{nisn}')"
+                        )
                         continue
                     
                     # Check duplicate in file
@@ -3181,3 +3179,357 @@ def rmib_autosave_api(request, student_id):
         
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+# ==================== EXPORT VIEWS - ENHANCED WITH PASSWORD ====================
+@login_required
+def export_page(request):
+    """Display export options page"""
+    if not request.user.is_staff:
+        messages.error(request, 'Anda tidak memiliki izin untuk mengakses halaman ini')
+        return redirect('students:list')
+    
+    # Get filter stats for UI
+    students = Student.objects.all()
+    context = {
+        'page_title': 'Export Data Siswa',
+        'breadcrumb_title': 'Export',
+        'total_students': students.count(),
+        'available_classes': students.values_list('student_class', flat=True).distinct().order_by('student_class'),
+        'available_years': students.values_list('entry_year', flat=True).distinct().order_by('-entry_year'),
+        'status_choices': Student.STATUS_CHOICES,
+        'gender_choices': Student.GENDER_CHOICES,
+    }
+    return render(request, 'students/export_page.html', context)
+
+
+@login_required
+def export_students_csv(request):
+    """Enhanced CSV export with filters and PASSWORD"""
+    if not request.user.is_staff:
+        messages.error(request, 'Anda tidak memiliki izin untuk mengekspor data')
+        return redirect('students:list')
+    
+    # Apply filters from GET parameters
+    students = Student.objects.select_related('user').all()
+    
+    # Filter by search
+    search = request.GET.get('search', '').strip()
+    if search:
+        students = students.filter(
+            Q(name__icontains=search) |
+            Q(nisn__icontains=search) |
+            Q(student_class__icontains=search)
+        )
+    
+    # Filter by class
+    class_filter = request.GET.get('class', '').strip()
+    if class_filter:
+        students = students.filter(student_class=class_filter)
+    
+    # Filter by status
+    status_filter = request.GET.get('status', '').strip()
+    if status_filter:
+        students = students.filter(test_status=status_filter)
+    
+    # Filter by gender
+    gender_filter = request.GET.get('gender', '').strip()
+    if gender_filter:
+        students = students.filter(gender=gender_filter)
+    
+    # Filter by year
+    year_filter = request.GET.get('year', '').strip()
+    if year_filter:
+        students = students.filter(entry_year=int(year_filter))
+    
+    # Order by
+    students = students.order_by('student_class', 'name')
+    
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+    filename = f"data_siswa_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    writer = csv.writer(response)
+    
+    # Headers - INCLUDE PASSWORD
+    writer.writerow([
+        'NISN', 'Nama', 'Kelas', 'Jenis Kelamin', 
+        'Tanggal Lahir', 'Tempat Lahir', 'Password',
+        'Status Tes', 'Tahun Masuk', 'Telepon', 'Alamat', 'Telepon Orang Tua'
+    ])
+    
+    # Data rows
+    for student in students:
+        writer.writerow([
+            student.nisn,
+            student.name,
+            student.student_class,
+            student.get_gender_display(),
+            student.birth_date.strftime('%d/%m/%Y') if student.birth_date else '',
+            student.birth_place,
+            student.generated_password or 'N/A',  # Include password
+            student.get_test_status_display(),
+            student.entry_year,
+            student.phone or '',
+            student.address or '',
+            student.parent_phone or '',
+        ])
+    
+    logger.info(f'CSV exported WITH PASSWORD: {students.count()} students by {request.user.username}')
+    return response
+
+
+@login_required
+def export_students_excel(request):
+    """Export to Excel with formatting and PASSWORD - requires openpyxl"""
+    if not request.user.is_staff:
+        return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
+    
+    try:
+        from openpyxl import Workbook
+        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+        from openpyxl.utils import get_column_letter
+    except ImportError:
+        messages.error(request, 'Library openpyxl tidak terinstall. Gunakan CSV export.')
+        return redirect('students:export_page')
+    
+    # Apply same filters as CSV
+    students = Student.objects.select_related('user').all()
+    
+    search = request.GET.get('search', '').strip()
+    if search:
+        students = students.filter(
+            Q(name__icontains=search) |
+            Q(nisn__icontains=search) |
+            Q(student_class__icontains=search)
+        )
+    
+    class_filter = request.GET.get('class', '').strip()
+    if class_filter:
+        students = students.filter(student_class=class_filter)
+    
+    status_filter = request.GET.get('status', '').strip()
+    if status_filter:
+        students = students.filter(test_status=status_filter)
+    
+    gender_filter = request.GET.get('gender', '').strip()
+    if gender_filter:
+        students = students.filter(gender=gender_filter)
+    
+    year_filter = request.GET.get('year', '').strip()
+    if year_filter:
+        students = students.filter(entry_year=int(year_filter))
+    
+    students = students.order_by('student_class', 'name')
+    
+    # Create workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Data Siswa"
+    
+    # Styling
+    header_fill = PatternFill(start_color="667EEA", end_color="667EEA", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF", size=12)
+    password_fill = PatternFill(start_color="FEF3C7", end_color="FEF3C7", fill_type="solid")  # Yellow for password
+    border = Border(
+        left=Side(style='thin'),
+        right=Side(style='thin'),
+        top=Side(style='thin'),
+        bottom=Side(style='thin')
+    )
+    
+    # Headers - INCLUDE PASSWORD
+    headers = [
+        'NISN', 'Nama', 'Kelas', 'Jenis Kelamin', 
+        'Tanggal Lahir', 'Tempat Lahir', 'Password',
+        'Status Tes', 'Tahun Masuk', 'Telepon', 'Alamat', 'Telepon Orang Tua'
+    ]
+    
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.value = header
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+        cell.border = border
+    
+    # Data rows
+    for row_num, student in enumerate(students, 2):
+        data = [
+            student.nisn,
+            student.name,
+            student.student_class,
+            student.get_gender_display(),
+            student.birth_date.strftime('%d/%m/%Y') if student.birth_date else '',
+            student.birth_place,
+            student.generated_password or 'N/A',  # Include password
+            student.get_test_status_display(),
+            student.entry_year,
+            student.phone or '',
+            student.address or '',
+            student.parent_phone or '',
+        ]
+        
+        for col_num, value in enumerate(data, 1):
+            cell = ws.cell(row=row_num, column=col_num)
+            cell.value = value
+            cell.border = border
+            cell.alignment = Alignment(vertical='center')
+            
+            # Highlight password column
+            if col_num == 7:  # Password column
+                cell.fill = password_fill
+                cell.font = Font(bold=True)
+    
+    # Auto-adjust column widths
+    for col in range(1, len(headers) + 1):
+        ws.column_dimensions[get_column_letter(col)].width = 18
+    
+    # Create response
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    filename = f"data_siswa_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    wb.save(response)
+    logger.info(f'Excel exported WITH PASSWORD: {students.count()} students by {request.user.username}')
+    return response
+
+
+@login_required
+def export_rmib_results_csv(request):
+    """Export RMIB results to CSV with LEVELS - FIXED"""
+    if not request.user.is_staff:
+        return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
+    
+    # Get only students with completed RMIB
+    students = Student.objects.filter(
+        test_status='completed'
+    ).select_related('rmib_result').order_by('student_class', 'name')
+    
+    # Apply filters
+    class_filter = request.GET.get('class', '').strip()
+    if class_filter:
+        students = students.filter(student_class=class_filter)
+    
+    year_filter = request.GET.get('year', '').strip()
+    if year_filter:
+        students = students.filter(entry_year=int(year_filter))
+    
+    # Create CSV
+    response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+    filename = f"hasil_rmib_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    writer = csv.writer(response)
+    
+    # Headers - matching RMIB batch import format
+    writer.writerow([
+        'NISN', 'Nama', 'Kelas', 'Jenis Kelamin', 'Tanggal Lahir',
+        'Out', 'Me', 'COMP', 'Sci', 'Prs', 'Aesth', 
+        'Lit', 'Mus', 'S.S', 'Cler', 'Prac', 'Med'
+    ])
+    
+    # RMIB category mapping (levels to CSV columns)
+    category_mapping = {
+        'outdoor': 'Out',
+        'mechanical': 'Me',
+        'computational': 'COMP',
+        'scientific': 'Sci',
+        'personal_contact': 'Prs',
+        'aesthetic': 'Aesth',
+        'literary': 'Lit',
+        'musical': 'Mus',
+        'social_service': 'S.S',
+        'clerical': 'Cler',
+        'practical': 'Prac',
+        'medical': 'Med'
+    }
+    
+    exported_count = 0
+    
+    # Data rows
+    for student in students:
+        if hasattr(student, 'rmib_result') and student.rmib_result.levels:
+            levels = student.rmib_result.levels
+            
+            # Convert levels dict to ordered list matching CSV headers
+            rmib_values = []
+            for key in category_mapping.keys():
+                level = levels.get(key, 0)
+                rmib_values.append(level)
+            
+            writer.writerow([
+                student.nisn,
+                student.name,
+                student.student_class,
+                student.gender,  # L or P
+                student.birth_date.strftime('%d/%m/%Y') if student.birth_date else '',
+                *rmib_values  # Unpack the 12 RMIB values
+            ])
+            exported_count += 1
+    
+    logger.info(f'RMIB CSV exported: {exported_count} results by {request.user.username}')
+    return response
+
+
+@login_required  
+def get_export_preview(request):
+    """AJAX endpoint to get preview of data to be exported"""
+    if not request.user.is_staff:
+        return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
+    
+    try:
+        # Apply same filters
+        students = Student.objects.all()
+        
+        search = request.GET.get('search', '').strip()
+        if search:
+            students = students.filter(
+                Q(name__icontains=search) |
+                Q(nisn__icontains=search) |
+                Q(student_class__icontains=search)
+            )
+        
+        class_filter = request.GET.get('class', '')
+        if class_filter:
+            students = students.filter(student_class=class_filter)
+        
+        status_filter = request.GET.get('status', '')
+        if status_filter:
+            students = students.filter(test_status=status_filter)
+        
+        gender_filter = request.GET.get('gender', '')
+        if gender_filter:
+            students = students.filter(gender=gender_filter)
+        
+        year_filter = request.GET.get('year', '')
+        if year_filter:
+            students = students.filter(entry_year=int(year_filter))
+        
+        count = students.count()
+        
+        # Sample preview (first 5)
+        preview_data = []
+        for student in students[:5]:
+            preview_data.append({
+                'nisn': student.nisn,
+                'name': student.name,
+                'class': student.student_class,
+                'gender': student.get_gender_display(),
+                'status': student.get_test_status_display(),
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'count': count,
+            'preview': preview_data,
+            'has_more': count > 5
+        })
+    
+    except Exception as e:
+        logger.error(f'Export preview error: {str(e)}')
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        }, status=500)

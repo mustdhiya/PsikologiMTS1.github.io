@@ -1,0 +1,32 @@
+Internal Server Error: /students/export/rmib-csv/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 3434, in export_rmib_results_csv
+    if hasattr(student, 'rmib_result') and student.rmib_result.scores:
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'RMIBResult' object has no attribute 'scores'
+"GET /students/export/rmib-csv/? HTTP/1.1" 500 87928
+Internal Server Error: /students/export/rmib-csv/
+Traceback (most recent call last):
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Kuliah Fauzan\Start Up\Project\PsikologiMTS1\PsikologiMTS1\students\views.py", line 3434, in export_rmib_results_csv
+    if hasattr(student, 'rmib_result') and student.rmib_result.scores:
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'RMIBResult' object has no attribute 'scores'
+"GET /students/export/rmib-csv/? HTTP/1.1" 500 87928

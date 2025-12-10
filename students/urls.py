@@ -63,4 +63,13 @@ urlpatterns = [
     path('certificate/download/<int:request_id>/', views.download_certificate_pdf, name='download_certificate'),
     path('certificate/cancel/<int:request_id>/', views.cancel_certificate_request, name='cancel_certificate'),
     path('certificate/status/<int:request_id>/', views.get_certificate_status, name='certificate_status'),
+
+    # ==================== EXPORT - ENHANCED ====================
+    path('export/', views.export_page, name='export_page'),
+    path('export/csv/', views.export_students_csv, name='export_csv'),
+    path('export/excel/', views.export_students_excel, name='export_excel'),
+    path('export/rmib-csv/', views.export_rmib_results_csv, name='export_rmib_csv'),
+    path('export/preview/', views.get_export_preview, name='export_preview'),
+    
+    path('export-csv/', views.export_students_csv),  
 ]

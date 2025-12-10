@@ -1,0 +1,625 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Export Data Siswa - PRESTISIA{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Reuse animations from list.html */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    .animate-fadeInUp {
+        animation: fadeInUp 0.6s ease-out forwards;
+        opacity: 0;
+    }
+    
+    .animate-scaleIn {
+        animation: scaleIn 0.4s ease-out forwards;
+        opacity: 0;
+    }
+    
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    
+    .card-modern {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        transition: all 0.3s ease;
+    }
+    
+    .card-modern:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .gradient-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    
+    .gradient-info {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+    
+    .btn-modern {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+    
+    .btn-outline {
+        background: white;
+        border: 2px solid #e2e8f0;
+        color: #475569;
+    }
+    
+    .btn-outline:hover {
+        border-color: #667eea;
+        color: #667eea;
+        background: #f8fafc;
+    }
+    
+    .export-format-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .export-format-card:hover {
+        transform: scale(1.05);
+    }
+    
+    .export-format-card.selected {
+        border: 3px solid #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+    }
+    
+    .preview-table {
+        border-collapse: separate;
+        border-spacing: 0 8px;
+        width: 100%;
+    }
+    
+    .preview-table thead th {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 12px 16px;
+        font-weight: 700;
+        color: #475569;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        border: none;
+    }
+    
+    .preview-table tbody tr {
+        background: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .preview-table tbody td {
+        padding: 12px 16px;
+        border: none;
+        color: #334155;
+        font-size: 13px;
+    }
+    
+    .spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HEADER -->
+<header class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-2xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="animate-fadeInUp">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-white/20 backdrop-blur-lg rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-file-export text-3xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl lg:text-4xl font-bold">Export Data Siswa</h1>
+                        <p class="text-indigo-100 mt-1">Ekspor data siswa dalam berbagai format</p>
+                    </div>
+                </div>
+                <a href="{% url 'students:list' %}" class="btn-modern btn-outline bg-white/10 text-white border-white/30 hover:bg-white/20">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Kembali</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- STATS -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 pb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="card-modern p-6 animate-scaleIn delay-100">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 gradient-primary rounded-xl flex items-center justify-center text-white text-2xl">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-bold text-gray-900">{{ total_students }}</h3>
+                    <p class="text-sm text-gray-600">Total Siswa</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-modern p-6 animate-scaleIn delay-200">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 gradient-success rounded-xl flex items-center justify-center text-white text-2xl">
+                    <i class="fas fa-filter"></i>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-bold text-gray-900" id="filteredCount">{{ total_students }}</h3>
+                    <p class="text-sm text-gray-600">Setelah Filter</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-modern p-6 animate-scaleIn delay-300">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 gradient-info rounded-xl flex items-center justify-center text-white text-2xl">
+                    <i class="fas fa-file-download"></i>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-bold text-gray-900">3</h3>
+                    <p class="text-sm text-gray-600">Format Tersedia</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EXPORT OPTIONS -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- LEFT: FILTERS -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Filter Card -->
+            <div class="card-modern p-6 animate-fadeInUp">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-filter text-indigo-600 mr-2"></i>
+                    Filter Data
+                </h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                            <i class="fas fa-search text-gray-500 mr-2"></i>Pencarian
+                        </label>
+                        <input type="text" id="searchInput" placeholder="Cari nama, NISN, atau kelas..." 
+                               class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                <i class="fas fa-chalkboard-teacher text-indigo-600 mr-2"></i>Kelas
+                            </label>
+                            <select id="classFilter" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none">
+                                <option value="">Semua Kelas</option>
+                                {% for class in available_classes %}
+                                <option value="{{ class }}">Kelas {{ class }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                <i class="fas fa-tasks text-green-600 mr-2"></i>Status Tes
+                            </label>
+                            <select id="statusFilter" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none">
+                                <option value="">Semua Status</option>
+                                {% for status_value, status_label in status_choices %}
+                                <option value="{{ status_value }}">{{ status_label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                <i class="fas fa-venus-mars text-purple-600 mr-2"></i>Jenis Kelamin
+                            </label>
+                            <select id="genderFilter" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none">
+                                <option value="">Semua</option>
+                                {% for gender_value, gender_label in gender_choices %}
+                                <option value="{{ gender_value }}">{{ gender_label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                <i class="fas fa-calendar text-blue-600 mr-2"></i>Tahun Masuk
+                            </label>
+                            <select id="yearFilter" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none">
+                                <option value="">Semua Tahun</option>
+                                {% for year in available_years %}
+                                <option value="{{ year }}">{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="updatePreview()" class="btn-modern btn-primary flex-1">
+                            <i class="fas fa-eye"></i>
+                            <span>Preview Data</span>
+                        </button>
+                        <button type="button" onclick="resetFilters()" class="btn-modern btn-outline">
+                            <i class="fas fa-redo"></i>
+                            <span>Reset</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Preview Card -->
+            <div class="card-modern p-6 animate-fadeInUp delay-100" id="previewCard" style="display: none;">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-eye text-green-600 mr-2"></i>
+                    Preview Data (<span id="previewCount">0</span> siswa)
+                </h2>
+                
+                <div class="overflow-x-auto">
+                    <table class="preview-table">
+                        <thead>
+                            <tr>
+                                <th>NISN</th>
+                                <th>Nama</th>
+                                <th>Kelas</th>
+                                <th>JK</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <p class="text-sm text-gray-500 mt-4 text-center" id="previewNote"></p>
+            </div>
+        </div>
+        
+        <!-- RIGHT: EXPORT FORMATS -->
+        <div class="space-y-6">
+            <div class="card-modern p-6 animate-fadeInUp delay-200">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-file-download text-purple-600 mr-2"></i>
+                    Format Export
+                </h2>
+                
+                <div class="space-y-4">
+                    <!-- CSV Format -->
+                    <div class="export-format-card card-modern p-4 selected" data-format="csv" onclick="selectFormat('csv')">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 gradient-success rounded-lg flex items-center justify-center text-white text-xl">
+                                <i class="fas fa-file-csv"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-gray-900">CSV</h3>
+                                <p class="text-xs text-gray-600">Comma Separated Values</p>
+                            </div>
+                            <i class="fas fa-check-circle text-2xl text-green-600 format-check"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Excel Format -->
+                    <div class="export-format-card card-modern p-4" data-format="excel" onclick="selectFormat('excel')">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 gradient-info rounded-lg flex items-center justify-center text-white text-xl">
+                                <i class="fas fa-file-excel"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-gray-900">Excel</h3>
+                                <p class="text-xs text-gray-600">Microsoft Excel (XLSX)</p>
+                            </div>
+                            <i class="fas fa-check-circle text-2xl text-gray-300 format-check"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- RMIB CSV Format -->
+                    <div class="export-format-card card-modern p-4" data-format="rmib" onclick="selectFormat('rmib')">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center text-white text-xl">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-gray-900">RMIB CSV</h3>
+                                <p class="text-xs text-gray-600">Hasil Tes RMIB Only</p>
+                            </div>
+                            <i class="fas fa-check-circle text-2xl text-gray-300 format-check"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" onclick="downloadExport()" class="w-full btn-modern btn-success mt-6" id="downloadBtn">
+                    <i class="fas fa-download"></i>
+                    <span>Download CSV</span>
+                </button>
+                
+                <div class="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                    <h4 class="font-bold text-blue-900 text-sm mb-2">
+                        <i class="fas fa-info-circle mr-2"></i>Info
+                    </h4>
+                    <ul class="text-xs text-blue-800 space-y-1">
+                        <li>• CSV: Kompatibel dengan Excel dan Google Sheets</li>
+                        <li>• Excel: Format terstruktur dengan styling</li>
+                        <li>• RMIB CSV: Khusus untuk hasil tes yang sudah selesai</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedFormat = 'csv';
+
+// Get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Select export format
+function selectFormat(format) {
+    selectedFormat = format;
+    
+    // Update UI
+    document.querySelectorAll('.export-format-card').forEach(card => {
+        card.classList.remove('selected');
+        card.querySelector('.format-check').classList.remove('text-green-600');
+        card.querySelector('.format-check').classList.add('text-gray-300');
+    });
+    
+    const selectedCard = document.querySelector(`[data-format="${format}"]`);
+    selectedCard.classList.add('selected');
+    selectedCard.querySelector('.format-check').classList.remove('text-gray-300');
+    selectedCard.querySelector('.format-check').classList.add('text-green-600');
+    
+    // Update download button text
+    const btnText = {
+        'csv': 'Download CSV',
+        'excel': 'Download Excel',
+        'rmib': 'Download RMIB CSV'
+    };
+    document.querySelector('#downloadBtn span').textContent = btnText[format];
+}
+
+// Get filter parameters
+function getFilterParams() {
+    const params = new URLSearchParams();
+    
+    const search = document.getElementById('searchInput').value.trim();
+    if (search) params.append('search', search);
+    
+    const classFilter = document.getElementById('classFilter').value;
+    if (classFilter) params.append('class', classFilter);
+    
+    const statusFilter = document.getElementById('statusFilter').value;
+    if (statusFilter) params.append('status', statusFilter);
+    
+    const genderFilter = document.getElementById('genderFilter').value;
+    if (genderFilter) params.append('gender', genderFilter);
+    
+    const yearFilter = document.getElementById('yearFilter').value;
+    if (yearFilter) params.append('year', yearFilter);
+    
+    return params;
+}
+
+// Update preview
+async function updatePreview() {
+    const params = getFilterParams();
+    const previewCard = document.getElementById('previewCard');
+    const previewBody = document.getElementById('previewBody');
+    const previewCount = document.getElementById('previewCount');
+    const filteredCount = document.getElementById('filteredCount');
+    const previewNote = document.getElementById('previewNote');
+    
+    try {
+        previewBody.innerHTML = '<tr><td colspan="5" class="text-center py-8"><div class="spinner mx-auto"></div><p class="mt-2 text-gray-600">Memuat preview...</p></td></tr>';
+        previewCard.style.display = 'block';
+        
+        const response = await fetch(`{% url 'students:export_preview' %}?${params.toString()}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            previewCount.textContent = data.count;
+            filteredCount.textContent = data.count;
+            
+            if (data.count === 0) {
+                previewBody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Tidak ada data sesuai filter</td></tr>';
+                previewNote.textContent = '';
+            } else {
+                previewBody.innerHTML = data.preview.map(student => `
+                    <tr>
+                        <td class="font-mono text-sm">${student.nisn}</td>
+                        <td class="font-medium">${student.name}</td>
+                        <td>${student.class}</td>
+                        <td>${student.gender}</td>
+                        <td><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">${student.status}</span></td>
+                    </tr>
+                `).join('');
+                
+                if (data.has_more) {
+                    previewNote.textContent = `Menampilkan 5 dari ${data.count} siswa. Semua data akan ter-export.`;
+                } else {
+                    previewNote.textContent = `Menampilkan semua ${data.count} siswa.`;
+                }
+            }
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        console.error('Preview error:', error);
+        previewBody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-red-600">Error: ${error.message}</td></tr>`;
+    }
+}
+
+// Download export
+function downloadExport() {
+    const params = getFilterParams();
+    const urls = {
+        'csv': '{% url "students:export_csv" %}',
+        'excel': '{% url "students:export_excel" %}',
+        'rmib': '{% url "students:export_rmib_csv" %}'
+    };
+    
+    const url = `${urls[selectedFormat]}?${params.toString()}`;
+    
+    // Show notification
+    showNotification('Sedang memproses export...', 'info', 2000);
+    
+    // Trigger download
+    window.location.href = url;
+    
+    setTimeout(() => {
+        showNotification('Export berhasil! File sedang didownload.', 'success', 3000);
+    }, 1000);
+}
+
+// Reset filters
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('classFilter').value = '';
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('genderFilter').value = '';
+    document.getElementById('yearFilter').value = '';
+    
+    document.getElementById('previewCard').style.display = 'none';
+    document.getElementById('filteredCount').textContent = '{{ total_students }}';
+    
+    showNotification('Filter direset', 'info', 2000);
+}
+
+// Notification system
+function showNotification(message, type = 'info', duration = 5000) {
+    // Remove existing
+    document.querySelectorAll('.notification-toast').forEach(n => n.remove());
+    
+    const colors = {
+        'success': 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+        'error': 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+        'warning': 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+        'info': 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'
+    };
+    
+    const icons = {
+        'success': 'fa-check-circle',
+        'error': 'fa-times-circle',
+        'warning': 'fa-exclamation-triangle',
+        'info': 'fa-info-circle'
+    };
+    
+    const notification = document.createElement('div');
+    notification.className = 'notification-toast';
+    notification.style.cssText = `
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 9999;
+        background: ${colors[type]};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        max-width: 400px;
+        animation: slideInRight 0.3s ease-out;
+    `;
+    
+    notification.innerHTML = `
+        <i class="fas ${icons[type]} text-xl"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    if (duration > 0) {
+        setTimeout(() => notification.remove(), duration);
+    }
+}
+
+// Auto-update preview on filter change
+document.addEventListener('DOMContentLoaded', () => {
+    ['searchInput', 'classFilter', 'statusFilter', 'genderFilter', 'yearFilter'].forEach(id => {
+        document.getElementById(id)?.addEventListener('change', () => {
+            // Optional: auto-update on change
+            // updatePreview();
+        });
+    });
+});
+</script>
+{% endblock %}
