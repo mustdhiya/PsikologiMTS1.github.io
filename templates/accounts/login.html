@@ -131,7 +131,7 @@
             50% { transform: translateY(-20px); }
         }
         
-        /* NISN Input Enhancements - REMOVED strict validation */
+        /* NISN Input Enhancements */
         .nisn-input:focus {
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
             border-color: #3b82f6;
@@ -144,6 +144,12 @@
         .help-card {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             border-left: 4px solid #3b82f6;
+        }
+        
+        /* Example Box */
+        .example-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
         }
         
         /* Admin Login Link */
@@ -267,6 +273,38 @@
                     <p class="text-gray-600">Masukkan NISN dan password dari guru</p>
                 </div>
                 
+                <!-- Example Link - Click to Show -->
+                <div class="mb-6 text-center">
+                    <button type="button" id="toggleExample" class="text-sm text-blue-600 hover:text-blue-800 underline flex items-center justify-center mx-auto transition-all">
+                        <i class="fas fa-lightbulb mr-1"></i>
+                        Lihat Contoh Login
+                        <i class="fas fa-chevron-down ml-1 text-xs" id="exampleIcon"></i>
+                    </button>
+                    
+                    <div id="exampleContent" class="hidden mt-3 example-box p-4 rounded-xl">
+                        <h4 class="font-bold text-amber-900 mb-3 flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-yellow-600 mr-2"></i>
+                            Contoh Login
+                        </h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center justify-between bg-white bg-opacity-50 p-2 rounded">
+                                <span class="text-amber-800 font-medium">NISN:</span>
+                                <code class="bg-amber-100 px-2 py-1 rounded text-amber-900 font-mono">0111245371</code>
+                            </div>
+                            <div class="flex items-center justify-between bg-white bg-opacity-50 p-2 rounded">
+                                <span class="text-amber-800 font-medium">Password:</span>
+                                <code class="bg-amber-100 px-2 py-1 rounded text-amber-900 font-mono">AIS1139</code>
+                            </div>
+                        </div>
+                        <p class="text-xs text-amber-700 mt-2 text-center">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            NISN bisa 9-10 digit. Cek di kartu pelajar Anda!
+                        </p>
+                    </div>
+                </div>
+
+
+                
                 <!-- Messages -->
                 {% if messages %}
                     {% for message in messages %}
@@ -279,7 +317,7 @@
                     {% endfor %}
                 {% endif %}
                 
-                <!-- Non-field errors (form-wide errors) -->
+                <!-- Non-field errors -->
                 {% if form.non_field_errors %}
                     <div class="mb-4 p-4 rounded-xl bg-red-50 text-red-800 border border-red-200">
                         <div class="flex items-center">
@@ -293,7 +331,7 @@
                 <form method="post" id="loginForm" class="space-y-6">
                     {% csrf_token %}
                     
-                    <!-- NISN Field - UPDATED WITHOUT 10 DIGIT REQUIREMENT -->
+                    <!-- NISN Field -->
                     <div class="input-group">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             <i class="fas fa-id-card mr-1"></i>
@@ -313,7 +351,7 @@
                         {% endif %}
                         <p class="mt-1 text-xs text-gray-500">
                             <i class="fas fa-info-circle mr-1"></i>
-                            Masukkan NISN Anda (biasanya 10 digit, tapi bisa berbeda)
+                            Masukkan NISN sesuai kartu pelajar (9 atau 10 digit)
                         </p>
                     </div>
                     
@@ -340,7 +378,7 @@
                         {% endif %}
                         <p class="mt-1 text-xs text-gray-500">
                             <i class="fas fa-info-circle mr-1"></i>
-                            Gunakan password yang diberikan guru
+                            Format: 3 huruf + 4 angka (contoh: AIS1139)
                         </p>
                     </div>
                     
@@ -372,6 +410,14 @@
                     
                     <div class="space-y-3 text-sm text-gray-600">
                         <div class="flex items-start space-x-2">
+                            <i class="fas fa-exclamation-triangle text-orange-500 mt-0.5 flex-shrink-0"></i>
+                            <div>
+                                <p class="font-medium">Login Gagal?</p>
+                                <p>Pastikan NISN sesuai kartu pelajar. Coba dengan/tanpa angka 0 di depan</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-2">
                             <i class="fas fa-user-times text-red-500 mt-0.5 flex-shrink-0"></i>
                             <div>
                                 <p class="font-medium">Lupa Password?</p>
@@ -383,12 +429,12 @@
                             <i class="fas fa-id-card-alt text-blue-500 mt-0.5 flex-shrink-0"></i>
                             <div>
                                 <p class="font-medium">Tidak tahu NISN?</p>
-                                <p>Tanyakan kepada guru atau periksa kartu pelajar</p>
+                                <p>Periksa kartu pelajar atau tanyakan kepada guru</p>
                             </div>
                         </div>
                         
                         <div class="flex items-start space-x-2">
-                            <i class="fas fa-lock text-orange-500 mt-0.5 flex-shrink-0"></i>
+                            <i class="fas fa-lock text-purple-500 mt-0.5 flex-shrink-0"></i>
                             <div>
                                 <p class="font-medium">Akun Terkunci?</p>
                                 <p>Tunggu 30 menit atau hubungi admin sekolah</p>
@@ -432,7 +478,7 @@
         Login Admin
     </a>
     
-    <!-- Scripts - UPDATED WITHOUT 10 DIGIT VALIDATION -->
+    <!-- Scripts -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
@@ -443,25 +489,52 @@
             const nisnField = document.querySelector('input[name="nisn"]');
             const eyeIcon = document.getElementById('eyeIcon');
             
+            // Toggle Example Credentials - COLLAPSIBLE
+            const toggleExample = document.getElementById('toggleExample');
+            const exampleContent = document.getElementById('exampleContent');
+            const exampleIcon = document.getElementById('exampleIcon');
+            
+            if (toggleExample && exampleContent) {
+                toggleExample.addEventListener('click', function() {
+                    exampleContent.classList.toggle('hidden');
+                    exampleIcon.classList.toggle('fa-chevron-down');
+                    exampleIcon.classList.toggle('fa-chevron-up');
+                    
+                    // Smooth rotation
+                    if (exampleContent.classList.contains('hidden')) {
+                        exampleIcon.style.transform = 'rotate(0deg)';
+                    } else {
+                        exampleIcon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            }
+            
             // NISN input - ONLY numbers, NO length restriction
             if (nisnField) {
                 nisnField.addEventListener('input', function() {
                     // Remove non-digits
                     this.value = this.value.replace(/\D/g, '');
                     
-                    // Visual feedback - valid if has any digits
-                    this.classList.remove('nisn-valid', 'nisn-invalid');
+                    // Limit to reasonable max (15 digits)
+                    if (this.value.length > 15) {
+                        this.value = this.value.slice(0, 15);
+                    }
                     
-                    if (this.value.length > 0) {
+                    // Visual feedback
+                    this.classList.remove('nisn-valid', 'nisn-invalid', 'border-yellow-300');
+                    
+                    if (this.value.length >= 9) {
                         this.classList.add('nisn-valid');
+                    } else if (this.value.length > 0) {
+                        this.classList.add('border-yellow-300');
                     }
                 });
                 
-                // Auto-focus on NISN field
+                // Auto-focus
                 nisnField.focus();
                 
-                // Add placeholder
-                nisnField.setAttribute('placeholder', 'Masukkan NISN Anda');
+                // Placeholder
+                nisnField.setAttribute('placeholder', 'Contoh: 0111245371 atau 011124537');
             }
             
             // Password visibility toggle
@@ -480,12 +553,19 @@
                 });
             }
             
-            // Form submission with loading state
+            // Form submission
             loginForm.addEventListener('submit', function(e) {
                 // Basic validation
                 if (!nisnField.value.trim()) {
                     e.preventDefault();
                     alert('Silakan masukkan NISN Anda');
+                    nisnField.focus();
+                    return;
+                }
+                
+                if (nisnField.value.length < 9) {
+                    e.preventDefault();
+                    alert('NISN minimal 9 digit. Periksa kembali kartu pelajar Anda.');
                     nisnField.focus();
                     return;
                 }
@@ -503,7 +583,7 @@
                 loginBtnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memverifikasi...';
             });
             
-            // Enhanced form validation with real-time feedback
+            // Real-time validation feedback
             const inputs = document.querySelectorAll('input');
             inputs.forEach(input => {
                 input.addEventListener('blur', function() {
@@ -517,12 +597,12 @@
                 });
                 
                 input.addEventListener('input', function() {
-                    // Remove error styling while typing
                     this.classList.remove('border-red-300');
                     this.classList.add('border-gray-300');
                 });
             });
         });
     </script>
+
 </body>
 </html>
