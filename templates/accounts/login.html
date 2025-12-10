@@ -131,7 +131,7 @@
             50% { transform: translateY(-20px); }
         }
         
-        /* NISN Input Enhancements */
+        /* NISN Input Enhancements - REMOVED strict validation */
         .nisn-input:focus {
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
             border-color: #3b82f6;
@@ -139,7 +139,6 @@
         
         .nisn-valid { border-color: #10b981 !important; }
         .nisn-invalid { border-color: #ef4444 !important; }
-        .nisn-partial { border-color: #f59e0b !important; }
         
         /* Help Section Styling */
         .help-card {
@@ -294,7 +293,7 @@
                 <form method="post" id="loginForm" class="space-y-6">
                     {% csrf_token %}
                     
-                    <!-- NISN Field -->
+                    <!-- NISN Field - UPDATED WITHOUT 10 DIGIT REQUIREMENT -->
                     <div class="input-group">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             <i class="fas fa-id-card mr-1"></i>
@@ -314,7 +313,7 @@
                         {% endif %}
                         <p class="mt-1 text-xs text-gray-500">
                             <i class="fas fa-info-circle mr-1"></i>
-                            Masukkan 10 digit NISN Anda
+                            Masukkan NISN Anda (biasanya 10 digit, tapi bisa berbeda)
                         </p>
                     </div>
                     
@@ -433,7 +432,7 @@
         Login Admin
     </a>
     
-    <!-- Scripts -->
+    <!-- Scripts - UPDATED WITHOUT 10 DIGIT VALIDATION -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
@@ -444,32 +443,25 @@
             const nisnField = document.querySelector('input[name="nisn"]');
             const eyeIcon = document.getElementById('eyeIcon');
             
-            // NISN input formatting and validation
+            // NISN input - ONLY numbers, NO length restriction
             if (nisnField) {
                 nisnField.addEventListener('input', function() {
                     // Remove non-digits
                     this.value = this.value.replace(/\D/g, '');
                     
-                    // Limit to 10 digits
-                    if (this.value.length > 10) {
-                        this.value = this.value.slice(0, 10);
-                    }
+                    // Visual feedback - valid if has any digits
+                    this.classList.remove('nisn-valid', 'nisn-invalid');
                     
-                    // Visual feedback for NISN length
-                    this.classList.remove('nisn-valid', 'nisn-invalid', 'nisn-partial');
-                    
-                    if (this.value.length === 10) {
+                    if (this.value.length > 0) {
                         this.classList.add('nisn-valid');
-                    } else if (this.value.length > 0) {
-                        this.classList.add('nisn-partial');
                     }
                 });
                 
                 // Auto-focus on NISN field
                 nisnField.focus();
                 
-                // Add placeholder with format hint
-                nisnField.setAttribute('placeholder', 'Contoh: 0123456789');
+                // Add placeholder
+                nisnField.setAttribute('placeholder', 'Masukkan NISN Anda');
             }
             
             // Password visibility toggle
@@ -488,14 +480,20 @@
                 });
             }
             
-            // Enhanced form submission with loading state
+            // Form submission with loading state
             loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Validate NISN length before submitting
-                if (nisnField && nisnField.value.length !== 10) {
-                    alert('NISN harus terdiri dari 10 digit!');
+                // Basic validation
+                if (!nisnField.value.trim()) {
+                    e.preventDefault();
+                    alert('Silakan masukkan NISN Anda');
                     nisnField.focus();
+                    return;
+                }
+                
+                if (!passwordField.value.trim()) {
+                    e.preventDefault();
+                    alert('Silakan masukkan password');
+                    passwordField.focus();
                     return;
                 }
                 
@@ -503,91 +501,18 @@
                 loginBtn.classList.add('loading');
                 loginBtn.disabled = true;
                 loginBtnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memverifikasi...';
-                
-                // Submit via AJAX for better user experience
-                const formData = new FormData(loginForm);
-                
-                fetch(loginForm.action || window.location.href, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        loginBtnText.innerHTML = '<i class="fas fa-check mr-2"></i>Login Berhasil!';
-                        
-                        // Show success message
-                        const successDiv = document.createElement('div');
-                        successDiv.className = 'mb-4 p-4 rounded-xl bg-green-50 text-green-800 border border-green-200';
-                        successDiv.innerHTML = '<div class="flex items-center"><i class="fas fa-check-circle mr-2"></i>Login berhasil! Mengalihkan ke dashboard...</div>';
-                        loginForm.parentNode.insertBefore(successDiv, loginForm);
-                        
-                        setTimeout(() => {
-                            window.location.href = data.redirect_url;
-                        }, 1500);
-                    } else {
-                        // Reset button state
-                        loginBtn.classList.remove('loading');
-                        loginBtn.disabled = false;
-                        loginBtnText.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Masuk ke Sistem';
-                        
-                        // Handle form errors
-                        if (data.errors) {
-                            // Show form errors
-                            for (const [field, errors] of Object.entries(data.errors)) {
-                                console.error(`${field}: ${errors.join(', ')}`);
-                            }
-                            
-                            // Show generic error message
-                            const errorDiv = document.createElement('div');
-                            errorDiv.className = 'mb-4 p-4 rounded-xl bg-red-50 text-red-800 border border-red-200';
-                            errorDiv.innerHTML = '<div class="flex items-center"><i class="fas fa-exclamation-circle mr-2"></i>Login gagal. Periksa NISN dan password Anda.</div>';
-                            
-                            // Remove existing error messages
-                            const existingErrors = loginForm.parentNode.querySelectorAll('.bg-red-50');
-                            existingErrors.forEach(error => error.remove());
-                            
-                            loginForm.parentNode.insertBefore(errorDiv, loginForm);
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Login error:', error);
-                    
-                    // Reset button state
-                    loginBtn.classList.remove('loading');
-                    loginBtn.disabled = false;
-                    loginBtnText.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Masuk ke Sistem';
-                    
-                    // Fallback: submit form normally
-                    loginForm.submit();
-                });
             });
             
             // Enhanced form validation with real-time feedback
             const inputs = document.querySelectorAll('input');
             inputs.forEach(input => {
                 input.addEventListener('blur', function() {
-                    this.classList.remove('border-red-300', 'border-green-300', 'border-yellow-300');
+                    this.classList.remove('border-red-300', 'border-green-300');
                     
-                    if (this.name === 'nisn') {
-                        if (this.value.length === 10 && this.value.match(/^\d{10}$/)) {
-                            this.classList.add('border-green-300');
-                        } else if (this.value.length > 0) {
-                            this.classList.add('border-yellow-300');
-                        } else {
-                            this.classList.add('border-red-300');
-                        }
-                    } else if (this.name === 'password') {
-                        if (this.value.trim() === '') {
-                            this.classList.add('border-red-300');
-                        } else {
-                            this.classList.add('border-green-300');
-                        }
+                    if (this.value.trim() === '') {
+                        this.classList.add('border-red-300');
+                    } else {
+                        this.classList.add('border-green-300');
                     }
                 });
                 
