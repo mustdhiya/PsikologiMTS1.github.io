@@ -35,7 +35,7 @@ else:
 # settings.py
 if IS_PRODUCTION:
     # CSRF - DISABLE SECURE COOKIE
-    CSRF_COOKIE_SECURE = False  # ← UBAH KE FALSE
+    CSRF_COOKIE_SECURE = False      
     CSRF_COOKIE_HTTPONLY = False
     CSRF_COOKIE_SAMESITE = 'Lax'
     CSRF_USE_SESSIONS = False
@@ -43,7 +43,7 @@ if IS_PRODUCTION:
     CSRF_TRUSTED_ORIGINS = [
         'https://prestisia.com',
         'https://www.prestisia.com',
-        'http://prestisia.com',  # ← TAMBAHKAN HTTP JUGA
+        'http://prestisia.com',  
         'http://www.prestisia.com',
     ]
 else:
@@ -121,7 +121,7 @@ WSGI_APPLICATION = 'psikologimts1.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql' if IS_PRODUCTION else 'django.db.backends.sqlite3',
-        'NAME': 'prep8924_psikologimts1_db' if IS_PRODUCTION else os.path.join(BASE_DIR, 'db_local.sqlite3'),
+        'NAME': 'must1341_psikologimts1_db' if IS_PRODUCTION else os.path.join(BASE_DIR, 'db_local.sqlite3'),
         'USER': 'prep8924' if IS_PRODUCTION else 'root',
         'PASSWORD': 'vEjwWHc1P9P337' if IS_PRODUCTION else '',
         'HOST': 'localhost',
@@ -190,7 +190,7 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 # ============================================================================
 if IS_PRODUCTION:
     # Redirect HTTP to HTTPS
-    SECURE_SSL_REDIRECT = False  # ← UBAH KE FALSE!
+    SECURE_SSL_REDIRECT = False  
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     
     # HSTS - DISABLE DULU
