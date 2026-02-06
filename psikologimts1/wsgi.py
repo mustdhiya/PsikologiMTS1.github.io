@@ -13,7 +13,7 @@ import pymysql
 pymysql.install_as_MySQLdb()
 
 # Add Django project to path
-sys.path.insert(0, '/home/prep8924/apps/PsikologiMTS1hub.io')
+sys.path.insert(0, '/home/must1341/apps/PsikologiMTS1hub.io')
 
 # Django settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'psikologimts1.settings')
