@@ -21,8 +21,9 @@ SECRET_KEY = os.environ.get(
 # # Deteksi apakah ini production atau development
 # IS_PRODUCTION = not DEBUG and os.environ.get('ENVIRONMENT', 'development') == 'production'
 
-DEBUG = True
-IS_PRODUCTION = False  
+DEBUG = False
+IS_PRODUCTION = True  
+
 
 # ALLOWED_HOSTS
 if IS_PRODUCTION:
